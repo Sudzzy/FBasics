@@ -4,12 +4,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.Permissions;
 
 public class BoatPatch implements Listener {
 
-	public BoatPatch(FBasics plugin) { }
+	public BoatPatch() { }
 
 
 	@EventHandler
