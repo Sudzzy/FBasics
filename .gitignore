@@ -1,36 +1,30 @@
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
+*.pydevproject
+.metadata
+.gradle
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
 
-# Folder config file
-Desktop.ini
+# External tool builders
+.externalToolBuilders/
 
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
+# Locally stored "Eclipse launch configurations"
+*.launch
 
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
+# CDT-specific
+.cproject
 
-# =========================
-# Operating System Files
-# =========================
+# PDT-specific
+.buildpath
 
-# OSX
-# =========================
+# sbteclipse plugin 
+.target
 
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Icon must ends with two \r.
-Icon
-
-# Thumbnails
-._*
-
-# Files that might appear on external disk
-.Spotlight-V100
-.Trashes
+# TeXlipse plugin
+.texlipse
