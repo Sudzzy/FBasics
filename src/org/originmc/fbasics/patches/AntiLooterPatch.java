@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.originmc.fbasics.FBasics;
+import org.originmc.fbasics.Permissions;
 import org.originmc.fbasics.settings.LanguageSettings;
 import org.originmc.fbasics.settings.PatchSettings;
 
@@ -36,10 +37,10 @@ public class AntiLooterPatch implements Listener {
 		Player player = e.getPlayer();
 		UUID uuid = player.getUniqueId();
 		Item item = e.getItem();
-		Boolean meta = Boolean.valueOf(item.hasMetadata("fbasics-antiloot"));
+		Boolean meta = item.hasMetadata("fbasics-antiloot");
 
 
-		if (player.hasPermission("fbasics.bypass.antilooter") || !meta) {
+		if (player.hasPermission(Permissions.antiLooter) || !meta) {
 			return;
 		}
 
@@ -54,7 +55,7 @@ public class AntiLooterPatch implements Listener {
 		}
 
 
-		long remaining = System.currentTimeMillis() - Long.valueOf(data[1]).longValue();
+		long remaining = System.currentTimeMillis() - Long.valueOf(data[1]);
 
 
 		if (remaining >= PatchSettings.antiLooterTime * 1000) {
@@ -79,15 +80,15 @@ public class AntiLooterPatch implements Listener {
 
 
 	@EventHandler
-	public void onDeath(PlayerDeathEvent event) {
+	public void onDeath(PlayerDeathEvent e) {
 
-		if (!(event.getEntity().getKiller() instanceof Player)) {
+		if (e.getEntity().getKiller() == null) {
 			return;
 		}
 
 
-		final Player killer = event.getEntity().getPlayer().getKiller();
-		Player victim = event.getEntity().getPlayer();
+		final Player killer = e.getEntity().getPlayer().getKiller();
+		Player victim = e.getEntity().getPlayer();
 
 
 		String dropped = LanguageSettings.antiLooterDropped.replace("{TIME}", "" + PatchSettings.antiLooterTime);
@@ -101,13 +102,13 @@ public class AntiLooterPatch implements Listener {
 		}.runTaskLaterAsynchronously(plugin, PatchSettings.antiLooterTime * 20);
 
 
-		for (ItemStack a : event.getDrops()) {
+		for (ItemStack a : e.getDrops()) {
 			Entity item = victim.getWorld().dropItemNaturally(victim.getLocation(), a);
 			item.setMetadata("fbasics-antiloot", new FixedMetadataValue(plugin, killer.getName() + "-" + System.currentTimeMillis()));
 		}
 
 
-		event.getDrops().clear();
+		e.getDrops().clear();
 
 	}
 

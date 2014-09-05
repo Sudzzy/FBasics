@@ -15,7 +15,7 @@ public class DatabaseSettings {
 
 	public static void loadCommandSettings() {
 
-		mysql = Boolean.valueOf(SettingsManager.getConfig().getBoolean("mysql.enabled"));
+		mysql = SettingsManager.getConfig().getBoolean("mysql.enabled");
 		user = SettingsManager.getConfig().getString("mysql.user-name");
 		pass = SettingsManager.getConfig().getString("mysql.user-password");
 		name = SettingsManager.getConfig().getString("mysql.database-name");

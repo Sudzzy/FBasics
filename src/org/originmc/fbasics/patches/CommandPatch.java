@@ -160,16 +160,15 @@ public class CommandPatch implements Listener {
 		}
 
 
-		for (String m : CommandSettings.matcher.keySet()) {
-			if (testMessage.matches(m)) {
-				editor = CommandSettings.matcher.get(m);
-				matcher = m;
-			}
-		}
+		for (String m : CommandSettings.matcher.keySet())
+            if (testMessage.matches(m)) {
+                editor = CommandSettings.matcher.get(m);
+                matcher = m;
+            }
 
 
 		if (editor == null) {
-			return Arrays.asList(message, String.valueOf(cancelled));
+			return Arrays.asList(message, "false");
 		}
 
 
@@ -204,9 +203,8 @@ public class CommandPatch implements Listener {
 		 */
 		if (permission != null && !player.hasPermission(permission)) {
 			player.sendMessage(ChatColor.translateAlternateColorCodes('&', LanguageSettings.permission));
-			cancelled = true;
 			message = "/fbasics nulled";
-			return Arrays.asList(message, String.valueOf(cancelled));
+			return Arrays.asList(message, "true");
 		}
 
 
@@ -222,9 +220,8 @@ public class CommandPatch implements Listener {
 
 			if (!blocks.contains(block1) || !blocks.contains(block2)) {
 				player.sendMessage(ChatColor.translateAlternateColorCodes('&', LanguageSettings.commandsBlock));
-				cancelled = true;
 				message = "/fbasics nulled";
-				return Arrays.asList(message, String.valueOf(cancelled));
+				return Arrays.asList(message, "true");
 			}
 		}
 
@@ -233,34 +230,31 @@ public class CommandPatch implements Listener {
 		 * Factions
 		 */
 		if (!factions.isEmpty() && Bukkit.getPluginManager().getPlugin("Factions") != null && !player.hasPermission(Permissions.commandsTerritory) && isInFactionLand(player, factions)) {
-			cancelled = true;
 			message = "/fbasics nulled";
-			return Arrays.asList(message, String.valueOf(cancelled));
+			return Arrays.asList(message, "true");
 		}
 
 
 		/*
 		 * Cooldown
 		 */
-		if (!cancelled && cooldown > 0 && !player.hasPermission(Permissions.commandsCooldown) && setCooldown(player, cooldown, editor)) {
-			cancelled = true;
+		if (cooldown > 0 && !player.hasPermission(Permissions.commandsCooldown) && setCooldown(player, cooldown, editor)) {
 			message = "/fbasics nulled";
-			return Arrays.asList(message, String.valueOf(cancelled));
+			return Arrays.asList(message, "true");
 		}
 
 
 		/*
 		 * Economy
 		 */
-		if (!cancelled && this.plugin.economy != null && !player.hasPermission(Permissions.commandsEconomy) && price != 0) {
+		if (this.plugin.economy != null && !player.hasPermission(Permissions.commandsEconomy) && price != 0) {
 
 			double balance = this.plugin.economy.getBalance(player);
 
 			if (balance < price) {
 				player.sendMessage(ChatColor.translateAlternateColorCodes('&', LanguageSettings.commandsInsufficientFunds));
-				cancelled = true;
 				message = "/fbasics nulled";
-				return Arrays.asList(message, String.valueOf(cancelled));
+				return Arrays.asList(message, "true");
 			}
 
 			this.plugin.economy.withdrawPlayer(player, price);
@@ -273,7 +267,7 @@ public class CommandPatch implements Listener {
 		/*
 		 * Warmup
 		 */
-		if (!cancelled && warmup > 0 && !player.hasPermission(Permissions.commandsWarmup)) {
+		if (warmup > 0 && !player.hasPermission(Permissions.commandsWarmup)) {
 			setWarmup(player, warmup, message);
 			cancelled = true;
 			message = "/fbasics nulled";
@@ -281,7 +275,6 @@ public class CommandPatch implements Listener {
 
 
 		return Arrays.asList(message, String.valueOf(cancelled));
-
 	}
 
 

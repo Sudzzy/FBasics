@@ -9,11 +9,7 @@ import org.originmc.fbasics.Permissions;
 
 public class BoatPatch implements Listener {
 
-	@SuppressWarnings("unused")
-	private FBasics plugin;
-	public BoatPatch(FBasics plugin) {
-		this.plugin = plugin;
-	}
+	public BoatPatch(FBasics plugin) { }
 
 
 	@EventHandler

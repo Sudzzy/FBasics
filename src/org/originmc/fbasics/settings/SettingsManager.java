@@ -113,16 +113,6 @@ public class SettingsManager {
 	}
 
 
-	public void saveFiles() {
-		try {
-			config.save(configFile);
-			language.save(languageFile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-
 	public void loadFiles() {
 		try {
 			config.load(configFile);

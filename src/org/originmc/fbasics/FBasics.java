@@ -1,7 +1,5 @@
 package org.originmc.fbasics;
 
-import java.sql.Connection;
-
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
@@ -31,7 +29,6 @@ import org.originmc.fbasics.settings.WildSettings;
 
 public class FBasics extends JavaPlugin {
 
-	public Connection connection;
 	public Permission permission = null;
 	public Economy economy = null;
 	public SettingsManager settingsManager = new SettingsManager(this);
@@ -81,7 +78,7 @@ public class FBasics extends JavaPlugin {
 		}
 
 		if (PatchSettings.cactusEnabled) {
-			getServer().getPluginManager().registerEvents(new CactusPatch(this), this);
+			getServer().getPluginManager().registerEvents(new CactusPatch(), this);
 		}
 		
 		if (CommandSettings.enabled) {
@@ -101,7 +98,7 @@ public class FBasics extends JavaPlugin {
 		}
 
 		if (PatchSettings.netherEnabled) {
-			getServer().getPluginManager().registerEvents(new NetherRoofPatch(this), this);
+			getServer().getPluginManager().registerEvents(new NetherRoofPatch(), this);
 		}
 
 	}

@@ -41,10 +41,5 @@ public class CrateSettings {
 
 		rewardCommands = cratesCommands;
 		rewardMessages = cratesMessages;
-
-
-		cratesCommands = null;
-		cratesMessages = null;
-
 	}
 }

@@ -19,7 +19,7 @@ public final class DatabaseManager {
 
 	public Connection getConnection() {
 
-		if (DatabaseSettings.mysql.booleanValue()) {
+		if (DatabaseSettings.mysql) {
 
 			try {
 				DatabaseSettings.url = "jdbc:mysql://" + DatabaseSettings.host + ":" + DatabaseSettings.port + "/" + DatabaseSettings.name + "?autoReconnect=true";
@@ -49,7 +49,7 @@ public final class DatabaseManager {
 
 	public void setupConnection() {
 
-		if (DatabaseSettings.mysql.booleanValue()) {
+		if (DatabaseSettings.mysql) {
 
 			try {
 
@@ -114,7 +114,7 @@ public final class DatabaseManager {
 		Connection connection = getConnection();
 
 
-		if (DatabaseSettings.mysql.booleanValue()) {
+		if (DatabaseSettings.mysql) {
 
 			try {
 
@@ -152,7 +152,7 @@ public final class DatabaseManager {
 
 	public void createTables() {
 
-		if (DatabaseSettings.mysql.booleanValue()) {
+		if (DatabaseSettings.mysql) {
 			if (!tableExists(DatabaseSettings.prefix + "Crates")) {
 				modifyQuery("CREATE TABLE `" + DatabaseSettings.prefix + "Crates` (`IGN` varchar(16) NOT NULL, `crates` int(10) DEFAULT 0, PRIMARY KEY (`IGN`));");
 			}

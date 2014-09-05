@@ -10,17 +10,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.settings.LanguageSettings;
 import org.originmc.fbasics.settings.PatchSettings;
 
 public class CactusPatch implements Listener {
 
-	@SuppressWarnings("unused")
-	private FBasics plugin;
-	public CactusPatch(FBasics plugin) {
-		this.plugin = plugin;
-	}
+	public CactusPatch() { }
 
 
 	@EventHandler
@@ -80,15 +75,7 @@ public class CactusPatch implements Listener {
 
 
 	private boolean checkChest(Block block) {
-
 		Material material = block.getType();
-
-
-		if (!PatchSettings.cactusBlocks.contains(material)) {
-			return false;
-		}
-
-
-		return true;
+		return PatchSettings.cactusBlocks.contains(material);
 	}
 }
