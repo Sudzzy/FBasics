@@ -94,7 +94,7 @@ public class FBasics extends JavaPlugin {
 		}
 
 		if (PatchSettings.boatEnabled) {
-			getServer().getPluginManager().registerEvents(new BoatPatch(this), this);
+			getServer().getPluginManager().registerEvents(new BoatPatch(), this);
 		}
 
 		if (PatchSettings.netherEnabled) {
