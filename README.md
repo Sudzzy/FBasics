@@ -1,35 +1,47 @@
-==What is FBasics?==
+## What is FBasics?
+
 FBasics is a small plugin I have put together which is jam-packed with tons of useful features specifically for factions servers.
+
 ----
-==Features==
-* Many glitches patched, including
-** Horse glitches 
-** Enderpearl glitching (Factions support)
-** Glitching to the top of the nether
-** Cactus duplication glitch
-** Essentials' teleportation glitches
-** Buycraft / Enjin promotion glitches (With Safe Promote)
-*Advanced command editing
-** Aliasing
-** Warmups (Cancelled on damage and movement)
-** Cooldowns
-** RegEx support
-** Blocking commands while in faction territory
-** Blocking commands while in specific block
-** Prices
-** Add your own permissions
-* Extra useful commands for factions servers
-** Crates
-** Wilderness (Factions support)
+
+## Features
+
+- Many glitches patched, including
+  - Horse glitches 
+  - Enderpearl glitching (Factions support)
+  - Glitching to the top of the nether
+  - Cactus duplication glitch
+  - Essentials' teleportation glitches
+  - Buycraft / Enjin promotion glitches (With Safe Promote)
+
+- Advanced command editing
+  - Aliasing
+  - Warmups (Cancelled on damage and movement)
+  - Cooldowns
+  - RegEx support
+  - Blocking commands while in faction territory
+  - Blocking commands while in specific block
+  - Prices
+  - Add your own permissions
+
+- Extra useful commands for factions servers
+  - Crates
+  - Wilderness (Factions support)
+
 ----
-==Supported Plugins (Latest version)==
-* FactionsUUID 1.6.9.5 by DrtShock
-* Factions 2.5.0
-* Massive Core 7.3.0
-* Vault 1.4.1
+
+## Supported Plugins (Latest version)
+- FactionsUUID 1.6.9.5 by DrtShock
+- Factions 2.5.0
+- Massive Core 7.3.0
+- Vault 1.4.1
+
 ----
-==Commands==
-|===Command===|===Description===|
+
+##Commands
+
+|Command|Description|
+| ------------- | ------------- |
 |/crate balance|View your own balance|
 |/crate balance [player]|View the balance of another player|
 |/crate open|Opens one of your crates|
@@ -42,9 +54,13 @@ FBasics is a small plugin I have put together which is jam-packed with tons of u
 |/fbasics version|View the current version you are using|
 |/wilderness|Teleports the player to a random location|
 |/safepromote [player] [old rank] [new rank] [world]|Promotes a player using group checks|
+
 ----
-==Admin Permissions==
-|===Permission===|===Description===|
+
+##Admin Permissions
+
+|Permission|Description|
+| ------------- | ------------- |
 |fbasics.admin|All admin permission nodes - Granted to Ops|
 |fbasics.bypass.antilooter|Bypasses loot protection|
 |fbasics.bypass.commands.block|Bypass commands blocks settings|
@@ -60,9 +76,13 @@ FBasics is a small plugin I have put together which is jam-packed with tons of u
 |fbasics.commands.crate.change|Access to change player crates|
 |fbasics.commands.crate.change|Access to change player crates|
 |fbasics.commands.reload|Access to reload the plugin|
+
 ----
-==User Permissions==
-|===Permission===|===Description===|
+
+##User Permissions
+
+|Permission|Description|
+| ------------- | ------------- |
 |fbasics.user|All user permission nodes - Granted to everyone|
 |fbasics.commands.crate.balance|Access to view your own balance|
 |fbasics.commands.crate.balance.other|Access to view balance of other players|
