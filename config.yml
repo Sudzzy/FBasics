@@ -43,8 +43,8 @@ commands:
             # http://jd.bukkit.org/rb/apidocs/org/bukkit/Material.html
             blocks: [AIR, LAVA]
             # Whitelists the usage of this command to certain faction territories (case insensitive)
-            # {MEMBER} = the faction the player is a member of
-            factions: [{MEMBER}, SAFEZONE, WARZONE, WILDERNESS]
+            # '{MEMBER}' = the faction the player is a member of
+            factions: ['{MEMBER}', SAFEZONE, WARZONE, WILDERNESS]
             # Amount the player needs to pay to execute this command (Requires Vault)
             price: 5.12
 
@@ -133,7 +133,7 @@ patcher:
     enderpearls:
         enabled: true
         disable-all-enderpearls: false
-        factions-whitelist: [{MEMBER}, WILDERNESS]
+        factions-whitelist: ['{MEMBER}', WILDERNESS]
         cooldown: 15
         door-cooldown: 2
 
