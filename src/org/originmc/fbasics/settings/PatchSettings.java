@@ -1,40 +1,39 @@
 package org.originmc.fbasics.settings;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
 
 public class PatchSettings {
 
-	/*
+	/**
 	 * Anti Looter
 	 */
 	public static boolean antiLooterEnabled;
 	public static int antiLooterTime;
 
 
-	/*
+	/**
 	 * Boat Glitch
 	 */
 	public static boolean boatEnabled;
 
 
-	/*
+	/**
 	 * Cactus Glitch
 	 */
 	public static boolean cactusEnabled;
 	public static List<Material> cactusBlocks;
 
 
-	/*
+	/**
 	 * Dismount Glitch
 	 */
 	public static boolean dismountEnabled;
 
 
-	/*
+	/**
 	 * Enderpearl Glitch
 	 */
 	public static boolean enderpearlsEnabled;
@@ -42,10 +41,17 @@ public class PatchSettings {
 	public static int enderpearlsCooldown;
 	public static int enderpearlsDoorCooldown;
 	public static List<String> enderpearlsFactions;
-	public static List<Material> enderpearlsDoors = Arrays.asList(new Material[] { Material.WOOD_DOOR, Material.TRAP_DOOR,Material.WOODEN_DOOR });
+	public static List<Material> enderpearlsDoors;
 
 
-	/*
+    /**
+     * McMMO Glitch
+     */
+    public static boolean mcmmoEnabled;
+    public static List<Material> mcmmoOres;
+
+
+	/**
 	 * Nether Glitch
 	 */
 	public static boolean netherEnabled;
@@ -65,9 +71,6 @@ public class PatchSettings {
 
 
 		boatEnabled = SettingsManager.getConfig().getBoolean("patcher.boat-glitch");
-
-
-		netherEnabled = SettingsManager.getConfig().getBoolean("patcher.nether-glitch");
 
 
 		cactusEnabled = SettingsManager.getConfig().getBoolean("patcher.cactus-dupe.enabled");
@@ -94,6 +97,30 @@ public class PatchSettings {
 			enderpearlsDoorCooldown = SettingsManager.getConfig().getInt("patcher.enderpearls.door-cooldown");
 			enderpearlsFactions = SettingsManager.getConfig().getStringList("patcher.enderpearls.factions-whitelist");
 
+
+            List<Material> tempEnderpearlsDoors = new ArrayList<Material>();
+            for (String material : SettingsManager.getConfig().getStringList("patcher.enderpearls.doors")) {
+                tempEnderpearlsDoors.add(Material.getMaterial(material));
+            }
+
+            enderpearlsDoors = tempEnderpearlsDoors;
 		}
+
+
+        mcmmoEnabled = SettingsManager.getConfig().getBoolean("patcher.mcmmo-mining-exploit.enabled");
+
+
+        if (mcmmoEnabled) {
+
+            List<Material> tempMcmmoOres = new ArrayList<Material>();
+            for (String material : SettingsManager.getConfig().getStringList("patcher.mcmmo-mining-exploit.ore-blocks")) {
+                tempMcmmoOres.add(Material.getMaterial(material));
+            }
+
+            mcmmoOres = tempMcmmoOres;
+        }
+
+
+        netherEnabled = SettingsManager.getConfig().getBoolean("patcher.nether-glitch");
 	}
 }

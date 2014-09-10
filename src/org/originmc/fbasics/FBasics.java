@@ -11,13 +11,7 @@ import org.originmc.fbasics.commands.FBCommand;
 import org.originmc.fbasics.commands.SPCommand;
 import org.originmc.fbasics.commands.WildCommand;
 import org.originmc.fbasics.database.DatabaseManager;
-import org.originmc.fbasics.patches.CactusPatch;
-import org.originmc.fbasics.patches.CommandPatch;
-import org.originmc.fbasics.patches.AntiLooterPatch;
-import org.originmc.fbasics.patches.DismountPatch;
-import org.originmc.fbasics.patches.EnderpearlPatch;
-import org.originmc.fbasics.patches.BoatPatch;
-import org.originmc.fbasics.patches.NetherRoofPatch;
+import org.originmc.fbasics.patches.*;
 import org.originmc.fbasics.settings.CommandSettings;
 import org.originmc.fbasics.settings.CrateSettings;
 import org.originmc.fbasics.settings.DatabaseSettings;
@@ -97,10 +91,13 @@ public class FBasics extends JavaPlugin {
 			getServer().getPluginManager().registerEvents(new BoatPatch(), this);
 		}
 
+        if (PatchSettings.mcmmoEnabled) {
+            getServer().getPluginManager().registerEvents(new McMMOPatch(), this);
+        }
+
 		if (PatchSettings.netherEnabled) {
 			getServer().getPluginManager().registerEvents(new NetherRoofPatch(), this);
 		}
-
 	}
 
 

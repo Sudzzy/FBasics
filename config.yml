@@ -121,6 +121,22 @@ patcher:
     dismount-glitch: true
     nether-glitch: true
 
+    mcmmo-mining-exploit:
+        enabled: true
+        ore-blocks:
+        - COAL_ORE
+        - REDSTONE_ORE
+        - IRON_ORE
+        - LAPIS_ORE
+        - GOLD_ORE
+        - DIAMOND_ORE
+        - EMERALD_ORE
+        - QUARTZ_ORE
+        - ENDER_STONE
+        - GLOWSTONE
+        - NETHERRACK
+        - PACKED_ICE
+
     cactus-dupe:
         enabled: true
         block-placement-near-cactus:
@@ -136,6 +152,10 @@ patcher:
         factions-whitelist: ['{MEMBER}', WILDERNESS]
         cooldown: 15
         door-cooldown: 2
+        doors:
+        - WOOD_DOOR
+        - TRAP_DOOR
+        - WOODEN_DOOR
 
 # Safe Promote requires Vault to be enabled
 safe-promote:
