@@ -10,23 +10,25 @@ import org.originmc.fbasics.commands.CrateCommand;
 import org.originmc.fbasics.commands.FBCommand;
 import org.originmc.fbasics.commands.SPCommand;
 import org.originmc.fbasics.commands.WildCommand;
-import org.originmc.fbasics.database.DatabaseManager;
+import org.originmc.fbasics.database.SetupDatabaseTask;
+import org.originmc.fbasics.database.UpdateDatabaseTask;
 import org.originmc.fbasics.patches.*;
-import org.originmc.fbasics.settings.CommandSettings;
-import org.originmc.fbasics.settings.CrateSettings;
-import org.originmc.fbasics.settings.DatabaseSettings;
-import org.originmc.fbasics.settings.LanguageSettings;
-import org.originmc.fbasics.settings.PatchSettings;
-import org.originmc.fbasics.settings.SPSettings;
-import org.originmc.fbasics.settings.SettingsManager;
-import org.originmc.fbasics.settings.WildSettings;
+import org.originmc.fbasics.settings.*;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FBasics extends JavaPlugin {
 
+    public Connection connection = null;
 	public Permission permission = null;
 	public Economy economy = null;
 	public SettingsManager settingsManager = new SettingsManager(this);
-	public DatabaseManager databaseManager = new DatabaseManager(this);
+    public Map<String, Integer> crates = new HashMap<String, Integer>();
+    public List<String> updateCrates = new ArrayList<String>();
 
 
 	public void onEnable() {
@@ -37,15 +39,15 @@ public class FBasics extends JavaPlugin {
 		setupSettings();
 		setupListeners();
 		setupCommands();
-		this.databaseManager.setupConnection();
-		this.databaseManager.createTables();
 		time = System.currentTimeMillis() - time;
 
 		getLogger().info("Plugin loaded successfully! (Took " + time + "ms)");
 	}
 
 
-	public void onDisable() { }
+	public void onDisable() {
+        if (CrateSettings.enabled) new UpdateDatabaseTask(this).run();
+    }
 
 
 	private void setupVault() {
@@ -107,6 +109,8 @@ public class FBasics extends JavaPlugin {
 
 		if (CrateSettings.enabled) {
 			getCommand("crate").setExecutor(new CrateCommand(this));
+            new SetupDatabaseTask(this).runTaskAsynchronously(this);
+            new UpdateDatabaseTask(this).runTaskTimerAsynchronously(this, 6000, 6000);
 		}
 
 		if (SPSettings.enabled && this.permission != null) {
@@ -116,7 +120,6 @@ public class FBasics extends JavaPlugin {
 		if (WildSettings.enabled) {
 			getCommand("wilderness").setExecutor(new WildCommand(this));
 		}
-
 	}
 
 
@@ -125,11 +128,9 @@ public class FBasics extends JavaPlugin {
 		this.settingsManager.updateFiles();
 		CommandSettings.loadCommandSettings();
 		CrateSettings.loadCrateSettings();
-		DatabaseSettings.loadCommandSettings();
 		PatchSettings.loadPatchSettings();
-		LanguageSettings.loadLanguageSettings();
+        LanguageSettings.loadLanguageSettings();
 		SPSettings.loadSafePromoteSettings();
 		WildSettings.loadWildernessSettings();
 	}
-
 }
