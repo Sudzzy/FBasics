@@ -2,19 +2,20 @@
 
 FBasics stands for "Factions Basics". The plugin provides you with an essential selection of features, designed for factions servers. It was initially developed to prevent all glitches / exploits that arised within my own factions server (OriginMC). Releasing this plugin is basically my little thank you to the community for helping me start out. Hopefully a few of you can benefit off this just as much as I have!
 
-##[Download Latest Development Build](https://github.com/Sudzzy/FBasics/raw/master/out/artifacts/FBasics_jar/FBasics.jar "Download Latest Development Build")
+## [Download Latest Development Build](https://github.com/Sudzzy/FBasics/raw/master/out/artifacts/FBasics_jar/FBasics.jar "Download Latest Development Build")
 
 ## Features
 
-- Many glitches patched, including
+- Many glitches patched - including:
   - Horse glitches 
   - Enderpearl glitching (Factions support)
   - Glitching to the top of the nether
   - Cactus duplication glitch
   - Essentials' teleportation glitches
   - Buycraft / Enjin promotion glitches (With Safe Promote)
+  - McMMO duplication glitch
 
-- Advanced command editing
+- Advanced command editing:
   - Aliasing
   - Warmups (Cancelled on damage and movement)
   - Cooldowns
@@ -24,14 +25,14 @@ FBasics stands for "Factions Basics". The plugin provides you with an essential 
   - Prices
   - Add your own permissions
 
-- Extra useful commands for factions servers
+- Other useful commands for factions servers:
   - Crates
   - Wilderness (Factions support)
 
 ## Supported Plugins (Latest version)
 - FactionsUUID 1.6.9.5 by DrtShock
-- Factions 2.5.0
-- Massive Core 7.3.0
+- Factions 2.6.0
+- Massive Core 7.4.0
 - Vault 1.4.1
 
 ##Commands
