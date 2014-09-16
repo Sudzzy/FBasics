@@ -2,11 +2,7 @@
 
 FBasics stands for "Factions Basics". The plugin provides you with an essential selection of features, designed for factions servers. It was initially developed to prevent all glitches / exploits that arised within my own factions server (OriginMC). Releasing this plugin is basically my little thank you to the community for helping me start out. Hopefully a few of you can benefit off this just as much as I have!
 
-----
-
 ##[Download Latest Development Build](https://github.com/Sudzzy/FBasics/raw/master/out/artifacts/FBasics_jar/FBasics.jar "Download Latest Development Build")
-
-----
 
 ## Features
 
@@ -32,15 +28,11 @@ FBasics stands for "Factions Basics". The plugin provides you with an essential 
   - Crates
   - Wilderness (Factions support)
 
-----
-
 ## Supported Plugins (Latest version)
 - FactionsUUID 1.6.9.5 by DrtShock
 - Factions 2.5.0
 - Massive Core 7.3.0
 - Vault 1.4.1
-
-----
 
 ##Commands
 
@@ -58,8 +50,6 @@ FBasics stands for "Factions Basics". The plugin provides you with an essential 
 |/fbasics version|View the current version you are using|
 |/wilderness|Teleports the player to a random location|
 |/safepromote [player] [old rank] [new rank] [world]|Promotes a player using group checks|
-
-----
 
 ##Admin Permissions
 
@@ -80,8 +70,6 @@ FBasics stands for "Factions Basics". The plugin provides you with an essential 
 |fbasics.commands.crate.change|Access to change player crates|
 |fbasics.commands.crate.change|Access to change player crates|
 |fbasics.commands.reload|Access to reload the plugin|
-
-----
 
 ##User Permissions
 
