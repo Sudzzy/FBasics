@@ -1,6 +1,10 @@
 ## What is FBasics?
 
-FBasics is a small plugin I have put together which is jam-packed with tons of useful features specifically for factions servers.
+FBasics stands for "Factions Basics". The plugin provides you with an essential selection of features, designed for factions servers. It was initially developed to prevent all glitches / exploits that arised within my own factions server (OriginMC). Releasing this plugin is basically my little thank you to the community for helping me start out. Hopefully a few of you can benefit off this just as much as I have!
+
+----
+
+##[Download Latest Development Build](https://github.com/Sudzzy/FBasics/raw/master/out/artifacts/FBasics_jar/FBasics.jar "Download Latest Development Build")
 
 ----
 
