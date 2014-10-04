@@ -1,5 +1,5 @@
 #####
-# FBasics 1.3.0
+# FBasics 1.3.2
 # Language Settings
 #####
 
@@ -57,9 +57,10 @@ crates:
 
 patcher:
     error:
-        cactus-place: 'You are not allowed to place this block near cactus!'
+        cactus-place: 'You are not allowed to place this block here!'
         enderpearls-disabled: 'Enderpearls are disabled on this server.'
         enderpearls-factions: 'Enderpearl cancelled as it is within protected territory.'
+        enderpearls-block: 'Enderpearls disabled whilst within a block!'
         nether-cancelled: 'Teleportation cancelled as the destination is above the nether!'
     info:
         enderpearls-cooldown: 'Not allowed to enderpearl yet! ({REMAINING} seconds)'

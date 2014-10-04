@@ -7,41 +7,43 @@ import org.bukkit.Material;
 
 public class PatchSettings {
 
-	/**
-	 * Anti Looter
-	 */
-	public static boolean antiLooterEnabled;
-	public static int antiLooterTime;
+    /**
+     * Anti Looter
+     */
+    public static boolean antiLooterEnabled;
+    public static int antiLooterTime;
 
 
-	/**
-	 * Boat Glitch
-	 */
-	public static boolean boatEnabled;
+    /**
+     * Boat Glitch
+     */
+    public static boolean boatEnabled;
 
 
-	/**
-	 * Cactus Glitch
-	 */
-	public static boolean cactusEnabled;
-	public static List<Material> cactusBlocks;
+    /**
+     * Cactus Glitch
+     */
+    public static boolean cactusEnabled;
+    public static boolean sugarcaneEnabled;
+    public static List<Material> cactusBlocks;
 
 
-	/**
-	 * Dismount Glitch
-	 */
-	public static boolean dismountEnabled;
+    /**
+     * Dismount Glitch
+     */
+    public static boolean dismountEnabled;
 
 
-	/**
-	 * Enderpearl Glitch
-	 */
-	public static boolean enderpearlsEnabled;
-	public static boolean enderpearlsDisable;
-	public static int enderpearlsCooldown;
-	public static int enderpearlsDoorCooldown;
-	public static List<String> enderpearlsFactions;
-	public static List<Material> enderpearlsDoors;
+    /**
+     * Enderpearl Glitch
+     */
+    public static boolean enderpearlsEnabled;
+    public static boolean enderpearlsDisable;
+    public static boolean enderpearlsBlocks;
+    public static int enderpearlsCooldown;
+    public static int enderpearlsDoorCooldown;
+    public static List<String> enderpearlsFactions;
+    public static List<Material> enderpearlsDoors;
 
 
     /**
@@ -51,51 +53,52 @@ public class PatchSettings {
     public static List<Material> mcmmoOres;
 
 
-	/**
-	 * Nether Glitch
-	 */
-	public static boolean netherEnabled;
+    /**
+     * Nether Glitch
+     */
+    public static boolean netherEnabled;
 
 
-	public static void loadPatchSettings() {
+    public static void loadPatchSettings() {
 
-		antiLooterEnabled = SettingsManager.getConfig().getBoolean("anti-looter.enabled");
-
-
-		if (antiLooterEnabled) {
-			antiLooterTime = SettingsManager.getConfig().getInt("anti-looter.protection-duration");
-		}
+        antiLooterEnabled = SettingsManager.getConfig().getBoolean("anti-looter.enabled");
 
 
-		dismountEnabled = SettingsManager.getConfig().getBoolean("patcher.dismount-glitch");
+        if (antiLooterEnabled) {
+            antiLooterTime = SettingsManager.getConfig().getInt("anti-looter.protection-duration");
+        }
 
 
-		boatEnabled = SettingsManager.getConfig().getBoolean("patcher.boat-glitch");
+        dismountEnabled = SettingsManager.getConfig().getBoolean("patcher.dismount-glitch");
 
 
-		cactusEnabled = SettingsManager.getConfig().getBoolean("patcher.cactus-dupe.enabled");
+        boatEnabled = SettingsManager.getConfig().getBoolean("patcher.boat-glitch");
+
+        cactusEnabled = SettingsManager.getConfig().getBoolean("patcher.cactus-dupe.enabled");
 
 
-		if (cactusEnabled) {
+        if (cactusEnabled) {
 
-			List<Material> tempCactusBlocks = new ArrayList<Material>();
-			for (String block : SettingsManager.getConfig().getStringList("patcher.cactus-dupe.block-placement-near-cactus")) {
-				tempCactusBlocks.add(Material.getMaterial(block));
-			}
+            List<Material> tempCactusBlocks = new ArrayList<Material>();
+            for (String block : SettingsManager.getConfig().getStringList("patcher.cactus-dupe.block-placement-near-cactus")) {
+                tempCactusBlocks.add(Material.getMaterial(block));
+            }
 
-			cactusBlocks = tempCactusBlocks;
-		}
-
-
-		enderpearlsEnabled = SettingsManager.getConfig().getBoolean("patcher.enderpearls.enabled");
+            cactusBlocks = tempCactusBlocks;
+            sugarcaneEnabled = SettingsManager.getConfig().getBoolean("patcher.cactus-dupe.enabled-for-sugarcane");
+        }
 
 
-		if (enderpearlsEnabled) {
+        enderpearlsEnabled = SettingsManager.getConfig().getBoolean("patcher.enderpearls.enabled");
 
-			enderpearlsDisable = SettingsManager.getConfig().getBoolean("patcher.enderpearls.disable-all-enderpearls");
-			enderpearlsCooldown = SettingsManager.getConfig().getInt("patcher.enderpearls.cooldown");
-			enderpearlsDoorCooldown = SettingsManager.getConfig().getInt("patcher.enderpearls.door-cooldown");
-			enderpearlsFactions = SettingsManager.getConfig().getStringList("patcher.enderpearls.factions-whitelist");
+
+        if (enderpearlsEnabled) {
+
+            enderpearlsDisable = SettingsManager.getConfig().getBoolean("patcher.enderpearls.disable-all-enderpearls");
+            enderpearlsBlocks = SettingsManager.getConfig().getBoolean("patcher.enderpearls.disable-within-block");
+            enderpearlsCooldown = SettingsManager.getConfig().getInt("patcher.enderpearls.cooldown");
+            enderpearlsDoorCooldown = SettingsManager.getConfig().getInt("patcher.enderpearls.door-cooldown");
+            enderpearlsFactions = SettingsManager.getConfig().getStringList("patcher.enderpearls.factions-whitelist");
 
 
             List<Material> tempEnderpearlsDoors = new ArrayList<Material>();
@@ -104,7 +107,7 @@ public class PatchSettings {
             }
 
             enderpearlsDoors = tempEnderpearlsDoors;
-		}
+        }
 
 
         mcmmoEnabled = SettingsManager.getConfig().getBoolean("patcher.mcmmo-mining-exploit.enabled");
@@ -122,5 +125,5 @@ public class PatchSettings {
 
 
         netherEnabled = SettingsManager.getConfig().getBoolean("patcher.nether-glitch");
-	}
+    }
 }

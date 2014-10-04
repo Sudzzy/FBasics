@@ -65,7 +65,7 @@ public class EnderpearlPatch implements Listener {
 
 		e.setCancelled(true);
 		player.sendMessage(ChatColor.translateAlternateColorCodes('&', LanguageSettings.enderpearlsFactions));
-		player.getInventory().addItem(new ItemStack[] { new ItemStack(Material.ENDER_PEARL, 1) });
+		player.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 1));
 
 	}
 
@@ -93,6 +93,19 @@ public class EnderpearlPatch implements Listener {
 			player.updateInventory();
 			return;
 		}
+
+
+        Location location = player.getLocation();
+        Material block1 = location.getBlock().getType();
+        Material block2 = location.getBlock().getRelative(0, 1, 0).getType();
+
+
+        if (PatchSettings.enderpearlsBlocks && (!block1.equals(Material.AIR) || !block2.equals(Material.AIR))) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', LanguageSettings.enderpearlsBlock));
+            e.setCancelled(true);
+            player.updateInventory();
+            return;
+        }
 
 		if (this.listEnderpearl.containsKey(player.getName())) {
 			String[] cooldownInfo = this.listEnderpearl.get(player.getName()).split("-");

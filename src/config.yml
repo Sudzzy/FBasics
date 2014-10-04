@@ -1,5 +1,5 @@
 #####
-# FBasics 1.3.1
+# FBasics 1.3.2
 # Main Settings
 #####
 # Supported Plugins:
@@ -14,7 +14,7 @@ anti-looter:
     enabled: true
     protection-duration: 15
 
-# Editing commands to your preferance + contains fixes for Essentials' teleportation glitches
+# Editing commands to your preference + contains fixes for Essentials' teleportation glitches
 commands:
     enabled: true
     ignore-case: true
@@ -70,9 +70,9 @@ commands:
             cooldown: 300
 
 crates:
-    # To propperly disable this plugin's commands for another plugin to take priority:
+    # To properly disable this plugins commands for another plugin to take priority:
     # 1. Set "enabled: false" 
-    # 2. Remove all the command's information from "plugin.yml" found within "FBasics.jar"
+    # 2. Remove all the commands information from "plugin.yml" found within "FBasics.jar"
     enabled: true
     # true = 1/# chance of getting each listed reward
     # false = any reward listed is chosen at random
@@ -139,6 +139,7 @@ patcher:
 
     cactus-dupe:
         enabled: true
+        enabled-for-sugarcane: true
         block-placement-near-cactus:
         - CHEST
         - TRAPPED_CHEST
@@ -149,19 +150,22 @@ patcher:
     enderpearls:
         enabled: true
         disable-all-enderpearls: false
-        factions-whitelist: ['{MEMBER}', WILDERNESS]
+        disable-within-block: true
+        factions-whitelist: ['{ALL}']
         cooldown: 15
         door-cooldown: 2
         doors:
-        - WOOD_DOOR
-        - TRAP_DOOR
+        - CHEST
+        - TRAPPED_CHEST
         - WOODEN_DOOR
+        - IRON_DOOR
+
 
 # Safe Promote requires Vault to be enabled
 safe-promote:
-    # To propperly disable this plugin's commands for another plugin to take priority:
+    # To properly disable this plugins commands for another plugin to take priority:
     # 1. Set "enabled: false" 
-    # 2. Remove all the command's information from "plugin.yml" found within "FBasics.jar"
+    # 2. Remove all the commands information from "plugin.yml" found within "FBasics.jar"
     enabled: true
     auto-complete-names: true
     failed-commands:
@@ -173,13 +177,13 @@ safe-promote:
     - mail send {NAME} Thank you for supporting the server, enjoy your rank upgrade!
 
 # Version number - DO NOT TOUCH
-version: 1.3.1
+version: 1.3.2
 
 # NOTE: Wilderness will never teleport a player into claimed faction land
 wilderness:
-    # To propperly disable this plugin's commands for another plugin to take priority:
+    # To properly disable this plugins commands for another plugin to take priority:
     # 1. Set "enabled: false" 
-    # 2. Remove all the command's information from "plugin.yml" found within "FBasics.jar"
+    # 2. Remove all the commands information from "plugin.yml" found within "FBasics.jar"
     enabled: true
     x-center: 0
     z-center: 0

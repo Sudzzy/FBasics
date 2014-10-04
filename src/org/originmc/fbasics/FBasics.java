@@ -75,6 +75,9 @@ public class FBasics extends JavaPlugin {
 
 		if (PatchSettings.cactusEnabled) {
 			getServer().getPluginManager().registerEvents(new CactusPatch(), this);
+            if (PatchSettings.sugarcaneEnabled) {
+                getServer().getPluginManager().registerEvents(new SugarcanePatch(), this);
+            }
 		}
 		
 		if (CommandSettings.enabled) {

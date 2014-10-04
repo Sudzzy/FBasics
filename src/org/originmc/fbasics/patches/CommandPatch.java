@@ -181,7 +181,7 @@ public class CommandPatch implements Listener {
 		List<String> factions = CommandSettings.factions.get(editor);
 
 
-		/*
+		/**
 		 * Alias
 		 */
 		if (alias != null) {
@@ -198,7 +198,7 @@ public class CommandPatch implements Listener {
 		}
 
 
-		/*
+		/**
 		 * Permission
 		 */
 		if (permission != null && !player.hasPermission(permission)) {
@@ -208,7 +208,7 @@ public class CommandPatch implements Listener {
 		}
 
 
-		/*
+		/**
 		 * Blocks
 		 */
 		if (!blocks.isEmpty() && !player.hasPermission(Permissions.commandsBlocks)) {
@@ -226,7 +226,7 @@ public class CommandPatch implements Listener {
 		}
 
 
-		/*
+		/**
 		 * Factions
 		 */
 		if (!factions.isEmpty() && Bukkit.getPluginManager().getPlugin("Factions") != null && !player.hasPermission(Permissions.commandsTerritory) && isInFactionLand(player, factions)) {
@@ -235,7 +235,7 @@ public class CommandPatch implements Listener {
 		}
 
 
-		/*
+		/**
 		 * Cooldown
 		 */
 		if (cooldown > 0 && !player.hasPermission(Permissions.commandsCooldown) && setCooldown(player, cooldown, editor)) {
@@ -244,7 +244,7 @@ public class CommandPatch implements Listener {
 		}
 
 
-		/*
+		/**
 		 * Economy
 		 */
 		if (this.plugin.economy != null && !player.hasPermission(Permissions.commandsEconomy) && price != 0) {
@@ -264,7 +264,7 @@ public class CommandPatch implements Listener {
 		}
 
 
-		/*
+		/**
 		 * Warmup
 		 */
 		if (warmup > 0 && !player.hasPermission(Permissions.commandsWarmup)) {

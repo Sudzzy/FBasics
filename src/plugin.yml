@@ -1,6 +1,6 @@
 name: FBasics
 main: org.originmc.fbasics.FBasics
-version: 1.3.1
+version: 1.3.2
 description: Fixes various bugs / flaws within Factions servers.
 author: OriginMC // Sudzzy
 database: true
