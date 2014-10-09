@@ -33,6 +33,11 @@ public class PatchSettings {
      */
     public static boolean dismountEnabled;
 
+    /**
+     * Dispenser Glitch
+     */
+    public static boolean dispenserEnabled;
+
 
     /**
      * Enderpearl Glitch
@@ -88,6 +93,7 @@ public class PatchSettings {
             sugarcaneEnabled = SettingsManager.getConfig().getBoolean("patcher.cactus-dupe.enabled-for-sugarcane");
         }
 
+        dispenserEnabled = SettingsManager.getConfig().getBoolean("patcher.dispenser-glitch");
 
         enderpearlsEnabled = SettingsManager.getConfig().getBoolean("patcher.enderpearls.enabled");
 

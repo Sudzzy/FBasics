@@ -120,6 +120,7 @@ patcher:
     boat-glitch: true
     dismount-glitch: true
     nether-glitch: true
+    dispenser-glitch: true
 
     mcmmo-mining-exploit:
         enabled: true

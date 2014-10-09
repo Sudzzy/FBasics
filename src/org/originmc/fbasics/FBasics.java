@@ -92,6 +92,10 @@ public class FBasics extends JavaPlugin {
 			getServer().getPluginManager().registerEvents(new EnderpearlPatch(this), this);
 		}
 
+        if (PatchSettings.dispenserEnabled) {
+            getServer().getPluginManager().registerEvents(new DispenserPatch(), this);
+        }
+
 		if (PatchSettings.boatEnabled) {
 			getServer().getPluginManager().registerEvents(new BoatPatch(), this);
 		}
