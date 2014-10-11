@@ -21,11 +21,10 @@ public class PatchSettings {
 
 
     /**
-     * Cactus Glitch
+     * Crop Glitch
      */
-    public static boolean cactusEnabled;
-    public static boolean sugarcaneEnabled;
-    public static List<Material> cactusBlocks;
+    public static boolean cropEnabled;
+    public static List<Material> cropBlocks;
 
 
     /**
@@ -79,18 +78,17 @@ public class PatchSettings {
 
         boatEnabled = SettingsManager.getConfig().getBoolean("patcher.boat-glitch");
 
-        cactusEnabled = SettingsManager.getConfig().getBoolean("patcher.cactus-dupe.enabled");
+        cropEnabled = SettingsManager.getConfig().getBoolean("patcher.crop-dupe.enabled");
 
 
-        if (cactusEnabled) {
+        if (cropEnabled) {
 
             List<Material> tempCactusBlocks = new ArrayList<Material>();
-            for (String block : SettingsManager.getConfig().getStringList("patcher.cactus-dupe.block-placement-near-cactus")) {
+            for (String block : SettingsManager.getConfig().getStringList("patcher.crop-dupe.block-placement-near-crops")) {
                 tempCactusBlocks.add(Material.getMaterial(block));
             }
 
-            cactusBlocks = tempCactusBlocks;
-            sugarcaneEnabled = SettingsManager.getConfig().getBoolean("patcher.cactus-dupe.enabled-for-sugarcane");
+            cropBlocks = tempCactusBlocks;
         }
 
         dispenserEnabled = SettingsManager.getConfig().getBoolean("patcher.dispenser-glitch");

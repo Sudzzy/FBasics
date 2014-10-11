@@ -22,7 +22,8 @@ commands:
     priority: '/f(| .*)'
     editors:
         # Name of your editor, make sure each editor is named differently.
-        # This section allows you to add / change any editors you want, so you can basically create your own commands here!
+        # This section allows you to add / change any editors you want, so you can basically create your
+        # own commands here!
         custom-command:
             # RegEx to get the correct command
             match: '/herpderp .*'
@@ -117,10 +118,18 @@ mysql:
     address: localhost
 
 patcher:
+    # Prevents the faction map exploit, and loading huge amounts of chunks that can lag the server.
     boat-glitch: true
+
+    # Prevents dismount glitching.
     dismount-glitch: true
+
+    # Blocks any teleportation above the nether roof.
     nether-glitch: true
-    dispenser-glitch: true
+
+    # Prevents dispensers dispensing bonemeal.
+    # Intended vanilla feature, but can be very over powered.
+    dispenser-glitch: false
 
     mcmmo-mining-exploit:
         enabled: true
@@ -138,16 +147,18 @@ patcher:
         - NETHERRACK
         - PACKED_ICE
 
-    cactus-dupe:
+    # This prevents duping of : Lily pads, Cactus and Sugarcane
+    crop-dupe:
         enabled: true
-        enabled-for-sugarcane: true
-        block-placement-near-cactus:
+        block-placement-near-crops:
         - CHEST
         - TRAPPED_CHEST
+        - WOOD_DOOR
+        - IRON_DOOR
 
-    # There are still hacked clients out there which are able to take advantage of enderpearls.
-    # To be safe from any kind of exploits from enderpearls at all - disable them entirely, or
-    # disable them from entering claimed faction areas.
+    # Prevents glitching through walls with enderpearls.
+    # Default settings should be fine to block most of the glitches, barring glitching through
+    # certain transparent blocks.
     enderpearls:
         enabled: true
         disable-all-enderpearls: false
@@ -156,10 +167,8 @@ patcher:
         cooldown: 15
         door-cooldown: 2
         doors:
-        - CHEST
-        - TRAPPED_CHEST
         - WOODEN_DOOR
-        - IRON_DOOR
+        - IRON_DOOR_BLOCK
 
 
 # Safe Promote requires Vault to be enabled

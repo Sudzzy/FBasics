@@ -50,7 +50,7 @@ public class LanguageSettings {
     /**
      * Patcher
      */
-    public static String cactusBlock;
+    public static String cropBlock;
     public static String enderpearlsCooldown;
     public static String enderpearlsDisabled;
     public static String enderpearlsFactions;
@@ -101,7 +101,7 @@ public class LanguageSettings {
         cratesPaymentReceived = info + SettingsManager.getLanguage().getString("crates.info.payment-received");
 
 
-        cactusBlock = error + SettingsManager.getLanguage().getString("patcher.error.cactus-place");
+        cropBlock = error + SettingsManager.getLanguage().getString("patcher.error.crop-place");
         enderpearlsCooldown = info + SettingsManager.getLanguage().getString("patcher.info.enderpearls-cooldown");
         enderpearlsDisabled = error + SettingsManager.getLanguage().getString("patcher.error.enderpearls-disabled");
         enderpearlsFactions = error + SettingsManager.getLanguage().getString("patcher.error.enderpearls-factions");

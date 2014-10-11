@@ -73,11 +73,8 @@ public class FBasics extends JavaPlugin {
 			getServer().getPluginManager().registerEvents(new AntiLooterPatch(this), this);
 		}
 
-		if (PatchSettings.cactusEnabled) {
-			getServer().getPluginManager().registerEvents(new CactusPatch(), this);
-            if (PatchSettings.sugarcaneEnabled) {
-                getServer().getPluginManager().registerEvents(new SugarcanePatch(), this);
-            }
+		if (PatchSettings.cropEnabled) {
+			getServer().getPluginManager().registerEvents(new CropPatch(), this);
 		}
 		
 		if (CommandSettings.enabled) {

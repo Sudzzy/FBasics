@@ -57,7 +57,7 @@ crates:
 
 patcher:
     error:
-        cactus-place: 'You are not allowed to place this block here!'
+        crop-place: 'You are not allowed to place this block here!'
         enderpearls-disabled: 'Enderpearls are disabled on this server.'
         enderpearls-factions: 'Enderpearl cancelled as it is within protected territory.'
         enderpearls-block: 'Enderpearls disabled whilst within a block!'
