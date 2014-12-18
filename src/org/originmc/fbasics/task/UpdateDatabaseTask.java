@@ -1,4 +1,4 @@
-package org.originmc.fbasics.tasks;
+package org.originmc.fbasics.task;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;

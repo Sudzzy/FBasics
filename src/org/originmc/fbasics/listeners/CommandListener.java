@@ -19,9 +19,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.originmc.fbasics.CommandEditor;
+import org.originmc.fbasics.entity.CommandEditor;
 import org.originmc.fbasics.FBasics;
-import org.originmc.fbasics.tasks.WarmupTask;
+import org.originmc.fbasics.task.WarmupTask;
 
 import java.util.*;
 

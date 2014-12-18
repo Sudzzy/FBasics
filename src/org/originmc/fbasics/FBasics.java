@@ -12,8 +12,8 @@ import org.originmc.fbasics.cmd.CmdFBasics;
 import org.originmc.fbasics.cmd.CmdSafePromote;
 import org.originmc.fbasics.cmd.CmdWilderness;
 import org.originmc.fbasics.listeners.*;
-import org.originmc.fbasics.tasks.SetupDatabaseTask;
-import org.originmc.fbasics.tasks.UpdateDatabaseTask;
+import org.originmc.fbasics.task.SetupDatabaseTask;
+import org.originmc.fbasics.task.UpdateDatabaseTask;
 
 import java.sql.Connection;
 import java.util.ArrayList;

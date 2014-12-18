@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.originmc.fbasics.DatabaseManager;
 import org.originmc.fbasics.FBasics;
+import org.originmc.fbasics.entity.Crate;
 
 import java.util.*;
 
@@ -32,27 +33,16 @@ public class CmdCrate implements CommandExecutor {
     private final String permissionOpen = "fbasics.commands.crate.open";
     private final String permissionPay = "fbasics.commands.crate.pay";
     private final List<String> messageHelp;
-    private final Set<String> rewards;
-    private final Map<String, String> rewardMessages;
-    private final Map<String, List<String>> rewardCommands;
+    private final Map<String, Crate> crates = new HashMap<String, Crate>();
 
     public CmdCrate(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();
         FileConfiguration language = plugin.getLanguage();
         String error = language.getString("general.error.prefix");
         String info = language.getString("general.info.prefix");
-        String prefix = config.getString("crates.message-prefix");
 
         this.plugin = plugin;
         this.newAlgorithm = config.getBoolean("crates.new-reward-algorithm");
-        this.rewards = config.getConfigurationSection("crates.rewards").getKeys(false);
-        this.rewardMessages = new HashMap<String, String>();
-        this.rewardCommands = new HashMap<String, List<String>>();
-
-        for (String reward : this.rewards) {
-            rewardMessages.put(reward, prefix + config.getString("crates.rewards." + reward + ".message"));
-            rewardCommands.put(reward, config.getStringList("crates.rewards." + reward + ".commands"));
-        }
         this.messageNotEnough = error + language.getString("crates.error.balance");
         this.messageInvalid = error + language.getString("crates.error.invalid");
         this.messageBalance = info + language.getString("crates.info.balance");
@@ -64,6 +54,8 @@ public class CmdCrate implements CommandExecutor {
         this.messageInvalidPlayer = error + language.getString("general.error.player");
         this.messagePermission = error + language.getString("general.error.permission");
         this.messageHelp = language.getStringList("general.help");
+        for (String crate : config.getConfigurationSection("crates.rewards").getKeys(false))
+            this.crates.put(crate, new Crate(config, crate));
     }
 
 
@@ -256,15 +248,15 @@ public class CmdCrate implements CommandExecutor {
         String name = player.getName().toLowerCase();
         Random random = new Random();
 
-        for (String reward : this.rewards) {
+        for (String reward : this.crates.keySet()) {
             double chance = 1.0D / Double.parseDouble(reward);
 
             if (chance < random.nextDouble()) {
                 continue;
             }
 
-            String message = this.rewardMessages.get(reward);
-            List<String> commands = this.rewardCommands.get(reward);
+            String message = this.crates.get(reward).getMessage();
+            List<String> commands = this.crates.get(reward).getCommands();
 
             for (String cmd : commands) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{NAME}", name));
@@ -277,11 +269,11 @@ public class CmdCrate implements CommandExecutor {
     private void oldAlgorithm(Player player) {
         String name = player.getName().toLowerCase();
         Random random = new Random();
-        int rewards = this.rewards.size();
+        int rewards = this.crates.size();
         int reward = random.nextInt(rewards);
-        String path = String.valueOf(this.rewards.toArray()[reward]);
-        String message = this.rewardMessages.get(path);
-        List<String> commands = this.rewardCommands.get(path);
+        String path = String.valueOf(this.crates.keySet().toArray()[reward]);
+        String message = this.crates.get(path).getMessage();
+        List<String> commands = this.crates.get(path).getCommands();
 
         for (String cmd : commands) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{NAME}", name));

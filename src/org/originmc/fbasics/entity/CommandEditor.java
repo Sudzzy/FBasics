@@ -1,4 +1,4 @@
-package org.originmc.fbasics;
+package org.originmc.fbasics.entity;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
