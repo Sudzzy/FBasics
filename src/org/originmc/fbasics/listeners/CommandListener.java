@@ -79,8 +79,12 @@ public class CommandListener implements Listener {
         Player player = event.getPlayer();
         CommandEditor commandEditor;
 
-        if (this.ignoreCase) commandEditor = getCommandEditor(command.toLowerCase());
-        else commandEditor = getCommandEditor(command);
+        if (this.ignoreCase) {
+            commandEditor = getCommandEditor(command.toLowerCase());
+        } else {
+            commandEditor = getCommandEditor(command);
+        }
+
         if (commandEditor == null) return;
 
         command = getNewCommand(command, commandEditor.getAlias(), commandEditor.getRegex());
@@ -205,7 +209,6 @@ public class CommandListener implements Listener {
         UUID uuid = player.getUniqueId();
 
         if (this.warmups.containsKey(uuid)) {
-            System.out.println(warmups);
             this.removeWarmup(uuid);
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageCancelled));
         }
@@ -218,14 +221,15 @@ public class CommandListener implements Listener {
     private String getNewCommand(String command, String alias, String matcher) {
         if (alias == null) return command;
 
-        String testMessage = command;
-
-        if (this.ignoreCase) testMessage = testMessage.toLowerCase();
-
+        String allArgs = "";
         String[] args = command.split(" ");
-        testMessage = testMessage.replaceAll(matcher.replace(".*", ""), "");
-        command = alias;
-        command = command.replace("{ALL_ARGS}", testMessage);
+        int matcherLength = matcher.replace(" .*", "").replace(".*", "").split(" ").length;
+        int allArgsLength = args.length - matcherLength;
+
+        for (int c = 0; c < allArgsLength; c++)
+            allArgs = allArgs + " " + args[c + matcherLength];
+
+        command = alias.replace("{ALL_ARGS}", allArgs);
         args[0] = args[0].substring(1);
 
         for (int c = 0; c < args.length; c++)

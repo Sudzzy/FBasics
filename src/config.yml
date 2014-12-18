@@ -136,7 +136,7 @@ patcher:
         ore-blocks:
         - COAL_ORE
         - REDSTONE_ORE
-        - GLOWING_REDSTONE_ORE 
+        - GLOWING_REDSTONE_ORE
         - IRON_ORE
         - LAPIS_ORE
         - GOLD_ORE
