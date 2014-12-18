@@ -51,7 +51,6 @@ public class ChestDupeListener implements Listener {
         }
     }
 
-
     private boolean isProtected(Block block) {
         for (List<Block> blocks : this.openBlocks.values()) {
             if (blocks.contains(block)) {
@@ -93,7 +92,6 @@ public class ChestDupeListener implements Listener {
         return blocks;
     }
 
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent e) {
         HumanEntity entity = e.getPlayer();
@@ -114,7 +112,6 @@ public class ChestDupeListener implements Listener {
         }
     }
 
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInteractEntity(PlayerInteractEntityEvent e) {
         Entity entity = e.getRightClicked();
@@ -127,7 +124,6 @@ public class ChestDupeListener implements Listener {
             }
         }
     }
-
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
@@ -155,7 +151,6 @@ public class ChestDupeListener implements Listener {
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.message));
     }
 
-
     @EventHandler
     public void onEntityHit(EntityDamageByEntityEvent e) {
         Entity damager = e.getDamager();
@@ -170,7 +165,6 @@ public class ChestDupeListener implements Listener {
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.message));
     }
 
-
     @EventHandler
     public void onVehicleHit(VehicleDamageEvent e) {
         Entity damager = e.getAttacker();
@@ -184,7 +178,6 @@ public class ChestDupeListener implements Listener {
         e.setCancelled(true);
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.message));
     }
-
 
     @EventHandler
     public void onExplode(EntityExplodeEvent e) {
