@@ -23,13 +23,13 @@ public class CropDupeListener implements Listener {
     private List<Material> cropBlocks = new ArrayList<Material>();
 
     public CropDupeListener(FBasics plugin) {
-        FileConfiguration config = plugin.getConfig();
+        FileConfiguration materials = plugin.getMaterials();
         FileConfiguration language = plugin.getLanguage();
         String error = language.getString("general.error.prefix");
 
         this.cropBlock = error + language.getString("patcher.error.crop-place");
 
-        for (String block : config.getStringList("patcher.crop-dupe.block-placement-near-crops"))
+        for (String block : materials.getStringList("block-placement-near-crops"))
             this.cropBlocks.add(Material.getMaterial(block));
     }
 

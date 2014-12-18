@@ -30,6 +30,7 @@ public class FBasics extends JavaPlugin {
     private Economy economy;
     private FileConfiguration config;
     private FileConfiguration language;
+    private FileConfiguration materials;
     private Permission permission;
 
     @Override
@@ -43,6 +44,7 @@ public class FBasics extends JavaPlugin {
         this.permission = permissionProvider.getProvider();
         this.config = new ConfigManager(this, "config").getConfig();
         this.language = new ConfigManager(this, "language").getConfig();
+        this.materials = new ConfigManager(this, "materials").getConfig();
 
         if (this.config.getBoolean("anti-looter.enabled")) {
             pluginManager.registerEvents(new AntiLootStealListener(this), this);
@@ -50,6 +52,10 @@ public class FBasics extends JavaPlugin {
 
         if (this.config.getBoolean("commands.enabled")) {
             pluginManager.registerEvents(new CommandListener(this), this);
+        }
+
+        if (this.config.getBoolean("patcher.anti-phase")) {
+            pluginManager.registerEvents(new AntiPhaseListener(this), this);
         }
 
         if (this.config.getBoolean("patcher.boat-glitch")) {
@@ -113,6 +119,10 @@ public class FBasics extends JavaPlugin {
 
     public FileConfiguration getLanguage() {
         return this.language;
+    }
+
+    public FileConfiguration getMaterials() {
+        return this.materials;
     }
 
     public Economy getEconomy() {

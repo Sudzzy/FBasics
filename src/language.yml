@@ -72,3 +72,6 @@ wilderness:
         world: 'Wilderness has been disabled in this world.'
     info:
         success: 'Teleported to X: {X} Y: {Y} Z: {Z}.'
+
+# Version number - DO NOT TOUCH
+version: 1.4.0

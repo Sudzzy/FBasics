@@ -32,22 +32,22 @@ public class ChestDupeListener implements Listener {
     private Map<Player, Entity> openEntities = new HashMap<Player, Entity>();
 
     public ChestDupeListener(FBasics plugin) {
-        FileConfiguration config = plugin.getConfig();
+        FileConfiguration materials = plugin.getMaterials();
         FileConfiguration language = plugin.getLanguage();
         String error = language.getString("general.error.prefix");
 
         this.message = error + language.getString("patcher.error.chest-dupe");
 
-        for (String block : config.getStringList("patcher.chest-dupe.inventory-blocks")) {
+        for (String block : materials.getStringList("inventory-blocks")) {
             this.blocks.add(Material.getMaterial(block));
         }
 
-        for (String entity : config.getStringList("patcher.chest-dupe.inventory-entities")) {
-            this.entities.add(EntityType.valueOf(entity));
+        for (String doubleBlock : materials.getStringList("inventory-double-blocks")) {
+            this.doubleBlocks.add(Material.getMaterial(doubleBlock));
         }
 
-        for (String doubleBlock : config.getStringList("patcher.chest-dupe.double-blocks")) {
-            this.doubleBlocks.add(Material.getMaterial(doubleBlock));
+        for (String entity : materials.getStringList("inventory-entities")) {
+            this.entities.add(EntityType.valueOf(entity));
         }
     }
 

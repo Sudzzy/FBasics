@@ -46,6 +46,7 @@ public class EnderpearlListener implements Listener {
     public EnderpearlListener(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();
         FileConfiguration language = plugin.getLanguage();
+        FileConfiguration materials = plugin.getMaterials();
         String error = language.getString("general.error.prefix");
         String info = language.getString("general.info.prefix");
 
@@ -60,7 +61,7 @@ public class EnderpearlListener implements Listener {
         this.messageDisabled = error + language.getString("patcher.error.enderpearls-disabled");
         this.messageFactions = error + language.getString("patcher.error.enderpearls-factions");
 
-        for (String material : config.getStringList("patcher.enderpearls.doors"))
+        for (String material : materials.getStringList("doors"))
             this.doors.add(Material.getMaterial(material));
     }
 

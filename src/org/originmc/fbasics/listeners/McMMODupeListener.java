@@ -17,9 +17,9 @@ public class McMMODupeListener implements Listener {
     private final List<Material> ores;
 
     public McMMODupeListener(FBasics plugin) {
-        FileConfiguration config = plugin.getConfig();
+        FileConfiguration materials = plugin.getMaterials();
         this.ores = new ArrayList<Material>();
-        for (String material : config.getStringList("patcher.mcmmo-mining-exploit.ore-blocks"))
+        for (String material : materials.getStringList("ore-blocks"))
             this.ores.add(Material.getMaterial(material));
     }
 
