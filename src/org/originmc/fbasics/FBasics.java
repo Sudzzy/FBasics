@@ -56,6 +56,10 @@ public class FBasics extends JavaPlugin {
             pluginManager.registerEvents(new BoatMovementListener(), this);
         }
 
+        if (this.config.getBoolean("patcher.chest-dupe.enabled")) {
+            pluginManager.registerEvents(new ChestDupeListener(this), this);
+        }
+
         if (this.config.getBoolean("patcher.crop-dupe.enabled")) {
             pluginManager.registerEvents(new CropDupeListener(this), this);
         }

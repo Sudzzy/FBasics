@@ -19,8 +19,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.originmc.fbasics.entity.CommandEditor;
 import org.originmc.fbasics.FBasics;
+import org.originmc.fbasics.entity.CommandEditor;
 import org.originmc.fbasics.task.WarmupTask;
 
 import java.util.*;
@@ -131,8 +131,12 @@ public class CommandListener implements Listener {
         Player player = event.getPlayer();
         CommandEditor commandEditor;
 
-        if (this.ignoreCase) commandEditor = getCommandEditor(command.toLowerCase());
-        else commandEditor = getCommandEditor(command);
+        if (this.ignoreCase) {
+            commandEditor = getCommandEditor(command.toLowerCase());
+        } else {
+            commandEditor = getCommandEditor(command);
+        }
+
         if (commandEditor == null) return;
 
         command = getNewCommand(command, commandEditor.getAlias(), commandEditor.getRegex());

@@ -148,6 +148,29 @@ patcher:
         - NETHERRACK
         - PACKED_ICE
 
+    # This prevents players duping items via this glitch:
+    # https://www.youtube.com/watch?v=WMio2fyxKnY
+    chest-dupe:
+        enabled: true
+        double-blocks:
+        - CHEST
+        - TRAPPED_CHEST
+        inventory-blocks:
+        - ANVIL
+        - BEACON
+        - BURNING_FURNACE
+        - CHEST
+        - DISPENSER
+        - DROPPER
+        - ENCHANTMENT_TABLE
+        - FURNACE
+        - HOPPER
+        - TRAPPED_CHEST
+        inventory-entities:
+        - MINECART_CHEST
+        - MINECART_FURNACE
+        - MINECART_HOPPER
+
     # This prevents duping of : Lily pads, Cactus and Sugarcane
     crop-dupe:
         enabled: true
@@ -170,7 +193,6 @@ patcher:
         doors:
         - WOODEN_DOOR
         - IRON_DOOR_BLOCK
-
 
 # Safe Promote requires Vault to be enabled
 safe-promote:

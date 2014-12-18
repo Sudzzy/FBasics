@@ -57,6 +57,7 @@ crates:
 
 patcher:
     error:
+        chest-dupe: 'You are not allowed to break a chest while it is open!'
         crop-place: 'You are not allowed to place this block here!'
         enderpearls-disabled: 'Enderpearls are disabled on this server.'
         enderpearls-factions: 'Enderpearl cancelled as it is within protected territory.'
