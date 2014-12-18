@@ -40,6 +40,7 @@ public class EnderpearlListener implements Listener {
     private final String messageFactions;
     private final List<String> factions;
     private final List<Material> doors = new ArrayList<Material>();
+    private final List<Material> hollowMaterials = new ArrayList<Material>();
     private final String permissionEnderpearl = "fbasics.bypass.glitch.enderpearl";
     private Map<String, String> listEnderpearl = new HashMap<String, String>();
 
@@ -63,6 +64,9 @@ public class EnderpearlListener implements Listener {
 
         for (String material : materials.getStringList("doors"))
             this.doors.add(Material.getMaterial(material));
+
+        for (String hollowMaterials : materials.getStringList("hollow-materials"))
+            this.hollowMaterials.add(Material.getMaterial(hollowMaterials));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -103,10 +107,10 @@ public class EnderpearlListener implements Listener {
         }
 
         Location location = player.getLocation();
-        Material block1 = location.getBlock().getType();
-        Material block2 = location.getBlock().getRelative(0, 1, 0).getType();
+        Material feet = location.getBlock().getType();
+        Material head = location.getBlock().getRelative(0, 1, 0).getType();
 
-        if (this.blocks && (!block1.equals(Material.AIR) || !block2.equals(Material.AIR))) {
+        if (this.blocks && (!this.hollowMaterials.contains(feet) || !this.hollowMaterials.contains(head))) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageBlock));
             e.setCancelled(true);
             player.updateInventory();
@@ -127,18 +131,11 @@ public class EnderpearlListener implements Listener {
 
     @EventHandler
     public void onDoorInteract(PlayerInteractEvent e) {
-
-        Action action = e.getAction();
-
-        if (action == Action.LEFT_CLICK_AIR || action == Action.RIGHT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
-            return;
-        }
+        if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
         Player player = e.getPlayer();
 
-        if (player.hasPermission(this.permissionEnderpearl)) {
-            return;
-        }
+        if (player.hasPermission(this.permissionEnderpearl)) return;
 
         Material block = e.getClickedBlock().getType();
 
@@ -146,7 +143,6 @@ public class EnderpearlListener implements Listener {
             setCooldown(player.getName(), this.doorCooldown);
         }
     }
-
 
     private void setCooldown(final String player, int cooldown) {
 
@@ -159,11 +155,9 @@ public class EnderpearlListener implements Listener {
         }.runTaskLaterAsynchronously(this.plugin, cooldown * 20);
     }
 
-
     private boolean isInFaction(Player player, Location location) {
 
         String version = Bukkit.getPluginManager().getPlugin("Factions").getDescription().getVersion();
-
 
         if (version.startsWith("1")) {
 

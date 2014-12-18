@@ -14,7 +14,7 @@ import java.util.List;
 
 public class AntiPhaseListener implements Listener {
 
-    private List<Material> hollowMaterials = new ArrayList<Material>();
+    private final List<Material> hollowMaterials = new ArrayList<Material>();
 
     public AntiPhaseListener(FBasics plugin) {
         FileConfiguration materials = plugin.getMaterials();
