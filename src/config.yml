@@ -1,5 +1,5 @@
 #####
-# FBasics 1.3.2
+# FBasics 1.4.0
 # Main Settings
 #####
 # Supported Plugins:
@@ -187,7 +187,7 @@ safe-promote:
     - mail send {NAME} Thank you for supporting the server, enjoy your rank upgrade!
 
 # Version number - DO NOT TOUCH
-version: 1.3.2
+version: 1.4.0
 
 # NOTE: Wilderness will never teleport a player into claimed faction land
 wilderness:

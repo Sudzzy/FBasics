@@ -1,9 +1,8 @@
-package org.originmc.fbasics.database;
+package org.originmc.fbasics.tasks;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.originmc.fbasics.FBasics;
-import org.originmc.fbasics.settings.SettingsManager;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -29,7 +28,7 @@ public class UpdateDatabaseTask extends BukkitRunnable {
 
     public void setCrates(String player, int crates) {
 
-        FileConfiguration config = SettingsManager.getConfig();
+        FileConfiguration config = this.plugin.getConfig();
         boolean mysql = config.getBoolean("mysql.enabled");
         String prefix = config.getString("mysql.table-prefix");
 

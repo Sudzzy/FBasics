@@ -1,19 +1,38 @@
-package org.originmc.fbasics.patches;
+package org.originmc.fbasics.listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.originmc.fbasics.settings.LanguageSettings;
-import org.originmc.fbasics.settings.PatchSettings;
+import org.originmc.fbasics.FBasics;
 
-public class CropPatch implements Listener {
+import java.util.ArrayList;
+import java.util.List;
+
+public class CropDupeListener implements Listener {
+
+
+    private final String cropBlock;
+    private List<Material> cropBlocks = new ArrayList<Material>();
+
+    public CropDupeListener(FBasics plugin) {
+        FileConfiguration config = plugin.getConfig();
+        FileConfiguration language = plugin.getLanguage();
+        String error = language.getString("general.error.prefix");
+
+        this.cropBlock = error + language.getString("patcher.error.crop-place");
+
+        for (String block : config.getStringList("patcher.crop-dupe.block-placement-near-crops"))
+            this.cropBlocks.add(Material.getMaterial(block));
+    }
+
 
     @EventHandler(ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent e) {
@@ -26,7 +45,7 @@ public class CropPatch implements Listener {
 
         Player player = e.getPlayer();
 
-        if (!PatchSettings.cropBlocks.contains(player.getItemInHand().getType())) {
+        if (!this.cropBlocks.contains(player.getItemInHand().getType())) {
             return;
         }
 
@@ -50,7 +69,7 @@ public class CropPatch implements Listener {
         if (checkBlock(player.getWorld().getBlockAt(location), Material.CACTUS)
                 || checkBlock(player.getWorld().getBlockAt(location.add(0D, 1D, 0D)), Material.SUGAR_CANE_BLOCK)
                 || player.getWorld().getBlockAt(location).getType().equals(Material.WATER_LILY)) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', LanguageSettings.cropBlock));
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.cropBlock));
             e.setCancelled(true);
         }
     }

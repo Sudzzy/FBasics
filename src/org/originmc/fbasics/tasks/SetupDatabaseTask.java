@@ -1,11 +1,13 @@
-package org.originmc.fbasics.database;
+package org.originmc.fbasics.tasks;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.originmc.fbasics.FBasics;
-import org.originmc.fbasics.settings.SettingsManager;
 
-import java.sql.*;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class SetupDatabaseTask extends BukkitRunnable {
 
@@ -19,7 +21,7 @@ public class SetupDatabaseTask extends BukkitRunnable {
     @Override
     public void run() {
 
-        FileConfiguration config = SettingsManager.getConfig();
+        FileConfiguration config = this.plugin.getConfig();
         boolean mysql = config.getBoolean("mysql.enabled");
         String user = config.getString("mysql.user-name");
         String pass = config.getString("mysql.user-password");

@@ -1,0 +1,300 @@
+package org.originmc.fbasics.cmd;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.originmc.fbasics.DatabaseManager;
+import org.originmc.fbasics.FBasics;
+
+import java.util.*;
+
+public class CmdCrate implements CommandExecutor {
+
+    private final boolean newAlgorithm;
+    private final FBasics plugin;
+    private final String messageBalance;
+    private final String messageBalanceOther;
+    private final String messageChanged;
+    private final String messagePaymentSent;
+    private final String messagePaymentReceived;
+    private final String messageNotEnough;
+    private final String messageInvalid;
+    private final String messageConsole;
+    private final String messageInvalidPlayer;
+    private final String messagePermission;
+    private final String permissionBalance = "fbasics.commands.crate.balance";
+    private final String permissionBalanceOther = "fbasics.commands.crate.balance.other";
+    private final String permissionChange = "fbasics.commands.crate.change";
+    private final String permissionOpen = "fbasics.commands.crate.open";
+    private final String permissionPay = "fbasics.commands.crate.pay";
+    private final List<String> messageHelp;
+    private final Set<String> rewards;
+    private final Map<String, String> rewardMessages;
+    private final Map<String, List<String>> rewardCommands;
+
+    public CmdCrate(FBasics plugin) {
+        FileConfiguration config = plugin.getConfig();
+        FileConfiguration language = plugin.getLanguage();
+        String error = language.getString("general.error.prefix");
+        String info = language.getString("general.info.prefix");
+        String prefix = config.getString("crates.message-prefix");
+
+        this.plugin = plugin;
+        this.newAlgorithm = config.getBoolean("crates.new-reward-algorithm");
+        this.rewards = config.getConfigurationSection("crates.rewards").getKeys(false);
+        this.rewardMessages = new HashMap<String, String>();
+        this.rewardCommands = new HashMap<String, List<String>>();
+
+        for (String reward : this.rewards) {
+            rewardMessages.put(reward, prefix + config.getString("crates.rewards." + reward + ".message"));
+            rewardCommands.put(reward, config.getStringList("crates.rewards." + reward + ".commands"));
+        }
+        this.messageNotEnough = error + language.getString("crates.error.balance");
+        this.messageInvalid = error + language.getString("crates.error.invalid");
+        this.messageBalance = info + language.getString("crates.info.balance");
+        this.messageBalanceOther = info + language.getString("crates.info.balance-other");
+        this.messageChanged = info + language.getString("crates.info.changed");
+        this.messagePaymentSent = info + language.getString("crates.info.payment-sent");
+        this.messagePaymentReceived = info + language.getString("crates.info.payment-received");
+        this.messageConsole = error + language.getString("general.error.console");
+        this.messageInvalidPlayer = error + language.getString("general.error.player");
+        this.messagePermission = error + language.getString("general.error.permission");
+        this.messageHelp = language.getStringList("general.help");
+    }
+
+
+    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        DatabaseManager database = new DatabaseManager(this.plugin);
+        if (args.length == 1) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageConsole));
+                return true;
+            }
+
+            Player player = (Player) sender;
+            args[0] = args[0].toLowerCase();
+
+            /**
+             * Balance (Self)
+             */
+            if (args[0].matches("bal|balance")) {
+                if (!player.hasPermission(this.permissionBalance)) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
+                    return true;
+                }
+                String name = player.getName().toLowerCase();
+                int crates = database.getCrates(name);
+                String msg = this.messageBalance.replace("{CRATES}", "" + crates);
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
+                return true;
+            }
+
+            /**
+             * Open
+             */
+            if (args[0].matches("open")) {
+                if (!player.hasPermission(this.permissionOpen)) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
+                    return true;
+                }
+
+                String name = player.getName().toLowerCase();
+                int crates = database.getCrates(name);
+
+                if (crates <= 0) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageNotEnough));
+                    return true;
+                }
+
+                if (this.newAlgorithm) {
+                    newAlgorithm(player);
+                } else {
+                    oldAlgorithm(player);
+                }
+
+                int removed = crates - 1;
+                database.setCrates(name, removed);
+                return true;
+            }
+        }
+
+        if (args.length == 2) {
+            /**
+             * Balance (Other)
+             */
+            if ((args[0].toLowerCase().matches("bal|balance"))) {
+                if (!sender.hasPermission(this.permissionBalanceOther)) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
+                    return true;
+                }
+
+                String name = args[1];
+                int crates = database.getCrates(name);
+
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageBalanceOther.replace("{NAME}", name).replace("{CRATES}", "" + crates)));
+                return true;
+            }
+        }
+
+        if (args.length == 3) {
+            args[0] = args[0].toLowerCase();
+
+            /**
+             * Set
+             */
+            if (args[0].matches("set")) {
+                if (!sender.hasPermission(this.permissionChange)) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
+                    return true;
+                }
+
+                String name = args[1].toLowerCase();
+                int crates = getValidInteger(args[2]);
+                database.setCrates(name, crates);
+                String msg = this.messageChanged.replace("{NAME}", name).replace("{CRATES}", "" + crates);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
+                return true;
+            }
+
+            /**
+             * Add
+             */
+            if (args[0].matches("add|give")) {
+                if (!sender.hasPermission(this.permissionChange)) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
+                    return true;
+                }
+
+                String name = args[1].toLowerCase();
+                int crates = getValidInteger(args[2]);
+                int added = database.getCrates(name) + crates;
+                database.setCrates(name, added);
+                String msg = this.messageChanged.replace("{NAME}", name).replace("{CRATES}", "" + added);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
+                return true;
+            }
+
+            /**
+             * Remove
+             */
+            if (args[0].matches("remove|rem")) {
+                if (!sender.hasPermission(this.permissionChange)) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
+                    return true;
+                }
+
+                String name = args[1].toLowerCase();
+                int crates = getValidInteger(args[2]);
+                int removed = database.getCrates(name) - crates;
+                database.setCrates(name, removed);
+                String msg = this.messageChanged.replace("{NAME}", name).replace("{CRATES}", "" + removed);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
+                return true;
+            }
+
+            /**
+             * Pay
+             */
+            if (args[0].matches("pay")) {
+                if (!sender.hasPermission(this.permissionPay)) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
+                    return true;
+                }
+
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageConsole));
+                    return true;
+                }
+
+                @SuppressWarnings("deprecation")
+                Player receiver = Bukkit.getPlayer(args[1]);
+                Player player = (Player) sender;
+                String playerName = player.getName().toLowerCase();
+                String receiverName = args[1].toLowerCase();
+                int crates = getValidInteger(args[2]);
+                int playerCrates = database.getCrates(playerName);
+
+                if (receiver == null) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageInvalidPlayer));
+                    return true;
+                }
+
+                if (crates <= 0) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageInvalid));
+                    return true;
+                }
+
+                if (playerCrates < crates) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageNotEnough));
+                    return true;
+                }
+
+                playerCrates = playerCrates - crates;
+                database.setCrates(playerName, playerCrates);
+                int receiverCrates = crates + database.getCrates(receiverName);
+                database.setCrates(receiverName, receiverCrates);
+                String playerMsg = this.messagePaymentSent.replace("{CRATES}", String.valueOf(crates)).replace("{NAME}", receiver.getName());
+                String receiverMsg = this.messagePaymentReceived.replace("{CRATES}", String.valueOf(crates)).replace("{NAME}", player.getName());
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', playerMsg));
+                receiver.sendMessage(ChatColor.translateAlternateColorCodes('&', receiverMsg));
+                return true;
+            }
+        }
+
+        for (String msg : this.messageHelp) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
+        }
+
+        return false;
+    }
+
+    private void newAlgorithm(Player player) {
+        String name = player.getName().toLowerCase();
+        Random random = new Random();
+
+        for (String reward : this.rewards) {
+            double chance = 1.0D / Double.parseDouble(reward);
+
+            if (chance < random.nextDouble()) {
+                continue;
+            }
+
+            String message = this.rewardMessages.get(reward);
+            List<String> commands = this.rewardCommands.get(reward);
+
+            for (String cmd : commands) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{NAME}", name));
+            }
+
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', message.replace("{NAME}", name)));
+        }
+    }
+
+    private void oldAlgorithm(Player player) {
+        String name = player.getName().toLowerCase();
+        Random random = new Random();
+        int rewards = this.rewards.size();
+        int reward = random.nextInt(rewards);
+        String path = String.valueOf(this.rewards.toArray()[reward]);
+        String message = this.rewardMessages.get(path);
+        List<String> commands = this.rewardCommands.get(path);
+
+        for (String cmd : commands) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{NAME}", name));
+        }
+
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', message.replace("{NAME}", name)));
+    }
+
+    private int getValidInteger(String integer) {
+        try {
+            return Integer.parseInt(integer);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+}
