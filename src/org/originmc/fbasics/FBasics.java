@@ -67,11 +67,11 @@ public class FBasics extends JavaPlugin {
             pluginManager.registerEvents(new BoatMovementListener(), this);
         }
 
-        if (this.config.getBoolean("patcher.chest-dupe.enabled")) {
+        if (this.config.getBoolean("patcher.chest-dupe")) {
             pluginManager.registerEvents(new ChestDupeListener(this), this);
         }
 
-        if (this.config.getBoolean("patcher.crop-dupe.enabled")) {
+        if (this.config.getBoolean("patcher.crop-dupe")) {
             pluginManager.registerEvents(new CropDupeListener(this), this);
         }
 
@@ -87,7 +87,7 @@ public class FBasics extends JavaPlugin {
             pluginManager.registerEvents(new EnderpearlListener(this), this);
         }
 
-        if (this.config.getBoolean("patcher.mcmmo-mining-exploit.enabled")) {
+        if (this.config.getBoolean("patcher.mcmmo-mining-exploit")) {
             pluginManager.registerEvents(new McMMODupeListener(this), this);
         }
 
