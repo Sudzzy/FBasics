@@ -39,9 +39,9 @@ permissions:
             fbasics.bypass.commands.territory: true
             fbasics.bypass.commands.warmup: true
             fbasics.bypass.glitch.boat: true
+            fbasics.bypass.glitch.dismount: true
             fbasics.bypass.glitch.enderpearl: true
             fbasics.bypass.glitch.nether: true
-            fbasics.bypass.glitch.dismount: true
             fbasics.commands.crate.change: true
             fbasics.commands.reload: true
             fbasics.commands.safepromote: true
