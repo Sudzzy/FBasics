@@ -32,6 +32,7 @@ public class FBasics extends JavaPlugin {
     private FileConfiguration language;
     private FileConfiguration materials;
     private Permission permission;
+    private String factionsVersion = "";
 
     @Override
     public void onEnable() {
@@ -45,6 +46,10 @@ public class FBasics extends JavaPlugin {
         this.config = new ConfigManager(this, "config").getConfig();
         this.language = new ConfigManager(this, "language").getConfig();
         this.materials = new ConfigManager(this, "materials").getConfig();
+
+        if (pluginManager.getPlugin("Factions") != null) {
+            this.factionsVersion = pluginManager.getPlugin("Factions").getDescription().getVersion();
+        }
 
         if (this.config.getBoolean("anti-looter.enabled")) {
             pluginManager.registerEvents(new AntiLootStealListener(this), this);
@@ -131,5 +136,9 @@ public class FBasics extends JavaPlugin {
 
     public Permission getPermission() {
         return this.permission;
+    }
+
+    public String getFactionsVersion() {
+        return this.factionsVersion;
     }
 }

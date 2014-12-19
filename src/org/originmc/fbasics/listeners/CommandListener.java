@@ -1,12 +1,5 @@
 package org.originmc.fbasics.listeners;
 
-import com.massivecraft.factions.Board;
-import com.massivecraft.factions.FLocation;
-import com.massivecraft.factions.FPlayers;
-import com.massivecraft.factions.entity.BoardColls;
-import com.massivecraft.factions.entity.UPlayer;
-import com.massivecraft.massivecore.ps.PS;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -266,33 +259,36 @@ public class CommandListener implements Listener {
     }
 
     private boolean isInsideClaim(Player player, List<String> factions) {
-        if (factions.isEmpty() || Bukkit.getPluginManager().getPlugin("Factions") == null || player.hasPermission(this.permissionTerritory))
+        if (factions.isEmpty() || this.plugin.getFactionsVersion() == null || player.hasPermission(this.permissionTerritory))
             return false;
 
         Location location = player.getLocation();
-        String factionsVersion = Bukkit.getPluginManager().getPlugin("Factions").getDescription().getVersion();
+        String factionsVersion = this.plugin.getFactionsVersion();
 
         if (factionsVersion.startsWith("1")) {
+            com.massivecraft.factions.FLocation flocation = new com.massivecraft.factions.FLocation(location);
+            com.massivecraft.factions.Faction faction1 = com.massivecraft.factions.Board.getInstance().getFactionAt(flocation);
+            com.massivecraft.factions.Faction faction2 = com.massivecraft.factions.FPlayers.getInstance().getByPlayer(player).getFaction();
 
-            FLocation flocation = new FLocation(location);
-            com.massivecraft.factions.Faction faction1 = Board.getFactionAt(flocation);
-            com.massivecraft.factions.Faction faction2 = FPlayers.i.get(player).getFaction();
-
-            for (String f : factions) {
-                if ((f.equalsIgnoreCase("{MEMBER}") && faction1 == faction2) || f.equalsIgnoreCase(faction1.getTag()) || f.equalsIgnoreCase(faction1.getTag().substring(2))) {
+            for (String f : factions)
+                if ((f.equalsIgnoreCase("{MEMBER}") && faction1 == faction2) || f.equalsIgnoreCase(faction1.getTag()) || f.equalsIgnoreCase(faction1.getTag().substring(2)))
                     return false;
-                }
-            }
-        } else if (factionsVersion.startsWith("2.6.0")) {
+        } else if (factionsVersion.startsWith("2.6")) {
+            com.massivecraft.massivecore.ps.PS ps = com.massivecraft.massivecore.ps.PS.valueOf(location);
+            com.massivecraft.factions.entity.Faction faction1 = com.massivecraft.factions.entity.BoardColls.get().getFactionAt(ps);
+            com.massivecraft.factions.entity.Faction faction2 = com.massivecraft.factions.entity.UPlayer.get(player).getFaction();
 
-            com.massivecraft.factions.entity.Faction faction1 = BoardColls.get().getFactionAt(PS.valueOf(location));
-            com.massivecraft.factions.entity.Faction faction2 = UPlayer.get(player).getFaction();
-
-            for (String f : factions) {
-                if ((f.equalsIgnoreCase("{MEMBER}") && faction1 == faction2) || f.equalsIgnoreCase(faction1.getName()) || f.equalsIgnoreCase(faction1.getName().substring(2))) {
+            for (String f : factions)
+                if ((f.equalsIgnoreCase("{MEMBER}") && faction1 == faction2) || f.equalsIgnoreCase(faction1.getName()) || f.equalsIgnoreCase(faction1.getName().substring(2)))
                     return false;
-                }
-            }
+        } else if (factionsVersion.startsWith("2.7")) {
+            com.massivecraft.massivecore.ps.PS ps = com.massivecraft.massivecore.ps.PS.valueOf(location);
+            com.massivecraft.factions.entity.Faction faction1 = com.massivecraft.factions.entity.BoardColl.get().getFactionAt(ps);
+            com.massivecraft.factions.entity.Faction faction2 = com.massivecraft.factions.entity.MPlayer.get(player).getFaction();
+
+            for (String f : factions)
+                if ((f.equalsIgnoreCase("{MEMBER}") && faction1 == faction2) || f.equalsIgnoreCase(faction1.getName()) || f.equalsIgnoreCase(faction1.getName().substring(2)))
+                    return false;
         }
 
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageFaction));

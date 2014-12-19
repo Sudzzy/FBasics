@@ -1,11 +1,5 @@
 package org.originmc.fbasics.cmd;
 
-import com.massivecraft.factions.Board;
-import com.massivecraft.factions.FLocation;
-import com.massivecraft.factions.entity.BoardColls;
-import com.massivecraft.factions.entity.FactionColls;
-import com.massivecraft.massivecore.ps.PS;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -26,6 +20,7 @@ public class CmdWilderness implements CommandExecutor {
     private final int zCenter;
     private final int maxRange;
     private final int minRange;
+    private final FBasics plugin;
     private final String messageFailed;
     private final String messageSuccess;
     private final String messageWorld;
@@ -51,6 +46,7 @@ public class CmdWilderness implements CommandExecutor {
         this.messagePermission = error + language.getString("general.error.permission");
         this.worlds = config.getStringList("wilderness.whitelisted-worlds");
         this.blocks = config.getStringList("wilderness.disabled-blocks");
+        this.plugin = plugin;
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -92,30 +88,22 @@ public class CmdWilderness implements CommandExecutor {
         int y = world.getHighestBlockYAt(x, z);
         Block highest = world.getBlockAt(x, y - 1, z);
         String blockname = highest.getType().toString();
+        String factionsVersion = this.plugin.getFactionsVersion();
 
-        if (this.blocks.contains(blockname)) {
-            return false;
-        }
+        if (this.blocks.contains(blockname)) return false;
 
-        if (Bukkit.getPluginManager().getPlugin("Factions") != null) {
-
-            String version = Bukkit.getPluginManager().getPlugin("Factions").getDescription().getVersion();
-
-            if (version.startsWith("1")) {
-                FLocation flocation = new FLocation(highest.getLocation());
-                if (!Board.getFactionAt(flocation).isNone()) {
-                    return false;
-                }
-            }
-
-            if (version.startsWith("2")) {
-                com.massivecraft.factions.entity.Faction wilderness = FactionColls.get().getForWorld(world.getName()).getNone();
-                com.massivecraft.factions.entity.Faction faction = BoardColls.get().getFactionAt(PS.valueOf(highest));
-
-                if (faction != wilderness) {
-                    return false;
-                }
-            }
+        if (factionsVersion.startsWith("1")) {
+            com.massivecraft.factions.FLocation flocation = new com.massivecraft.factions.FLocation(highest);
+            com.massivecraft.factions.Faction faction = com.massivecraft.factions.Board.getInstance().getFactionAt(flocation);
+            if (!faction.isNone()) return false;
+        } else if (factionsVersion.startsWith("2.6")) {
+            com.massivecraft.massivecore.ps.PS ps = com.massivecraft.massivecore.ps.PS.valueOf(highest);
+            com.massivecraft.factions.entity.Faction faction = com.massivecraft.factions.entity.BoardColls.get().getFactionAt(ps);
+            if (!faction.isNone()) return false;
+        } else if (factionsVersion.startsWith("2.7")) {
+            com.massivecraft.massivecore.ps.PS ps = com.massivecraft.massivecore.ps.PS.valueOf(highest);
+            com.massivecraft.factions.entity.Faction faction = com.massivecraft.factions.entity.BoardColl.get().getFactionAt(ps);
+            if (!faction.isNone()) return false;
         }
 
         teleportPlayer(sender, world, x, z);

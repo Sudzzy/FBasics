@@ -1,11 +1,5 @@
 package org.originmc.fbasics.listeners;
 
-import com.massivecraft.factions.Board;
-import com.massivecraft.factions.FLocation;
-import com.massivecraft.factions.FPlayers;
-import com.massivecraft.factions.entity.BoardColls;
-import com.massivecraft.factions.entity.UPlayer;
-import com.massivecraft.massivecore.ps.PS;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -156,43 +150,37 @@ public class EnderpearlListener implements Listener {
     }
 
     private boolean isInFaction(Player player, Location location) {
+        String factionsVersion = this.plugin.getFactionsVersion();
 
-        String version = Bukkit.getPluginManager().getPlugin("Factions").getDescription().getVersion();
-
-        if (version.startsWith("1")) {
-
-            FLocation flocation = new FLocation(location);
-            com.massivecraft.factions.Faction faction1 = Board.getFactionAt(flocation);
-            com.massivecraft.factions.Faction faction2 = FPlayers.i.get(player).getFaction();
-
+        if (factionsVersion.startsWith("1")) {
+            com.massivecraft.factions.FLocation flocation = new com.massivecraft.factions.FLocation(location);
+            com.massivecraft.factions.Faction faction1 = com.massivecraft.factions.Board.getInstance().getFactionAt(flocation);
+            com.massivecraft.factions.Faction faction2 = com.massivecraft.factions.FPlayers.getInstance().getByPlayer(player).getFaction();
 
             for (String faction : this.factions) {
-
-                if (faction.equalsIgnoreCase("{MEMBER}") && faction1 == faction2) {
+                if (faction.equalsIgnoreCase("{MEMBER}") && faction1 == faction2) return false;
+                if (faction.equalsIgnoreCase(faction1.getTag()) || faction.equalsIgnoreCase(faction1.getTag().substring(2)))
                     return false;
-                }
-
-
-                if (faction.equalsIgnoreCase(faction1.getTag()) || faction.equalsIgnoreCase(faction1.getTag().substring(2))) {
-                    return false;
-                }
             }
-        } else if (version.startsWith("2")) {
-
-            com.massivecraft.factions.entity.Faction faction1 = BoardColls.get().getFactionAt(PS.valueOf(location));
-            com.massivecraft.factions.entity.Faction faction2 = UPlayer.get(player).getFaction();
-
+        } else if (factionsVersion.startsWith("2.6")) {
+            com.massivecraft.massivecore.ps.PS ps = com.massivecraft.massivecore.ps.PS.valueOf(location);
+            com.massivecraft.factions.entity.Faction faction1 = com.massivecraft.factions.entity.BoardColls.get().getFactionAt(ps);
+            com.massivecraft.factions.entity.Faction faction2 = com.massivecraft.factions.entity.UPlayer.get(player).getFaction();
 
             for (String faction : this.factions) {
-
-                if (faction.equalsIgnoreCase("{MEMBER}") && faction1 == faction2) {
+                if (faction.equalsIgnoreCase("{MEMBER}") && faction1 == faction2) return false;
+                if (faction.equalsIgnoreCase(faction1.getName()) || faction.equalsIgnoreCase(faction1.getName().substring(2)))
                     return false;
-                }
+            }
+        } else if (factionsVersion.startsWith("2.7")) {
+            com.massivecraft.massivecore.ps.PS ps = com.massivecraft.massivecore.ps.PS.valueOf(location);
+            com.massivecraft.factions.entity.Faction faction1 = com.massivecraft.factions.entity.BoardColl.get().getFactionAt(ps);
+            com.massivecraft.factions.entity.Faction faction2 = com.massivecraft.factions.entity.MPlayer.get(player).getFaction();
 
-
-                if (faction.equalsIgnoreCase(faction1.getName()) || faction.equalsIgnoreCase(faction1.getName().substring(2))) {
+            for (String faction : this.factions) {
+                if (faction.equalsIgnoreCase("{MEMBER}") && faction1 == faction2) return false;
+                if (faction.equalsIgnoreCase(faction1.getName()) || faction.equalsIgnoreCase(faction1.getName().substring(2)))
                     return false;
-                }
             }
         }
 
