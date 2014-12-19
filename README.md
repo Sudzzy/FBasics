@@ -14,6 +14,7 @@ FBasics stands for "Factions Basics". The plugin provides you with an essential 
   - Essentials' teleportation glitches
   - Buycraft / Enjin promotion glitches (With Safe Promote)
   - McMMO duplication glitch
+  - TNT/Chest duplication glitches
 
 - Advanced command editing:
   - Aliasing
@@ -32,8 +33,16 @@ FBasics stands for "Factions Basics". The plugin provides you with an essential 
 ## Supported Plugins (Latest version)
 - FactionsUUID 1.6.9.5 by DrtShock
 - Factions 2.6.0
-- Massive Core 7.4.0
+- Factions 2.7.4
+- MassiveCore 7.4.0 (Old)
+- MassiveCore 2.7.4 (New)
 - Vault 1.4.1
+- Vault 1.5.0
+
+## Supported Server Versions (Latest version)
+- 1.7.2 -> 1.7.10 Craftbukkit
+- 1.7 / 1.8 Spigot Protocol hack
+- 1.8.1 Spigot
 
 ##Commands
 
