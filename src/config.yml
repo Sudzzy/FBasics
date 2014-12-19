@@ -2,11 +2,19 @@
 # FBasics 1.4.0
 # Main Settings
 #####
+# Supported Servers:
+# 1.7.2 -> 1.7.10
+# 1.7 / 1.8 Spigot Protocol hack
+# 1.8.1 Spigot
+#####
 # Supported Plugins:
 # Factions 1.6.9.5 by DrtShock
 # Factions 2.6.0
-# MassiveCore 7.4.0
+# Factions 2.7.4
+# MassiveCore 7.4.0 (Old)
+# MassiveCore 2.7.4 (New)
 # Vault 1.4.1
+# Vault 1.5.0
 #####
 
 # Prevents players from stealing others' loot during PVP
