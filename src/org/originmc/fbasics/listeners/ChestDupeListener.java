@@ -191,13 +191,6 @@ public class ChestDupeListener implements Listener {
     }
 
     @EventHandler
-    public void onDrop(BlockDispenseEvent event) {
-        if (event.getBlock().getType().equals(Material.DROPPER)) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
     public void onDamage(EntityDamageEvent event) {
         if (this.openEntities.values().contains(event.getEntity())) event.setCancelled(true);
     }
