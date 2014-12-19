@@ -55,7 +55,7 @@ doors:
 - WOODEN_DOOR
 - IRON_DOOR_BLOCK
 
-# Used in Anti Phase and Enderpearl Patch
+# Used in Anti Phase, Enderpearl Patch and Dismount Patches
 hollow-materials:
 - ACACIA_STAIRS
 - ACTIVATOR_RAIL

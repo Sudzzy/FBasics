@@ -161,6 +161,9 @@ patcher:
         enabled: true
         disable-all-enderpearls: false
         disable-within-block: true
+        # Prevents being able to glitch above roofs etc.
+        # (Very useful, recommended you keep this activated)
+        correct-teleport: true
         factions-whitelist: ['{ALL}']
         cooldown: 15
         door-cooldown: 2

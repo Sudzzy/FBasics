@@ -1,9 +1,10 @@
 package org.originmc.fbasics.listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,6 +26,7 @@ public class EnderpearlListener implements Listener {
 
     private final boolean blocks;
     private final boolean disabled;
+    private final boolean correctTeleport;
     private final int cooldown;
     private final int doorCooldown;
     private final FBasics plugin;
@@ -48,6 +50,7 @@ public class EnderpearlListener implements Listener {
         this.plugin = plugin;
         this.disabled = config.getBoolean("patcher.enderpearls.disable-all-enderpearls");
         this.blocks = config.getBoolean("patcher.enderpearls.disable-within-block");
+        this.correctTeleport = config.getBoolean("patcher.enderpearls.correct-teleport");
         this.cooldown = config.getInt("patcher.enderpearls.cooldown");
         this.doorCooldown = config.getInt("patcher.enderpearls.door-cooldown");
         this.factions = config.getStringList("patcher.enderpearls.factions-whitelist");
@@ -65,20 +68,33 @@ public class EnderpearlListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onTeleport(PlayerTeleportEvent e) {
-        if (!e.getCause().equals(TeleportCause.ENDER_PEARL) || this.factions.contains("{ALL}"))
-            return;
+        if (!e.getCause().equals(TeleportCause.ENDER_PEARL)) return;
 
         Player player = e.getPlayer();
 
-        if (player.hasPermission(this.permissionEnderpearl)) return;
+        if (!this.factions.contains("{ALL}") && !player.hasPermission(this.permissionEnderpearl)) {
+            Location location = e.getTo();
 
-        Location location = e.getTo();
+            if (isInFaction(player, location)) {
+                e.setCancelled(true);
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageFactions));
+                player.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 1));
+            }
+        }
 
-        if (Bukkit.getPluginManager().getPlugin("Factions") != null && !isInFaction(player, location)) return;
+        if (this.correctTeleport) {
+            Location toLocation = e.getTo();
+            Block toBlock = toLocation.getBlock();
+            boolean feet = this.hollowMaterials.contains(toBlock.getType());
+            boolean head = this.hollowMaterials.contains(toBlock.getRelative(BlockFace.UP).getType());
+            double excess = toLocation.getY() - (int) toLocation.getY();
 
-        e.setCancelled(true);
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageFactions));
-        player.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 1));
+            if (feet)
+                e.setTo(e.getTo().subtract(0, excess, 0));
+
+            if (!head)
+                e.setTo(toLocation.subtract(0, 1, 0));
+        }
     }
 
     @SuppressWarnings("deprecation")
