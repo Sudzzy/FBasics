@@ -39,6 +39,7 @@ inventory-double-blocks:
 
 # Used in Chest Dupe Patch
 inventory-entities:
+- HORSE
 - MINECART_CHEST
 - MINECART_FURNACE
 - MINECART_HOPPER
@@ -55,7 +56,7 @@ doors:
 - WOODEN_DOOR
 - IRON_DOOR_BLOCK
 
-# Used in Anti Phase, Enderpearl Patch and Dismount Patches
+# Used in Anti Phase, Enderpearl Patches and Dismount Patches
 hollow-materials:
 - ACACIA_STAIRS
 - ACTIVATOR_RAIL

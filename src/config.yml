@@ -61,14 +61,20 @@ commands:
             match: '/(\w+):.*'
             permission: fbasics.bypass.commands.glitchable
 
+        # IMPORTANT: This editor is necessary to prevent Essentials' teleportation glitches.
+        #            Remove the default Essentials' warmups, or this will not work!
         teleport-warmups:
             match: '/(((e|)(spawn|home(|s))(| .*))|((e|)(tpa(|sk)|call|warp(|s)) .*)|(f (|\\)(home|warp)(|\\)(| .*)))'
             warmup: 2
 
+        # IMPORTANT: This editor is necessary to prevent essentials' teleportation glitches
+        #            Remove the default Essentials' warmups, or this will not work!
         essentials-teleport-blocks:
             match: '/(e|)((tp(accept|yes))|((set|create)home))(| .*)'
             blocks: [AIR, SNOW, CARPET, TORCH, LONG_GRASS]
 
+        # IMPORTANT: This editor is necessary to prevent essentials' teleportation glitches
+        #            Remove the default Essentials' warmups, or this will not work!
         essentials-blocked-commands:
             match: '/(e|)(tpahere|back|return)(| .*)'
             permission: fbasics.bypass.commands.glitchable
@@ -127,12 +133,13 @@ mysql:
 
 patcher:
     # Prevents all known types of phase, V-Clipping, etc
+    # Very accurate method and should not be possible to bypass
     anti-phase: true
 
     # Prevents the faction map exploit, and loading huge amounts of chunks that can lag the server.
     boat-glitch: true
 
-    # Prevents dismount glitching.
+    # Prevents dismount glitching (For both boats and horses)
     dismount-glitch: true
 
     # Blocks any teleportation above the nether roof.
