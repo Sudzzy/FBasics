@@ -102,7 +102,7 @@ public class EnderpearlListener implements Listener {
     public void onEnderpearl(PlayerInteractEvent e) {
         Action action = e.getAction();
 
-        if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) return;
+        if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK || action == Action.PHYSICAL) return;
 
         Player player = e.getPlayer();
         Material item = player.getItemInHand().getType();
