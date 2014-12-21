@@ -18,6 +18,9 @@ ore-blocks:
 - GLOWSTONE
 - NETHERRACK
 - PACKED_ICE
+# If you are using Spigot 1.8, it may be useful to stop slime blocks being moved by pistons to prevent this:
+# https://www.youtube.com/watch?v=SaGPyMDLtLY
+#- SLIME_BLOCK
 
 # Used in Chest Dupe Patch
 inventory-blocks:
@@ -72,6 +75,7 @@ hollow-materials:
 - CARPET
 - CARROT
 - CAULDRON
+- CHEST
 - CROPS
 - COBBLE_WALL
 - COBBLESTONE_STAIRS
@@ -86,6 +90,7 @@ hollow-materials:
 - DOUBLE_STEP
 - DRAGON_EGG
 - ENCHANTMENT_TABLE
+- ENDER_CHEST
 - ENDER_PORTAL
 - ENDER_PORTAL_FRAME
 - FENCE
@@ -141,6 +146,7 @@ hollow-materials:
 - THIN_GLASS
 - TORCH
 - TRAP_DOOR
+- TRAPPED_CHEST
 - TRIPWIRE
 - TRIPWIRE_HOOK
 - VINE

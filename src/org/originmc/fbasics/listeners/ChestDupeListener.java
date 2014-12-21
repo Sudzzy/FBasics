@@ -116,10 +116,22 @@ public class ChestDupeListener implements Listener {
     public void onInteractEntity(PlayerInteractEntityEvent e) {
         Entity entity = e.getRightClicked();
         EntityType entityType = entity.getType();
+        Player player = e.getPlayer();
+
+        if (entityType.equals(EntityType.HORSE) && this.entities.contains(EntityType.HORSE)) {
+            if (!player.isSneaking()) return;
+
+            Horse horse = (Horse) entity;
+
+            if (!horse.isTamed()) return;
+
+            this.openEntities.put(player, entity);
+            return;
+        }
 
         for (EntityType inventoryEntity : this.entities) {
             if (entityType.equals(inventoryEntity)) {
-                this.openEntities.put(e.getPlayer(), entity);
+                this.openEntities.put(player, entity);
                 return;
             }
         }
