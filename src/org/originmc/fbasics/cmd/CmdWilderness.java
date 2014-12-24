@@ -92,10 +92,14 @@ public class CmdWilderness implements CommandExecutor {
 
         if (this.blocks.contains(blockname)) return false;
 
-        if (factionsVersion.startsWith("1")) {
+        if (factionsVersion.startsWith("1.6")) {
             com.massivecraft.factions.FLocation flocation = new com.massivecraft.factions.FLocation(highest);
             com.massivecraft.factions.Faction faction = com.massivecraft.factions.Board.getInstance().getFactionAt(flocation);
             if (!faction.isNone()) return false;
+        /* if (factionsVersion.startsWith("1.8")) {
+            com.massivecraft.factions.FLocation flocation = new com.massivecraft.factions.FLocation(highest);
+            com.massivecraft.factions.Faction faction = com.massivecraft.factions.Board.getFactionAt(flocation);
+            if (!faction.isNone()) return false; */
         } else if (factionsVersion.startsWith("2.6")) {
             com.massivecraft.massivecore.ps.PS ps = com.massivecraft.massivecore.ps.PS.valueOf(highest);
             com.massivecraft.factions.entity.Faction faction = com.massivecraft.factions.entity.BoardColls.get().getFactionAt(ps);

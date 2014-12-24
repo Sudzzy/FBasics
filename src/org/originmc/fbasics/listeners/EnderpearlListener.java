@@ -168,7 +168,7 @@ public class EnderpearlListener implements Listener {
     private boolean isInFaction(Player player, Location location) {
         String factionsVersion = this.plugin.getFactionsVersion();
 
-        if (factionsVersion.startsWith("1")) {
+        if (factionsVersion.startsWith("1.6")) {
             com.massivecraft.factions.FLocation flocation = new com.massivecraft.factions.FLocation(location);
             com.massivecraft.factions.Faction faction1 = com.massivecraft.factions.Board.getInstance().getFactionAt(flocation);
             com.massivecraft.factions.Faction faction2 = com.massivecraft.factions.FPlayers.getInstance().getByPlayer(player).getFaction();
@@ -178,6 +178,16 @@ public class EnderpearlListener implements Listener {
                 if (faction.equalsIgnoreCase(faction1.getTag()) || faction.equalsIgnoreCase(faction1.getTag().substring(2)))
                     return false;
             }
+        /* if (factionsVersion.startsWith("1.8")) {
+            com.massivecraft.factions.FLocation flocation = new com.massivecraft.factions.FLocation(location);
+            com.massivecraft.factions.Faction faction1 = com.massivecraft.factions.Board.getFactionAt(flocation);
+            com.massivecraft.factions.Faction faction2 = com.massivecraft.factions.FPlayers.i.get(player).getFaction();
+
+            for (String faction : this.factions) {
+                if (faction.equalsIgnoreCase("{MEMBER}") && faction1 == faction2) return false;
+                if (faction.equalsIgnoreCase(faction1.getTag()) || faction.equalsIgnoreCase(faction1.getTag().substring(2)))
+                    return false;
+            } */
         } else if (factionsVersion.startsWith("2.6")) {
             com.massivecraft.massivecore.ps.PS ps = com.massivecraft.massivecore.ps.PS.valueOf(location);
             com.massivecraft.factions.entity.Faction faction1 = com.massivecraft.factions.entity.BoardColls.get().getFactionAt(ps);
