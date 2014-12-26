@@ -50,9 +50,19 @@ inventory-entities:
 # Used in Crop Dupe Patch
 block-placement-near-crops:
 - CHEST
+- DIODE
+- IRON_DOOR
+- REDSTONE_COMPARATOR
 - TRAPPED_CHEST
 - WOOD_DOOR
-- IRON_DOOR
+
+# Used in Crop Dupe Patch
+crop-blocks:
+- BROWN_MUSHROOM
+- CACTUS
+- RED_MUSHROOM
+- SUGAR_CANE_BLOCK
+- WATER_LILY
 
 # Used in Enderpearl Patch
 doors:
