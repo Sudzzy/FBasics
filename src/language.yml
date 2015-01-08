@@ -32,6 +32,10 @@ anti-looter:
         protected: 'This loot is currently protected! ({REMAINING} seconds)'
         unprotected: 'Your loot is now unprotected.'
 
+book-limiter:
+    info:
+        book-too-long: 'Books are limited to {NUMBER} pages.'
+
 commands:
     error:
         block: 'You cannot perform this command whilst in this block/height.'
