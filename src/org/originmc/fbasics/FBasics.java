@@ -95,6 +95,10 @@ public class FBasics extends JavaPlugin {
             pluginManager.registerEvents(new NetherTeleportListener(this), this);
         }
 
+        if (this.config.getBoolean("patcher.book-limiter.enabled")) {
+            pluginManager.registerEvents(new BookLimiterListener(this), this);
+        }
+
         if (this.config.getBoolean("crates.enabled")) {
             getCommand("crate").setExecutor(new CmdCrate(this));
             new SetupDatabaseTask(this).runTaskAsynchronously(this);

@@ -175,6 +175,12 @@ patcher:
         cooldown: 15
         door-cooldown: 2
 
+    # Prevents users with modified clients from creating massive books
+    # Can cause issues with server I/O and general lag if left unchecked
+    book-limiter:
+        enabled: true
+        page-limit: 10
+
 # Safe Promote requires Vault to be enabled
 safe-promote:
     # To properly disable this plugins commands for another plugin to take priority:
