@@ -130,13 +130,18 @@ public class EnderpearlListener implements Listener {
         if (this.listEnderpearl.containsKey(player.getName())) {
             String[] cooldownInfo = this.listEnderpearl.get(player.getName()).split("-");
             long remaining = Integer.parseInt(cooldownInfo[1]) - (System.currentTimeMillis() - Long.parseLong(cooldownInfo[0])) / 1000L;
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageCooldown.replace("{REMAINING}", "" + remaining)));
-            e.setCancelled(true);
-            player.updateInventory();
-            return;
+
+            if (remaining < 0)
+                listEnderpearl.remove(player.getName());
+            else {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageCooldown.replace("{REMAINING}", "" + remaining)));
+                e.setCancelled(true);
+                player.updateInventory();
+                return;
+            }
         }
 
-        setCooldown(player.getName(), this.cooldown);
+        listEnderpearl.put(player.getName(), System.currentTimeMillis() + "-" + this.cooldown);
     }
 
     @EventHandler
@@ -150,19 +155,8 @@ public class EnderpearlListener implements Listener {
         Material block = e.getClickedBlock().getType();
 
         if (this.doors.contains(block) && !this.listEnderpearl.containsKey(player.getName())) {
-            setCooldown(player.getName(), this.doorCooldown);
+            listEnderpearl.put(player.getName(), System.currentTimeMillis() + "-" + this.doorCooldown);
         }
-    }
-
-    private void setCooldown(final String player, int cooldown) {
-
-        listEnderpearl.put(player, System.currentTimeMillis() + "-" + cooldown);
-
-        new BukkitRunnable() {
-            public void run() {
-                listEnderpearl.remove(player);
-            }
-        }.runTaskLaterAsynchronously(this.plugin, cooldown * 20);
     }
 
     private boolean isInFaction(Player player, Location location) {
