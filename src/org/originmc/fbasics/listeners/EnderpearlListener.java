@@ -38,7 +38,7 @@ public class EnderpearlListener implements Listener {
     private final List<Material> doors = new ArrayList<Material>();
     private final List<Material> hollowMaterials = new ArrayList<Material>();
     private final String permissionEnderpearl = "fbasics.bypass.glitch.enderpearl";
-    private Map<String, String> listEnderpearl = new HashMap<String, String>();
+    private Map<String, String> enderpearlCooldowns = new HashMap<String, String>();
 
     public EnderpearlListener(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();
@@ -67,51 +67,51 @@ public class EnderpearlListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onTeleport(PlayerTeleportEvent e) {
-        if (!e.getCause().equals(TeleportCause.ENDER_PEARL)) return;
+    public void onTeleport(PlayerTeleportEvent event) {
+        if (!event.getCause().equals(TeleportCause.ENDER_PEARL)) return;
 
-        Player player = e.getPlayer();
+        Player player = event.getPlayer();
 
         if (!this.factions.contains("{ALL}") && !player.hasPermission(this.permissionEnderpearl)) {
-            Location location = e.getTo();
+            Location location = event.getTo();
 
             if (isInFaction(player, location)) {
-                e.setCancelled(true);
+                event.setCancelled(true);
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageFactions));
                 player.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 1));
             }
         }
 
         if (this.correctTeleport) {
-            Location toLocation = e.getTo();
+            Location toLocation = event.getTo();
             Block toBlock = toLocation.getBlock();
             boolean feet = this.hollowMaterials.contains(toBlock.getType());
             boolean head = this.hollowMaterials.contains(toBlock.getRelative(BlockFace.UP).getType());
             double excess = toLocation.getY() - (int) toLocation.getY();
 
             if (feet)
-                e.setTo(e.getTo().subtract(0, excess, 0));
+                event.setTo(event.getTo().subtract(0, excess, 0));
 
             if (!head)
-                e.setTo(toLocation.subtract(0, 1, 0));
+                event.setTo(toLocation.subtract(0, 1, 0));
         }
     }
 
     @SuppressWarnings("deprecation")
     @EventHandler
-    public void onEnderpearl(PlayerInteractEvent e) {
-        Action action = e.getAction();
+    public void onEnderpearl(PlayerInteractEvent event) {
+        Action action = event.getAction();
 
         if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK || action == Action.PHYSICAL) return;
 
-        Player player = e.getPlayer();
+        Player player = event.getPlayer();
         Material item = player.getItemInHand().getType();
 
         if (player.hasPermission(this.permissionEnderpearl) || item == null || item != Material.ENDER_PEARL) return;
 
         if (this.disabled) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageDisabled));
-            e.setCancelled(true);
+            event.setCancelled(true);
             player.updateInventory();
             return;
         }
@@ -122,26 +122,26 @@ public class EnderpearlListener implements Listener {
 
         if (this.blocks && (!this.hollowMaterials.contains(feet) || !this.hollowMaterials.contains(head))) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageBlock));
-            e.setCancelled(true);
+            event.setCancelled(true);
             player.updateInventory();
             return;
         }
 
-        if (this.listEnderpearl.containsKey(player.getName())) {
-            String[] cooldownInfo = this.listEnderpearl.get(player.getName()).split("-");
+        if (this.enderpearlCooldowns.containsKey(player.getName())) {
+            String[] cooldownInfo = this.enderpearlCooldowns.get(player.getName()).split("-");
             long remaining = Integer.parseInt(cooldownInfo[1]) - (System.currentTimeMillis() - Long.parseLong(cooldownInfo[0])) / 1000L;
 
             if (remaining < 0)
-                listEnderpearl.remove(player.getName());
+                enderpearlCooldowns.remove(player.getName());
             else {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageCooldown.replace("{REMAINING}", "" + remaining)));
-                e.setCancelled(true);
+                event.setCancelled(true);
                 player.updateInventory();
                 return;
             }
         }
 
-        listEnderpearl.put(player.getName(), System.currentTimeMillis() + "-" + this.cooldown);
+        enderpearlCooldowns.put(player.getName(), System.currentTimeMillis() + "-" + this.cooldown);
     }
 
     @EventHandler
@@ -154,8 +154,8 @@ public class EnderpearlListener implements Listener {
 
         Material block = e.getClickedBlock().getType();
 
-        if (this.doors.contains(block) && !this.listEnderpearl.containsKey(player.getName())) {
-            listEnderpearl.put(player.getName(), System.currentTimeMillis() + "-" + this.doorCooldown);
+        if (this.doors.contains(block) && !this.enderpearlCooldowns.containsKey(player.getName())) {
+            enderpearlCooldowns.put(player.getName(), System.currentTimeMillis() + "-" + this.doorCooldown);
         }
     }
 
