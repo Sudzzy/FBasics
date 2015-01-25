@@ -38,7 +38,7 @@ public class CommandListener implements Listener {
     private final String permissionTerritory = "fbasics.bypass.commands.territory";
     private final String permissionWarmup = "fbasics.bypass.commands.warmup";
     private final List<CommandEditor> editors = new ArrayList<CommandEditor>();
-    private Map<UUID, WarmupTask> warmups = new HashMap<UUID, WarmupTask>();
+    private final Map<UUID, WarmupTask> warmups = new HashMap<UUID, WarmupTask>();
 
     public CommandListener(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();

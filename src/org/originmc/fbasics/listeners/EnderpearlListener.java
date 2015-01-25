@@ -38,7 +38,7 @@ public class EnderpearlListener implements Listener {
     private final List<Material> doors = new ArrayList<Material>();
     private final List<Material> hollowMaterials = new ArrayList<Material>();
     private final String permissionEnderpearl = "fbasics.bypass.glitch.enderpearl";
-    private Map<String, String> enderpearlCooldowns = new HashMap<String, String>();
+    private final Map<String, String> enderpearlCooldowns = new HashMap<String, String>();
 
     public EnderpearlListener(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();

@@ -28,8 +28,8 @@ public class ChestDupeListener implements Listener {
     private final List<Material> blocks = new ArrayList<Material>();
     private final List<Material> doubleBlocks = new ArrayList<Material>();
     private final List<EntityType> entities = new ArrayList<EntityType>();
-    private Map<Player, List<Block>> openBlocks = new HashMap<Player, List<Block>>();
-    private Map<Player, Entity> openEntities = new HashMap<Player, Entity>();
+    private final Map<Player, List<Block>> openBlocks = new HashMap<Player, List<Block>>();
+    private final Map<Player, Entity> openEntities = new HashMap<Player, Entity>();
 
     public ChestDupeListener(FBasics plugin) {
         FileConfiguration materials = plugin.getMaterials();
@@ -99,16 +99,20 @@ public class ChestDupeListener implements Listener {
         if (!(entity instanceof Player)) return;
 
         Player player = (Player) entity;
-        @SuppressWarnings("deprecation")
-        Block block = player.getTargetBlock(null, 6);
-        Material blockType = block.getType();
+        try {
+            @SuppressWarnings("deprecation")
+            Block block = player.getTargetBlock(null, 6);
+            Material blockType = block.getType();
 
-        for (Material inventoryBlock : this.blocks) {
-            if (blockType.equals(inventoryBlock)) {
-                List<Block> blocks = getSurroundingBlocks(block);
-                this.openBlocks.put(player, blocks);
-                return;
+            for (Material inventoryBlock : this.blocks) {
+                if (blockType.equals(inventoryBlock)) {
+                    List<Block> blocks = getSurroundingBlocks(block);
+                    this.openBlocks.put(player, blocks);
+                    return;
+                }
             }
+        } catch (Exception exception) {
+            // Continue //
         }
     }
 

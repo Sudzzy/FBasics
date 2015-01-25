@@ -18,8 +18,8 @@ import java.util.List;
 public class CropDupeListener implements Listener {
 
     private final String cropBlock;
-    private List<Material> dupableBlocks = new ArrayList<Material>();
-    private List<Material> cropBlocks = new ArrayList<Material>();
+    private final List<Material> dupableBlocks = new ArrayList<Material>();
+    private final List<Material> cropBlocks = new ArrayList<Material>();
 
     public CropDupeListener(FBasics plugin) {
         FileConfiguration materials = plugin.getMaterials();
