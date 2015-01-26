@@ -1,0 +1,57 @@
+name: ${project.artifactId}
+main: org.originmc.fbasics.FBasics
+version: ${project.version}
+description: ${project.description}
+authors: [Sudzzy]
+database: true
+website: http://www.originmc.org/
+depend: [Vault]
+softdepend: [Factions, MassiveCore]
+
+commands:
+    crate:
+        description: Access to mystery crates
+        aliases: [crates]
+
+    fbasics:
+        description: FBasics core command
+        aliases: [fb]
+
+    safepromote:
+        description: Safely promotes players using a check
+        aliases: [sp]
+
+    wilderness:
+        description: Teleports the user to a random location
+        aliases: [wild]
+
+permissions:
+    fbasics.admin:
+        default: op
+        description: All FBasics permissions for Administrators
+        children:
+            fbasics.user: true
+            fbasics.bypass.antilooter: true
+            fbasics.bypass.commands.blocks: true
+            fbasics.bypass.commands.cooldowns: true
+            fbasics.bypass.commands.economy: true
+            fbasics.bypass.commands.glitchable: true
+            fbasics.bypass.commands.territory: true
+            fbasics.bypass.commands.warmup: true
+            fbasics.bypass.glitch.boat: true
+            fbasics.bypass.glitch.dismount: true
+            fbasics.bypass.glitch.enderpearl: true
+            fbasics.bypass.glitch.nether: true
+            fbasics.commands.crate.change: true
+            fbasics.commands.reload: true
+            fbasics.commands.safepromote: true
+
+    fbasics.user:
+        default: true
+        description: Predefined permissions for default players
+        children:
+            fbasics.commands.crate.balance: true
+            fbasics.commands.crate.balance.other: true
+            fbasics.commands.crate.open: true
+            fbasics.commands.crate.pay: true
+            fbasics.commands.wilderness: true

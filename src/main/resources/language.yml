@@ -1,0 +1,81 @@
+#####
+# FBasics 1.4.0
+# Language Settings
+#####
+
+general:
+    help:
+    - '&8----------// &6FBasics Help &8\\----------'
+    - '&fKey - &e/users &c/admins &8(&7needed&8) &8(optional)'
+    - '&e/crate balance &8{name) &fShows how many crates you have'
+    - '&e/crate open &fOpen one of your crates'
+    - '&e/crate pay &8(&7name&8) (&7amount&8) &fPay someone in crates'
+    - '&c/crate add &8(&7name&8) (&7amount&8) &fAdd crates'
+    - '&c/crate rem &8(&7name&8) (&7amount&8) &fRemove crates'
+    - '&c/crate set &8(&7name&8) (&7amount&8) &fSet crates'
+    - '&e/fbasics version &fShows installed version of the plugin'
+    - '&c/fbasics reload &fReloads the plugin'
+    - '&c/safepromote &8(&7name&8) (&7old rank&8) (&7new rank&8) &fSafely promote'
+    - '&e/wilderness &fTeleports to a random location'
+    error:
+        prefix: '&4FBasics &8// &f'
+        console: 'This command can only be executed in game.'
+        permission: 'You do not have permission.'
+        player: 'Player not found! (Are they online?)'
+    info:
+        prefix: '&6FBasics &8// &f'
+        reload: 'Plugin successfully reloaded.'
+
+anti-looter:
+    info:
+        dropped: 'The dropped items have been protected for {TIME} seconds.'
+        protected: 'This loot is currently protected! ({REMAINING} seconds)'
+        unprotected: 'Your loot is now unprotected.'
+
+book-limiter:
+    info:
+        book-too-long: 'Books are limited to {NUMBER} pages.'
+
+commands:
+    error:
+        block: 'You cannot perform this command whilst in this block/height.'
+        faction: 'You cannot perform this command whilst in this faction area.'
+        funds: 'You do not have enough funds to execute this command.'
+        warmup: 'Command cancelled due to another command already warming up!'
+    info:
+        cancelled: 'Command cancelled.'
+        cooldown: 'Command on cooldown! ({COOLDOWN} seconds)'
+        paid: 'You have paid ${MONEY} to use this command.'
+        warmup: 'Command commencing in {WARMUP} seconds. Do not move.'
+
+crates:
+    error:
+        balance: 'You do not have enough crates!'
+        invalid: 'Invalid amount of crates specified!'
+    info:
+        balance: 'You have {CRATES} crates left.'
+        balance-other: '{NAME} has {CRATES} crates remaining.'
+        changed: '{NAME} now has {CRATES} crates.'
+        payment-sent: 'You have paid {NAME} {CRATES} crates.'
+        payment-received: 'You have received {CRATES} crates from {NAME}.'
+
+patcher:
+    error:
+        chest-dupe: 'You are not allowed to damage this while it is open!'
+        crop-place: 'You are not allowed to place this block here!'
+        enderpearls-disabled: 'Enderpearls are disabled on this server.'
+        enderpearls-factions: 'Enderpearl cancelled as it is within protected territory.'
+        enderpearls-block: 'Enderpearls disabled whilst within a block!'
+        nether-cancelled: 'Teleportation cancelled as the destination is above the nether!'
+    info:
+        enderpearls-cooldown: 'Not allowed to enderpearl yet! ({REMAINING} seconds)'
+
+wilderness:
+    error:
+        failed: 'Failed to find a place to teleport! Try again.'
+        world: 'Wilderness has been disabled in this world.'
+    info:
+        success: 'Teleported to X: {X} Y: {Y} Z: {Z}.'
+
+# Version number - DO NOT TOUCH
+version: ${project.version}

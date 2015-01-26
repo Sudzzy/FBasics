@@ -1,0 +1,215 @@
+#####
+# FBasics 1.4.0
+# Main Settings
+#####
+# Supported Servers:
+# 1.7.2 -> 1.7.10 Craftbukkit
+# 1.7 / 1.8 Spigot Protocol hack
+# 1.8.1 Spigot
+#####
+# Supported Plugins:
+# Factions 1.6.9.5 by DrtShock
+# Factions 2.6.0
+# Factions 2.7.4
+# MassiveCore 7.4.0 (Old)
+# MassiveCore 2.7.4 (New)
+# Vault 1.4.1
+# Vault 1.5.0
+#####
+
+# Prevents players from stealing others' loot during PVP
+anti-looter:
+    enabled: true
+    protection-duration: 15
+
+# Editing commands to your preference + contains fixes for Essentials' teleportation glitches
+commands:
+    enabled: true
+    ignore-case: true
+    # Commands with this RegEx will be edited BEFORE any plugin touches them. Otherwise it will be edited after.
+    priority: '/f(| .*)'
+    editors:
+        # Name of your editor, make sure each editor is named differently.
+        # This section allows you to add / change any editors you want, so you can basically create your
+        # own commands here!
+        custom-command:
+            # RegEx to get the correct command
+            match: '/herpderp .*'
+            # Custom permission for this command
+            permission: some.random.permission
+            # Cooldown for using the command (in seconds)
+            cooldown: 10
+            # Warmup for using the command (also in seconds)
+            # The command will be cancelled if the player takes damage, or moves 1 block
+            warmup: 3
+            # Changes the command to anything else you would like
+            # {ARG:0} = herpderp
+            # {ARG:1} = next word written after "herpderp"
+            # {ARG:2} = word after previous argument - these go on until the message doesn't have anymore arguments
+            # {ALL_ARGS} = a collection of all arguments after ".*" as it was written - useful for "/msg", "/bcast", etc
+            alias: '/me {ALL_ARGS}'
+            # Whitelists the usage of this command to these certain blocks, use material names from here:
+            # http://jd.bukkit.org/rb/apidocs/org/bukkit/Material.html
+            blocks: [AIR, LAVA]
+            # Whitelists the usage of this command to certain faction territories (case insensitive)
+            # '{MEMBER}' = the faction the player is a member of
+            factions: ['{MEMBER}', SAFEZONE, WARZONE, WILDERNESS]
+            # Amount the player needs to pay to execute this command (Requires Vault)
+            price: 5.12
+
+        bukkit-plugin-aliaser:
+            match: '/(\w+):.*'
+            permission: fbasics.bypass.commands.glitchable
+
+        # IMPORTANT: This editor is necessary to prevent Essentials' teleportation glitches.
+        #            Remove the default Essentials' warmups, or this will not work!
+        teleport-warmups:
+            match: '/(((e|)(spawn|home(|s))(| .*))|((e|)(tpa(|sk)|call|warp(|s)) .*)|(f (|\\)(home|warp)(|\\)(| .*)))'
+            warmup: 2
+
+        # IMPORTANT: This editor is necessary to prevent essentials' teleportation glitches
+        #            Remove the default Essentials' warmups, or this will not work!
+        essentials-teleport-blocks:
+            match: '/(e|)((tp(accept|yes))|((set|create)home))(| .*)'
+            blocks: [AIR, SNOW, CARPET, TORCH, LONG_GRASS]
+
+        # IMPORTANT: This editor is necessary to prevent essentials' teleportation glitches
+        #            Remove the default Essentials' warmups, or this will not work!
+        essentials-blocked-commands:
+            match: '/(e|)(tpahere|back|return)(| .*)'
+            permission: fbasics.bypass.commands.glitchable
+
+        wilderness:
+            match: '/(wilderness|wild)(| .*)'
+            warmup: 2
+            cooldown: 300
+
+crates:
+    # To properly disable this plugins commands for another plugin to take priority:
+    # 1. Set "enabled: false" 
+    # 2. Remove all the commands information from "plugin.yml" found within "FBasics.jar"
+    enabled: true
+    # true = 1/# chance of getting each listed reward
+    # false = any reward listed is chosen at random
+    new-reward-algorithm: true
+    message-prefix: '&6FBasics &8// &f'
+    rewards:
+        '1':
+            message: 'You have won 3 diamonds!'
+            commands:
+            - give {NAME} diamond 3
+
+        '2':
+            message: 'You have won 30 XP Levels!'
+            commands:
+            - exp give {NAME} 30L
+
+        '3':
+            message: 'You have won a Potion kit!'
+            commands:
+            - give {NAME} netherstalk 16
+            - give {NAME} glowstone 8
+            - give {NAME} blazerod 8
+            - give {NAME} ghasttear 2
+
+        '5':
+            message: 'You have won 2 Super Gold Apples!'
+            commands:
+            - give {NAME} 322:1 2
+
+        '10':
+            message: 'You have won a Blaze Spawner!'
+            commands:
+            - give {NAME} 52:61 1
+
+mysql:
+    enabled: false
+    user-name: UserName
+    user-password: UserPassword
+    database-name: DataBaseName
+    table-prefix: FBasics_
+    port: 3306
+    address: localhost
+
+patcher:
+    # Prevents all known types of phase, V-Clipping, etc
+    # Very accurate method and should not be possible to bypass
+    anti-phase: true
+
+    # Prevents the faction map exploit, and loading huge amounts of chunks that can lag the server.
+    boat-glitch: true
+
+    # Prevents dismount glitching (For both boats and horses)
+    dismount-glitch: true
+
+    # Blocks any teleportation above the nether roof.
+    nether-glitch: true
+
+    # Prevents dispensers dispensing bonemeal.
+    # Intended vanilla feature, but can be very over powered.
+    dispenser-glitch: false
+
+    # Prevents glitching with ores in mcMMO
+    # https://www.youtube.com/watch?v=fqUXNT_YW7g
+    mcmmo-mining-exploit: true
+
+    # Prevents players duping items with destroying chests
+    # https://www.youtube.com/watch?v=WMio2fyxKnY
+    chest-dupe: true
+
+    # This prevents duping of : Lily pads, Cactus and Sugarcane
+    # https://www.youtube.com/watch?v=-I6CY9PXJW0
+    crop-dupe: true
+
+    # Prevents glitching through walls with enderpearls.
+    # Default settings should be fine to block most of the glitches, barring glitching through
+    # certain transparent blocks.
+    enderpearls:
+        enabled: true
+        disable-all-enderpearls: false
+        disable-within-block: true
+        # Prevents being able to glitch above roofs etc.
+        # (Very useful, recommended you keep this activated)
+        correct-teleport: true
+        factions-whitelist: ['{ALL}']
+        cooldown: 15
+        door-cooldown: 2
+
+    # Prevents users with modified clients from creating massive books
+    # Can cause issues with server I/O and general lag if left unchecked
+    book-limiter:
+        enabled: true
+        page-limit: 10
+
+# Safe Promote requires Vault to be enabled
+safe-promote:
+    # To properly disable this plugins commands for another plugin to take priority:
+    # 1. Set "enabled: false" 
+    # 2. Remove all the commands information from "plugin.yml" found within "FBasics.jar"
+    enabled: true
+    auto-complete-names: true
+    failed-commands:
+    - mail send {NAME} You did not own {OLD_GROUP} so {NEW_GROUP} was not added
+    - mail send YOUR_NAME_HERE {NAME} failed rank check! {OLD_GROUP} to {NEW_GROUP} as they did not previously own {OLD_GROUP}
+    success-commands:
+    - permissions player {NAME} addgroup {NEW_GROUP}
+    - permissions player {NAME} removegroup {OLD_GROUP}
+    - mail send {NAME} Thank you for supporting the server, enjoy your rank upgrade!
+
+# Version number - DO NOT TOUCH
+version: ${project.version}
+
+# NOTE: Wilderness will never teleport a player into claimed faction land
+wilderness:
+    # To properly disable this plugins commands for another plugin to take priority:
+    # 1. Set "enabled: false" 
+    # 2. Remove all the commands information from "plugin.yml" found within "FBasics.jar"
+    enabled: true
+    x-center: 0
+    z-center: 0
+    max-range: 7000
+    min-range: -7000
+    # Worlds where wilderness is enabled, it is recomended not to enable wilderness within the nether / end
+    whitelisted-worlds: [world, another_normal_world]
+    # Blocks that you do not want the player to teleport on when using wilderness
+    disabled-blocks: [STATIONARY_LAVA, STATIONARY_WATER, WATER, LAVA, CACTUS]
