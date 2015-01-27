@@ -6,8 +6,23 @@
 
     <groupId>org.originmc</groupId>
     <artifactId>FBasics</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
-    <description>Attempts to combat exploits within Factions servers</description>
+    <packaging>pom</packaging>
+    <version>parent</version>
+    <name>FBasics Parent</name>
+    <url>https://github.com/Sudzzy/FBasics</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <modules>
+        <module>factions_integration</module>
+        <module>factions_1_6_9_5</module>
+        <module>factions_1_8_2</module>
+        <module>factions_2_6_0</module>
+        <module>factions_2_7_5</module>
+        <module>fbasics</module>
+    </modules>
 
     <repositories>
         <repository>
@@ -15,63 +30,6 @@
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
     </repositories>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.8-R0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>Vault</groupId>
-            <artifactId>Vault</artifactId>
-            <version>1.5.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/Vault-1.5.2.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>Factions-1.6.9.5</groupId>
-            <artifactId>Factions-1.6.9.5</artifactId>
-            <version>1.6.9.5</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/Factions-1.6.9.5.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>Factions-1.8.2</groupId>
-            <artifactId>Factions-1.8.2</artifactId>
-            <version>1.8.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/Factions-1.8.2.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>Factions-2.7.5</groupId>
-            <artifactId>Factions-2.7.5</artifactId>
-            <version>2.7.5</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/Factions-2.7.5.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>MassiveCore-2.7.5</groupId>
-            <artifactId>MassiveCore-2.7.5</artifactId>
-            <version>2.7.5</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/MassiveCore-2.7.5.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>Factions-2.6.0</groupId>
-            <artifactId>Factions-2.6.0</artifactId>
-            <version>2.6.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/Factions-2.6.0.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>MassiveCore-7.4.0</groupId>
-            <artifactId>MassiveCore-7.4.0</artifactId>
-            <version>7.4.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/MassiveCore-7.4.0.jar</systemPath>
-        </dependency>
-    </dependencies>
 
     <build>
         <resources>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.originmc</groupId>
+    <artifactId>FBasics</artifactId>
+    <name>FBasics</name>
+    <url>https://github.com/Sudzzy/FBasics</url>
+    <version>1.5.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/Sudzzy/FBasics/issues</url>
+    </issueManagement>
+
+    <build>
+        <directory>../target</directory>
+        <finalName>FBasics</finalName>
+        <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>${basedir}/src/main/resources/</directory>
+                <includes>
+                    <include>*.yml</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <scope>provided</scope>
+            <version>LATEST</version>
+        </dependency>
+        <dependency>
+            <groupId>Vault</groupId>
+            <artifactId>Vault</artifactId>
+            <version>1.5.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../lib/Vault-1.5.2.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.originmc</groupId>
+            <artifactId>FBasics-Factions-Integration</artifactId>
+            <version>integration</version>
+            <type>jar</type>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.originmc</groupId>
+            <artifactId>FBasics-Factions-v1_6_9_5</artifactId>
+            <version>v1_6_9_5</version>
+            <type>jar</type>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.originmc</groupId>
+            <artifactId>FBasics-Factions-v1_8_2</artifactId>
+            <version>v1_8_2</version>
+            <type>jar</type>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.originmc</groupId>
+            <artifactId>FBasics-Factions-v2_6_0</artifactId>
+            <version>v2_6_0</version>
+            <type>jar</type>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.originmc</groupId>
+            <artifactId>FBasics-Factions-v2_7_5</artifactId>
+            <version>v2_7_5</version>
+            <type>jar</type>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+</project>
