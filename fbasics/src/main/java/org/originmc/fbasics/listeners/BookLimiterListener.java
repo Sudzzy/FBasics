@@ -1,6 +1,5 @@
 package org.originmc.fbasics.listeners;
 
-import org.originmc.fbasics.FBasics;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,9 +11,9 @@ import org.originmc.fbasics.FBasics;
 
 public class BookLimiterListener implements Listener {
 
+    private static final String PERMISSION_BYPASS = "fbasics.bypass.booklimiter";
     private final FBasics plugin;
     private final int pageLimit;
-    private final String PERMISSION_BYPASS = "fbasics.bypass.booklimiter";
     private final String playerMessage;
 
     public BookLimiterListener(FBasics plugin) {
@@ -22,23 +21,28 @@ public class BookLimiterListener implements Listener {
         FileConfiguration language = plugin.getLanguage();
 
         this.plugin = plugin;
-        this.pageLimit = config.getInt("book-limiter.page-limit");
-        this.playerMessage = language.getString("book-limiter.info.book-too-long");
+        this.pageLimit = config.getInt("patcher.book-limiter.page-limit");
+        this.playerMessage = language.getString("patcher.book-limiter.info.book-too-long");
+
+        if (config.getBoolean("patcher.book-limiter.enabled")) {
+            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            plugin.getLogger().info("Book-Limiter module loaded");
+        }
     }
 
     @EventHandler
     public void onPlayerEditBook(PlayerEditBookEvent event) {
-        if (event.getPlayer().hasPermission(PERMISSION_BYPASS)) return;
+        if (event.getPlayer().hasPermission(PERMISSION_BYPASS)) {
+            return;
+        }
 
-        if (event.getNewBookMeta().getPageCount() > pageLimit) {
-            BookMeta newMeta = (BookMeta) plugin.getServer().getItemFactory().getItemMeta(Material.WRITTEN_BOOK);
+        if (event.getNewBookMeta().getPageCount() > this.pageLimit) {
+            BookMeta newMeta = (BookMeta) this.plugin.getServer().getItemFactory().getItemMeta(Material.WRITTEN_BOOK);
             // Retain old data
             newMeta.setAuthor(event.getPreviousBookMeta().getAuthor());
             newMeta.setTitle(event.getPreviousBookMeta().getTitle());
 
-            for (int i = 1; i < pageLimit + 1; i++) { // Start at 1 so that we can use this for pages
-                newMeta.addPage(event.getPreviousBookMeta().getPage(i));
-            }
+            newMeta.setPages(newMeta.getPages().subList(0, this.pageLimit - 1));
 
             event.setNewBookMeta(newMeta);
             event.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', this.playerMessage.replace("{NUMBER}", "" + this.pageLimit)));

@@ -1,6 +1,5 @@
 package org.originmc.fbasics.cmd;
 
-import org.originmc.fbasics.entity.Crate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -11,11 +10,21 @@ import org.bukkit.entity.Player;
 import org.originmc.fbasics.DatabaseManager;
 import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.entity.Crate;
+import org.originmc.fbasics.task.SetupDatabaseTask;
+import org.originmc.fbasics.task.UpdateDatabaseTask;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class CmdCrate implements CommandExecutor {
 
+    private static final String PERMISSION_BALANCE = "fbasics.commands.crate.balance";
+    private static final String PERMISSION_BALANCE_OTHER = "fbasics.commands.crate.balance.other";
+    private static final String PERMISSION_CHANGE = "fbasics.commands.crate.change";
+    private static final String PERMISSION_OPEN = "fbasics.commands.crate.open";
+    private static final String PERMISSION_PAY = "fbasics.commands.crate.pay";
     private final boolean newAlgorithm;
     private final FBasics plugin;
     private final String messageBalance;
@@ -28,11 +37,6 @@ public class CmdCrate implements CommandExecutor {
     private final String messageConsole;
     private final String messageInvalidPlayer;
     private final String messagePermission;
-    private final String permissionBalance = "fbasics.commands.crate.balance";
-    private final String permissionBalanceOther = "fbasics.commands.crate.balance.other";
-    private final String permissionChange = "fbasics.commands.crate.change";
-    private final String permissionOpen = "fbasics.commands.crate.open";
-    private final String permissionPay = "fbasics.commands.crate.pay";
     private final List<String> messageHelp;
     private final Map<String, Crate> crates = new HashMap<String, Crate>();
 
@@ -55,8 +59,16 @@ public class CmdCrate implements CommandExecutor {
         this.messageInvalidPlayer = error + language.getString("general.error.player");
         this.messagePermission = error + language.getString("general.error.permission");
         this.messageHelp = language.getStringList("general.help");
-        for (String crate : config.getConfigurationSection("crates.rewards").getKeys(false))
+
+        for (String crate : config.getConfigurationSection("crates.rewards").getKeys(false)) {
             this.crates.put(crate, new Crate(config, crate));
+        }
+
+        if (config.getBoolean("crates.enabled")) {
+            plugin.getCommand("crate").setExecutor(this);
+            new SetupDatabaseTask(plugin).runTaskAsynchronously(plugin);
+            new UpdateDatabaseTask(plugin).runTaskTimerAsynchronously(plugin, 6000, 6000);
+        }
     }
 
 
@@ -71,11 +83,8 @@ public class CmdCrate implements CommandExecutor {
             Player player = (Player) sender;
             args[0] = args[0].toLowerCase();
 
-            /**
-             * Balance (Self)
-             */
             if (args[0].matches("bal|balance")) {
-                if (!player.hasPermission(this.permissionBalance)) {
+                if (!player.hasPermission(PERMISSION_BALANCE)) {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
                     return true;
                 }
@@ -86,11 +95,9 @@ public class CmdCrate implements CommandExecutor {
                 return true;
             }
 
-            /**
-             * Open
-             */
+            /* Open */
             if (args[0].matches("open")) {
-                if (!player.hasPermission(this.permissionOpen)) {
+                if (!player.hasPermission(PERMISSION_OPEN)) {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
                     return true;
                 }
@@ -116,11 +123,10 @@ public class CmdCrate implements CommandExecutor {
         }
 
         if (args.length == 2) {
-            /**
-             * Balance (Other)
-             */
+
+            /* Balance (Other) */
             if ((args[0].toLowerCase().matches("bal|balance"))) {
-                if (!sender.hasPermission(this.permissionBalanceOther)) {
+                if (!sender.hasPermission(PERMISSION_BALANCE_OTHER)) {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
                     return true;
                 }
@@ -136,11 +142,9 @@ public class CmdCrate implements CommandExecutor {
         if (args.length == 3) {
             args[0] = args[0].toLowerCase();
 
-            /**
-             * Set
-             */
+            /* Set */
             if (args[0].matches("set")) {
-                if (!sender.hasPermission(this.permissionChange)) {
+                if (!sender.hasPermission(PERMISSION_CHANGE)) {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
                     return true;
                 }
@@ -153,11 +157,9 @@ public class CmdCrate implements CommandExecutor {
                 return true;
             }
 
-            /**
-             * Add
-             */
+            /* Add */
             if (args[0].matches("add|give")) {
-                if (!sender.hasPermission(this.permissionChange)) {
+                if (!sender.hasPermission(PERMISSION_CHANGE)) {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
                     return true;
                 }
@@ -171,11 +173,9 @@ public class CmdCrate implements CommandExecutor {
                 return true;
             }
 
-            /**
-             * Remove
-             */
+            /* Remove */
             if (args[0].matches("remove|rem")) {
-                if (!sender.hasPermission(this.permissionChange)) {
+                if (!sender.hasPermission(PERMISSION_CHANGE)) {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
                     return true;
                 }
@@ -189,11 +189,9 @@ public class CmdCrate implements CommandExecutor {
                 return true;
             }
 
-            /**
-             * Pay
-             */
+            /* Pay */
             if (args[0].matches("pay")) {
-                if (!sender.hasPermission(this.permissionPay)) {
+                if (!sender.hasPermission(PERMISSION_PAY)) {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
                     return true;
                 }

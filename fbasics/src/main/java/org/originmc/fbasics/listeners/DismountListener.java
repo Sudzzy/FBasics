@@ -20,27 +20,48 @@ import java.util.List;
 
 public class DismountListener implements Listener {
 
-    private final String permissionDismount = "fbasics.bypass.glitch.dismount";
+    private static final BlockFace[] BLOCK_FACES = {
+            BlockFace.SELF,
+            BlockFace.UP,
+            BlockFace.DOWN,
+            BlockFace.NORTH,
+            BlockFace.EAST,
+            BlockFace.SOUTH,
+            BlockFace.WEST
+    };
+    private static final String PERMISSION_DISMOUNT = "fbasics.bypass.glitch.dismount";
     private final FBasics plugin;
     private final List<Material> hollowMaterials = new ArrayList<Material>();
 
     public DismountListener(FBasics plugin) {
-        this.plugin = plugin;
+        FileConfiguration config = plugin.getConfig();
         FileConfiguration materials = plugin.getMaterials();
 
-        for (String hollowMaterials : materials.getStringList("hollow-materials"))
+        this.plugin = plugin;
+
+        for (String hollowMaterials : materials.getStringList("hollow-materials")) {
             this.hollowMaterials.add(Material.getMaterial(hollowMaterials));
+        }
+
+        if (config.getBoolean("patcher.dismount-glitch")) {
+            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            plugin.getLogger().info("Dismount-Glitch module loaded");
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onExit(VehicleExitEvent event) {
+    public void onVehicleExit(VehicleExitEvent event) {
         final Entity entity = event.getExited();
 
-        if (!(entity instanceof Player)) return;
+        if (!(entity instanceof Player)) {
+            return;
+        }
 
         final Player player = (Player) entity;
 
-        if (player.hasPermission(this.permissionDismount)) return;
+        if (player.hasPermission(PERMISSION_DISMOUNT)) {
+            return;
+        }
 
         if (!this.hollowMaterials.contains(event.getVehicle().getLocation().add(0, 1, 0).getBlock().getType())) {
             final Location location = player.getLocation().subtract(0, 1, 0);
@@ -64,25 +85,20 @@ public class DismountListener implements Listener {
         }.runTask(plugin);
     }
 
-    @EventHandler
-    public void onSpawn(CreatureSpawnEvent event) {
-        if (!event.getEntityType().equals(EntityType.HORSE)) return;
+    @EventHandler(ignoreCancelled = true)
+    public void onCreatureSpawn(CreatureSpawnEvent event) {
+        if (!event.getEntityType().equals(EntityType.HORSE)) {
+            return;
+        }
 
-        Block center = event.getEntity().getLocation().getBlock();
-        Block north = center.getRelative(BlockFace.NORTH);
-        Block east = center.getRelative(BlockFace.EAST);
-        Block south = center.getRelative(BlockFace.SOUTH);
-        Block west = center.getRelative(BlockFace.WEST);
+        Block block = event.getEntity().getLocation().getBlock();
 
-        List<Material> surroundingBlockTypes = new ArrayList<Material>();
-        surroundingBlockTypes.add(center.getType());
-        surroundingBlockTypes.add(north.getType());
-        surroundingBlockTypes.add(east.getType());
-        surroundingBlockTypes.add(south.getType());
-        surroundingBlockTypes.add(west.getType());
-
-        if (!this.hollowMaterials.containsAll(surroundingBlockTypes)) {
-            event.setCancelled(true);
+        for (BlockFace blockFace : BLOCK_FACES) {
+            Material material = block.getRelative(blockFace).getType();
+            if (!this.hollowMaterials.contains(material)) {
+                event.setCancelled(true);
+                return;
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 package org.originmc.fbasics.listeners;
 
-import org.originmc.fbasics.FBasics;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,38 +14,50 @@ import java.util.List;
 
 public class AntiPhaseListener implements Listener {
 
+    private static final String PERMISSION_PHASE = "fbasics.bypass.phase";
     private final List<Material> hollowMaterials = new ArrayList<Material>();
 
     public AntiPhaseListener(FBasics plugin) {
+        FileConfiguration config = plugin.getConfig();
         FileConfiguration materials = plugin.getMaterials();
 
-        for (String hollowMaterials : materials.getStringList("hollow-materials"))
+        for (String hollowMaterials : materials.getStringList("hollow-materials")) {
             this.hollowMaterials.add(Material.getMaterial(hollowMaterials));
+        }
+
+        if (config.getBoolean("patcher.anti-phase")) {
+            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            plugin.getLogger().info("Anti-Phase module loaded");
+        }
     }
 
-    @EventHandler
-    public void onMove(PlayerMoveEvent event) {
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
 
-        if (player.isFlying()) {
+        if (player.isFlying() || player.hasPermission(PERMISSION_PHASE)) {
             return;
         }
 
         Location from = event.getFrom();
         Location to = event.getTo();
 
-        if (to.getY() > 254) return;
+        if (to.getY() > 254) {
+            return;
+        }
 
         double distance = from.distance(to);
 
-        if (distance == 0.0D) return;
+        if (distance == 0.0D) {
+            return;
+        }
 
-        if (distance > 5.0D) {
+        if (distance > 8.0D) {
             event.setTo(from);
             return;
         }
 
-        if ((distance > 0.45D) && (!isPathHollow(from, to))) {
+        if (!isPathHollow(from, to)) {
             event.setTo(from);
         }
     }

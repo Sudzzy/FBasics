@@ -1,6 +1,5 @@
 package org.originmc.fbasics.cmd;
 
-import org.originmc.fbasics.FBasics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -13,10 +12,10 @@ import java.util.List;
 
 public class CmdFBasics implements CommandExecutor {
 
+    private static final String PERMISSION_RELOAD = "fbasics.commands.reload";
     private final FBasics plugin;
     private final String messagePermission;
     private final String messageReload;
-    private final String permissionReload = "fbasics.commands.reload";
     private final List<String> messageHelp;
 
     public CmdFBasics(FBasics plugin) {
@@ -28,6 +27,8 @@ public class CmdFBasics implements CommandExecutor {
         this.messagePermission = error + language.getString("general.error.permission");
         this.messageReload = info + language.getString("general.info.reload");
         this.messageHelp = language.getStringList("general.help");
+
+        plugin.getCommand("fbasics").setExecutor(this);
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -36,7 +37,7 @@ public class CmdFBasics implements CommandExecutor {
 
             if (args[0].matches("reload")) {
 
-                if (!sender.hasPermission(this.permissionReload)) {
+                if (!sender.hasPermission(PERMISSION_RELOAD)) {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
                     return true;
                 }

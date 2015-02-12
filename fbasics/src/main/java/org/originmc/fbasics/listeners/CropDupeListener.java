@@ -17,51 +17,63 @@ import java.util.List;
 
 public class CropDupeListener implements Listener {
 
-    private final String cropBlock;
+    private static final BlockFace[] BLOCK_FACES = {
+            BlockFace.NORTH,
+            BlockFace.NORTH_EAST,
+            BlockFace.EAST,
+            BlockFace.SOUTH_EAST,
+            BlockFace.SOUTH,
+            BlockFace.SOUTH_WEST,
+            BlockFace.WEST,
+            BlockFace.NORTH_WEST,
+            BlockFace.UP,
+            BlockFace.DOWN
+    };
+    private final String msgCropBlock;
     private final List<Material> dupableBlocks = new ArrayList<Material>();
     private final List<Material> cropBlocks = new ArrayList<Material>();
 
     public CropDupeListener(FBasics plugin) {
+        FileConfiguration config = plugin.getConfig();
         FileConfiguration materials = plugin.getMaterials();
         FileConfiguration language = plugin.getLanguage();
         String error = language.getString("general.error.prefix");
 
-        this.cropBlock = error + language.getString("patcher.error.crop-place");
+        this.msgCropBlock = error + language.getString("patcher.error.crop-place");
 
-        for (String block : materials.getStringList("block-placement-near-crops"))
+        for (String block : materials.getStringList("block-placement-near-crops")) {
             this.cropBlocks.add(Material.getMaterial(block));
+        }
 
-        for (String block : materials.getStringList("crop-blocks"))
+        for (String block : materials.getStringList("crop-blocks")) {
             this.dupableBlocks.add(Material.getMaterial(block));
+        }
+
+        if (config.getBoolean("patcher.crop-dupe")) {
+            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            plugin.getLogger().info("Crop-Dupe module loaded");
+        }
     }
 
     @SuppressWarnings("deprecation")
     @EventHandler(ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event) {
-        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            return;
+        }
 
         Player player = event.getPlayer();
 
-        if (!this.cropBlocks.contains(player.getItemInHand().getType())) return;
+        if (!this.cropBlocks.contains(player.getItemInHand().getType())) {
+            return;
+        }
 
-        List<Material> materials = new ArrayList<Material>();
-        BlockFace blockFace = event.getBlockFace();
-        Block block = event.getClickedBlock().getRelative(blockFace);
+        Block block = event.getClickedBlock().getRelative(event.getBlockFace());
 
-        materials.add(block.getRelative(BlockFace.NORTH).getType());
-        materials.add(block.getRelative(BlockFace.NORTH_EAST).getType());
-        materials.add(block.getRelative(BlockFace.EAST).getType());
-        materials.add(block.getRelative(BlockFace.SOUTH_EAST).getType());
-        materials.add(block.getRelative(BlockFace.SOUTH).getType());
-        materials.add(block.getRelative(BlockFace.SOUTH_WEST).getType());
-        materials.add(block.getRelative(BlockFace.WEST).getType());
-        materials.add(block.getRelative(BlockFace.NORTH_WEST).getType());
-        materials.add(block.getRelative(BlockFace.UP).getType());
-        materials.add(block.getRelative(BlockFace.DOWN).getType());
-
-        for (Material material : materials) {
+        for (BlockFace blockFace : BLOCK_FACES) {
+            Material material = block.getRelative(blockFace).getType();
             if (this.dupableBlocks.contains(material)) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.cropBlock));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.msgCropBlock));
                 player.updateInventory();
                 event.setCancelled(true);
                 return;

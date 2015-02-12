@@ -1,5 +1,7 @@
 package org.originmc.fbasics;
 
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.originmc.fbasics.cmd.CmdCrate;
 import org.originmc.fbasics.cmd.CmdSafePromote;
 import org.originmc.fbasics.cmd.CmdWilderness;
@@ -11,12 +13,12 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.originmc.fbasics.cmd.CmdFBasics;
-import org.originmc.fbasics.task.SetupDatabaseTask;
 import org.originmc.fbasics.task.UpdateDatabaseTask;
 import org.originmc.fbasics.listeners.*;
 import org.originmc.hooks.factions.FactionsHook;
 import org.originmc.hooks.factions.FactionsManager;
 
+import java.io.*;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,85 +47,88 @@ public class FBasics extends JavaPlugin {
 
         this.economy = economyProvider.getProvider();
         this.permission = permissionProvider.getProvider();
-        this.config = new ConfigManager(this, "config").getConfig();
-        this.language = new ConfigManager(this, "language").getConfig();
-        this.materials = new ConfigManager(this, "materials").getConfig();
+        this.config = getFileConfiguration("config");
+        this.language = getFileConfiguration("language");
+        this.materials = getFileConfiguration("materials");
+
         if (pluginManager.getPlugin("Factions") != null) {
             String version = pluginManager.getPlugin("Factions").getDescription().getVersion();
             String error = language.getString("general.error.prefix");
-            String msgFaction = error + language.getString("commands..error.faction");
+            String msgFaction = error + language.getString("commands.error.faction");
             List<String> factions = config.getStringList("patcher.enderpearls.factions-whitelist");
             this.factionsHook = new FactionsManager(version, msgFaction, factions).getHook();
         }
 
-        if (this.config.getBoolean("anti-looter.enabled")) {
-            pluginManager.registerEvents(new AntiLootStealListener(this), this);
-        }
-
-        if (this.config.getBoolean("commands.enabled")) {
-            pluginManager.registerEvents(new CommandListener(this), this);
-        }
-
-        if (this.config.getBoolean("patcher.anti-phase")) {
-            pluginManager.registerEvents(new AntiPhaseListener(this), this);
-        }
-
-        if (this.config.getBoolean("patcher.boat-glitch")) {
-            pluginManager.registerEvents(new BoatMovementListener(), this);
-        }
-
-        if (this.config.getBoolean("patcher.chest-dupe")) {
-            pluginManager.registerEvents(new ChestDupeListener(this), this);
-        }
-
-        if (this.config.getBoolean("patcher.crop-dupe")) {
-            pluginManager.registerEvents(new CropDupeListener(this), this);
-        }
-
-        if (this.config.getBoolean("patcher.dismount-glitch")) {
-            pluginManager.registerEvents(new DismountListener(this), this);
-        }
-
-        if (this.config.getBoolean("patcher.dispenser-glitch")) {
-            pluginManager.registerEvents(new DispenserListener(), this);
-        }
-
-        if (this.config.getBoolean("patcher.enderpearls.enabled")) {
-            pluginManager.registerEvents(new EnderpearlListener(this), this);
-        }
-
-        if (this.config.getBoolean("patcher.mcmmo-mining-exploit")) {
-            pluginManager.registerEvents(new McMMODupeListener(this), this);
-        }
-
-        if (this.config.getBoolean("patcher.nether-glitch")) {
-            pluginManager.registerEvents(new NetherTeleportListener(this), this);
-        }
-
-        if (this.config.getBoolean("patcher.book-limiter.enabled")) {
-            pluginManager.registerEvents(new BookLimiterListener(this), this);
-        }
-
-        if (this.config.getBoolean("crates.enabled")) {
-            getCommand("crate").setExecutor(new CmdCrate(this));
-            new SetupDatabaseTask(this).runTaskAsynchronously(this);
-            new UpdateDatabaseTask(this).runTaskTimerAsynchronously(this, 6000, 6000);
-        }
-
-        getCommand("fbasics").setExecutor(new CmdFBasics(this));
-
-        if (this.config.getBoolean("safe-promote.enabled")) {
-            getCommand("safepromote").setExecutor(new CmdSafePromote(this));
-        }
-
-        if (this.config.getBoolean("wilderness.enabled")) {
-            getCommand("wilderness").setExecutor(new CmdWilderness(this));
-        }
+        new AntiLootStealListener(this);
+        new AntiPhaseListener(this);
+        new BoatMovementListener(this);
+        new BookLimiterListener(this);
+        new ChestDupeListener(this);
+        new CommandListener(this);
+        new CropDupeListener(this);
+        new DismountListener(this);
+        new DispenserListener(this);
+        new EnderpearlListener(this);
+        new McMMODupeListener(this);
+        new NetherTeleportListener(this);
+        new CmdCrate(this);
+        new CmdFBasics(this);
+        new CmdSafePromote(this);
+        new CmdWilderness(this);
     }
 
     @Override
     public void onDisable() {
-        if (this.config.getBoolean("crates.enabled")) new UpdateDatabaseTask(this).run();
+        if (this.config.getBoolean("crates.enabled")) {
+            new UpdateDatabaseTask(this).run();
+        }
+    }
+
+    private FileConfiguration getFileConfiguration(String fileName) {
+        File file = new File(getDataFolder(), fileName + ".yml");
+        FileConfiguration fileConfiguration = new YamlConfiguration();
+
+        try {
+            fileConfiguration.load(file);
+            String version = fileConfiguration.getString("version");
+
+            if (version != null && version.equals(getDescription().getVersion())) {
+                return fileConfiguration;
+            }
+
+            if (version == null) {
+                version = "backup";
+            }
+
+            if (file.renameTo(new File(getDataFolder(), "old-" + fileName + "-" + version + ".yml"))) {
+                getLogger().info("Created a backup for: " + fileName + ".yml");
+            }
+
+        } catch (Exception e) {
+            getLogger().info("Generating fresh configuration file: " + fileName + ".yml");
+        }
+
+        try {
+            if (!file.exists()) {
+                if (file.getParentFile().mkdirs()) {
+                    InputStream in = getResource(fileName + ".yml");
+                    OutputStream out = new FileOutputStream(file);
+                    byte[] buf = new byte[1024];
+                    int len;
+                    while ((len = in.read(buf)) > 0) out.write(buf, 0, len);
+                    out.close();
+                    in.close();
+                }
+            }
+            fileConfiguration.load(file);
+        } catch(IOException|InvalidConfigurationException ex) {
+            getLogger().severe("Plugin unable to write configuration file " + fileName + ".yml!");
+            getLogger().severe("Disabling...");
+            getServer().getPluginManager().disablePlugin(this);
+            ex.printStackTrace();
+        }
+
+        return fileConfiguration;
     }
 
     @Override

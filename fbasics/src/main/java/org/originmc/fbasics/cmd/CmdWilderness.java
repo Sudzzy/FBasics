@@ -16,6 +16,7 @@ import java.util.Random;
 
 public class CmdWilderness implements CommandExecutor {
 
+    private static final String PERMISSION_WILDERNESS = "fbasics.commands.wilderness";
     private final int xCenter;
     private final int zCenter;
     private final int maxRange;
@@ -28,13 +29,13 @@ public class CmdWilderness implements CommandExecutor {
     private final String messagePermission;
     private final List<String> worlds;
     private final List<String> blocks;
-    private final String permissionWilderness = "fbasics.commands.wilderness";
 
     public CmdWilderness(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();
         FileConfiguration language = plugin.getLanguage();
         String error = language.getString("general.error.prefix");
         String info = language.getString("general.info.prefix");
+
         this.xCenter = config.getInt("wilderness.x-center");
         this.zCenter = config.getInt("wilderness.z-center");
         this.maxRange = config.getInt("wilderness.max-range");
@@ -47,6 +48,10 @@ public class CmdWilderness implements CommandExecutor {
         this.worlds = config.getStringList("wilderness.whitelisted-worlds");
         this.blocks = config.getStringList("wilderness.disabled-blocks");
         this.plugin = plugin;
+
+        if (config.getBoolean("wilderness.enabled")) {
+            plugin.getCommand("wilderness").setExecutor(this);
+        }
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -55,7 +60,7 @@ public class CmdWilderness implements CommandExecutor {
             return true;
         }
 
-        if (!sender.hasPermission(this.permissionWilderness)) {
+        if (!sender.hasPermission(PERMISSION_WILDERNESS)) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
         }
 
@@ -89,8 +94,10 @@ public class CmdWilderness implements CommandExecutor {
         Block highest = world.getBlockAt(x, y - 1, z);
         String blockName = highest.getType().toString();
 
-        if (this.blocks.contains(blockName)) return false;
-        if (plugin.getFactionsHook() != null && plugin.getFactionsHook().isInTerritory(highest.getLocation())) return false;
+        if (this.blocks.contains(blockName) ||
+                (plugin.getFactionsHook() != null && plugin.getFactionsHook().isInTerritory(highest.getLocation()))) {
+            return false;
+        }
 
         teleportPlayer(sender, world, x, z);
         return true;

@@ -30,7 +30,6 @@ anti-looter:
     info:
         dropped: 'The dropped items have been protected for {TIME} seconds.'
         protected: 'This loot is currently protected! ({REMAINING} seconds)'
-        unprotected: 'Your loot is now unprotected.'
 
 book-limiter:
     info:

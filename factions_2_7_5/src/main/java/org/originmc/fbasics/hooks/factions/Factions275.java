@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Factions275 implements FactionsHook {
 
-    private final String PERMISSION_TERRITORY = "fbasics.bypass.commands.territory";
+    private static final String PERMISSION_TERRITORY = "fbasics.bypass.commands.territory";
     private final String msgFaction;
     private final List<String> factions;
 
@@ -45,7 +45,7 @@ public class Factions275 implements FactionsHook {
     }
 
     public boolean isInFaction(Player player, Location location) {
-        PS ps =  PS.valueOf(location);
+        PS ps = PS.valueOf(location);
         Faction faction1 = BoardColl.get().getFactionAt(ps);
         Faction faction2 = MPlayer.get(player).getFaction();
 

@@ -11,22 +11,20 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.originmc.fbasics.FBasics;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class AntiLootStealListener implements Listener {
 
+    private static final String PERMISSION_BYPASS = "fbasics.bypass.antilooter";
     private final int protectionDuration;
     private final FBasics plugin;
-    private final String messageDropped;
-    private final String messageProtected;
-    private final String messageTimer;
-    private final String permissionAntiLooter = "fbasics.bypass.antilooter";
-    private List<UUID> messageCooldownPlayers = new ArrayList<UUID>();
+    private final String msgDropped;
+    private final String msgProtected;
+    private final Map<UUID, Long> messageCooldowns = new HashMap<UUID, Long>();
 
     public AntiLootStealListener(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();
@@ -35,66 +33,59 @@ public class AntiLootStealListener implements Listener {
 
         this.plugin = plugin;
         this.protectionDuration = config.getInt("anti-looter.protection-duration");
-        this.messageDropped = info + language.getString("anti-looter.info.dropped");
-        this.messageProtected = info + language.getString("anti-looter.info.protected");
-        this.messageTimer = info + language.getString("anti-looter.info.unprotected");
+        this.msgDropped = info + language.getString("anti-looter.info.dropped");
+        this.msgProtected = info + language.getString("anti-looter.info.protected");
+
+        if (config.getBoolean("anti-looter.enabled")) {
+            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            plugin.getLogger().info("Anti-Looter module loaded");
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerPickupItem(PlayerPickupItemEvent e) {
-        Player player = e.getPlayer();
+    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+        Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
-        Item item = e.getItem();
-        Boolean meta = item.hasMetadata("fbasics-antiloot");
+        Item item = event.getItem();
 
-        if (player.hasPermission(this.permissionAntiLooter) || !meta) return;
-
-        String[] data = item.getMetadata("fbasics-antiloot").get(0).asString().split("-");
-        long remaining = System.currentTimeMillis() - Long.valueOf(data[1]);
-
-        if (player.getName().equals(data[0]) || remaining >= this.protectionDuration * 1000) {
-            e.getItem().removeMetadata("fbasics-antiloot", plugin);
+        if (player.hasPermission(PERMISSION_BYPASS) || !item.hasMetadata("fbasics-antiloot")) {
             return;
         }
 
-        e.setCancelled(true);
+        String[] itemData = item.getMetadata("fbasics-antiloot").get(0).asString().split("-");
+        long remaining = System.currentTimeMillis() - Long.valueOf(itemData[1]);
 
-        if (this.messageCooldownPlayers.contains(uuid)) return;
+        if (player.getName().equals(itemData[0]) || remaining >= this.protectionDuration * 1000) {
+            event.getItem().removeMetadata("fbasics-antiloot", plugin);
+            return;
+        }
 
-        setMessageCooldown(uuid);
-        long cooldown = this.protectionDuration - remaining / 1000L;
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageProtected.replace("{REMAINING}", "" + cooldown)));
+        event.setCancelled(true);
+
+        if (this.messageCooldowns.containsKey(uuid) && System.currentTimeMillis() - this.messageCooldowns.get(uuid) > 1000) {
+            return;
+        }
+
+        this.messageCooldowns.put(uuid, System.currentTimeMillis());
+        long cooldown = this.protectionDuration - remaining / 1000;
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.msgProtected.replace("{REMAINING}", "" + cooldown)));
     }
 
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent e) {
-        if (e.getEntity().getKiller() == null) return;
-
-        final Player killer = e.getEntity().getPlayer().getKiller();
-        Player victim = e.getEntity().getPlayer();
-        killer.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageDropped.replace("{TIME}", "" + this.protectionDuration)));
-
-        new BukkitRunnable() {
-            public void run() {
-                killer.sendMessage(ChatColor.translateAlternateColorCodes('&', messageTimer));
-            }
-        }.runTaskLaterAsynchronously(plugin, protectionDuration * 20);
-
-        for (ItemStack a : e.getDrops()) {
-            Entity item = victim.getWorld().dropItemNaturally(victim.getLocation(), a);
-            item.setMetadata("fbasics-antiloot", new FixedMetadataValue(plugin, killer.getName() + "-" + System.currentTimeMillis()));
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        if (event.getEntity().getKiller() == null) {
+            return;
         }
 
-        e.getDrops().clear();
-    }
+        Player killer = event.getEntity().getPlayer().getKiller();
+        Player victim = event.getEntity().getPlayer();
+        killer.sendMessage(ChatColor.translateAlternateColorCodes('&', this.msgDropped.replace("{TIME}", "" + this.protectionDuration)));
 
-    private void setMessageCooldown(final UUID uuid) {
-        messageCooldownPlayers.add(uuid);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                messageCooldownPlayers.remove(uuid);
-            }
-        }.runTaskLaterAsynchronously(plugin, 20L);
+        for (ItemStack itemStack : event.getDrops()) {
+            Entity item = victim.getWorld().dropItemNaturally(victim.getLocation(), itemStack);
+            item.setMetadata("fbasics-antiloot", new FixedMetadataValue(this.plugin, killer.getName() + "-" + System.currentTimeMillis()));
+        }
+
+        event.getDrops().clear();
     }
 }

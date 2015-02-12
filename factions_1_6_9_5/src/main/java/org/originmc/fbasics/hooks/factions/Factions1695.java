@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Factions1695 implements FactionsHook {
 
-    private final String PERMISSION_TERRITORY = "fbasics.bypass.commands.territory";
+    private static final String PERMISSION_TERRITORY = "fbasics.bypass.commands.territory";
     private final String msgFaction;
     private final List<String> factions;
 

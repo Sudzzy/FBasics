@@ -1,8 +1,5 @@
 package org.originmc.fbasics.listeners;
 
-import org.originmc.fbasics.FBasics;
-import org.originmc.fbasics.entity.CommandEditor;
-import org.originmc.fbasics.task.WarmupTask;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,10 +16,16 @@ import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.entity.CommandEditor;
 import org.originmc.fbasics.task.WarmupTask;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class CommandListener implements Listener {
 
+    private static final String PERMISSION_BLOCKS = "fbasics.bypass.commands.blocks";
+    private static final String PERMISSION_COOLDOWN = "fbasics.bypass.commands.cooldowns";
+    private static final String PERMISSION_ECONOMY = "fbasics.bypass.commands.economy";
+    private static final String PERMISSION_WARMUP = "fbasics.bypass.commands.warmup";
     private final boolean ignoreCase;
     private final FBasics plugin;
     private final String priority;
@@ -35,12 +38,6 @@ public class CommandListener implements Listener {
     private final String messagePermission;
     private final String messageWarmup;
     private final String messageWarmupDouble;
-    private final String permissionBlocks = "fbasics.bypass.commands.blocks";
-    private final String permissionCooldown = "fbasics.bypass.commands.cooldowns";
-    private final String permissionEconomy = "fbasics.bypass.commands.economy";
-    private final String permissionTerritory = "fbasics.bypass.commands.territory";
-    private final String permissionWarmup = "fbasics.bypass.commands.warmup";
-    private final List<CommandEditor> editors = new ArrayList<CommandEditor>();
     private final Map<UUID, WarmupTask> warmups = new HashMap<UUID, WarmupTask>();
 
     public CommandListener(FBasics plugin) {
@@ -63,120 +60,37 @@ public class CommandListener implements Listener {
         this.messageWarmupDouble = error + language.getString("commands.error.warmup");
 
         for (String editor : config.getConfigurationSection("commands.editors").getKeys(false)) {
-            this.editors.add(new CommandEditor(config, editor));
+            new CommandEditor(config, editor);
+        }
+
+        if (config.getBoolean("commands.enabled")) {
+            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            plugin.getLogger().info("Commands module loaded");
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onCommandLowest(PlayerCommandPreprocessEvent event) {
-        String command = event.getMessage();
-
-        if (!command.matches(this.priority)) return;
-
-        Player player = event.getPlayer();
-        CommandEditor commandEditor;
-
-        if (this.ignoreCase) {
-            commandEditor = getCommandEditor(command.toLowerCase());
-        } else {
-            commandEditor = getCommandEditor(command);
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerCommandLowest(PlayerCommandPreprocessEvent event) {
+        if (event.getMessage().matches(this.priority)) {
+            handleCommand(event);
         }
-
-        if (commandEditor == null) return;
-
-        command = getNewCommand(command, commandEditor.getAlias(), commandEditor.getRegex());
-
-        if (!hasPermission(player, commandEditor.getPerm())) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (isInsideBlock(player, commandEditor.getBlocks())) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (isInsideClaim(player, commandEditor.getFactions())) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (!setCooldown(player, commandEditor)) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (setWarmup(player, commandEditor, command)) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (!billPlayer(player, commandEditor.getPrice())) {
-            event.setCancelled(true);
-            return;
-        }
-
-        event.setMessage(command);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onCommandHighest(PlayerCommandPreprocessEvent event) {
-        String command = event.getMessage();
-
-        if (command.matches(this.priority)) return;
-
-        Player player = event.getPlayer();
-        CommandEditor commandEditor;
-
-        if (this.ignoreCase) {
-            commandEditor = getCommandEditor(command.toLowerCase());
-        } else {
-            commandEditor = getCommandEditor(command);
+    public void onPlayerCommandHighest(PlayerCommandPreprocessEvent event) {
+        if (!event.getMessage().matches(this.priority)) {
+            handleCommand(event);
         }
-
-        if (commandEditor == null) return;
-
-        command = getNewCommand(command, commandEditor.getAlias(), commandEditor.getRegex());
-
-        if (!hasPermission(player, commandEditor.getPerm())) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (isInsideBlock(player, commandEditor.getBlocks())) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (isInsideClaim(player, commandEditor.getFactions())) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (!setCooldown(player, commandEditor)) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (setWarmup(player, commandEditor, command)) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (!billPlayer(player, commandEditor.getPrice())) {
-            event.setCancelled(true);
-            return;
-        }
-
-        event.setMessage(command);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        if (!this.warmups.containsKey(uuid)) return;
+        if (!this.warmups.containsKey(uuid)) {
+            return;
+        }
 
         Location from = event.getFrom();
         Location to = event.getTo();
@@ -185,117 +99,135 @@ public class CommandListener implements Listener {
         int y = Math.abs((int) from.getY() - (int) to.getY());
         int z = Math.abs((int) from.getZ() - (int) to.getZ());
 
-        if (!(x >= 1 || y >= 1 || z >= 1)) return;
+        if (!(x >= 1 || y >= 1 || z >= 1)) {
+            return;
+        }
 
-        this.removeWarmup(uuid);
+        removeWarmup(uuid);
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageCancelled));
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onDamage(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player)) return;
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
 
         Player player = (Player) event.getEntity();
         UUID uuid = player.getUniqueId();
 
         if (this.warmups.containsKey(uuid)) {
-            this.removeWarmup(uuid);
+            removeWarmup(uuid);
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageCancelled));
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTeleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
         if (this.warmups.containsKey(uuid)) {
-            this.removeWarmup(uuid);
+            removeWarmup(uuid);
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageCancelled));
         }
     }
 
-    public void removeWarmup(UUID uuid) {
-        this.warmups.remove(uuid).stopTask();
-    }
+    public void handleCommand(PlayerCommandPreprocessEvent event) {
+        String command = event.getMessage();
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
+        CommandEditor commandEditor;
 
-    private String getNewCommand(String command, String alias, String matcher) {
-        if (alias == null) return command;
-
-        String allArgs = "";
-        String[] args = command.split(" ");
-        int matcherLength = matcher.replace(" .*", "").replace(".*", "").split(" ").length;
-        int allArgsLength = args.length - matcherLength;
-
-        for (int c = 0; c < allArgsLength; c++)
-            allArgs = allArgs + " " + args[c + matcherLength];
-
-        command = alias.replace("{ALL_ARGS}", allArgs);
-        args[0] = args[0].substring(1);
-
-        for (int c = 0; c < args.length; c++)
-            command = command.replace("{ARG:" + c + "}", args[c]);
-
-        return command;
-    }
-
-    private boolean hasPermission(Player player, String permission) {
-        if (permission != null && !player.hasPermission(permission)) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
-            return false;
+        if (this.ignoreCase) {
+            commandEditor = CommandEditor.getCommandEditor(command.toLowerCase());
+        } else {
+            commandEditor = CommandEditor.getCommandEditor(command);
         }
-        return true;
-    }
 
-    private boolean isInsideBlock(Player player, List<Material> blocks) {
-        if (!blocks.isEmpty() && !player.hasPermission(this.permissionBlocks)) {
+        if (commandEditor == null) {
+            return;
+        }
+
+        if (commandEditor.getAlias() != null) {
+            String allArgs = "";
+            String[] args = command.split(" ");
+            int matcherLength = commandEditor.getRegex().replace(" .*", "").replace(".*", "").split(" ").length;
+            int allArgsLength = args.length - matcherLength;
+
+            for (int c = 0; c < allArgsLength; c++) {
+                allArgs = allArgs + " " + args[c + matcherLength];
+            }
+
+            command = commandEditor.getAlias().replace("{ALL_ARGS}", allArgs);
+            args[0] = args[0].substring(1);
+
+            for (int c = 0; c < args.length; c++) {
+                command = command.replace("{ARG:" + c + "}", args[c]);
+            }
+        }
+
+        if (commandEditor.getPerm() != null && !player.hasPermission(commandEditor.getPerm())) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
+            event.setCancelled(true);
+            return;
+        }
+
+        if (!commandEditor.getBlocks().isEmpty() && !player.hasPermission(PERMISSION_BLOCKS)) {
 
             Location location = player.getLocation();
             Material block1 = location.getBlock().getType();
             Material block2 = location.getBlock().getRelative(0, 1, 0).getType();
 
-            if (!blocks.contains(block1) || !blocks.contains(block2)) {
+            if (!commandEditor.getBlocks().contains(block1) || !commandEditor.getBlocks().contains(block2)) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageBlock));
-                return true;
+                event.setCancelled(true);
+                return;
             }
         }
-        return false;
-    }
 
-    private boolean isInsideClaim(Player player, List<String> factions) {
-        if (plugin.getFactionsHook() != null && plugin.getFactionsHook().isInsideClaim(player, factions)) {
+        if (this.plugin.getFactionsHook() != null &&
+                this.plugin.getFactionsHook().isInsideClaim(player, commandEditor.getFactions())) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageFaction));
-            return true;
+            event.setCancelled(true);
+            return;
         }
-        return false;
-    }
 
-    private CommandEditor getCommandEditor(String command) {
-        for (CommandEditor commandEditor : this.editors) {
-            if (command.matches(commandEditor.getRegex())) return commandEditor;
-        }
-        return null;
-    }
-
-    private boolean setCooldown(Player player, CommandEditor commandEditor) {
-        UUID uuid = player.getUniqueId();
-        int cooldown = commandEditor.getCooldown();
-
-        if (cooldown > 0 && !player.hasPermission(this.permissionCooldown)) {
-            long remaining = cooldown - (System.currentTimeMillis() - commandEditor.getActiveCooldown(uuid)) / 1000L;
+        if (commandEditor.getCooldown() > 0 && !player.hasPermission(PERMISSION_COOLDOWN)) {
+            long remaining = commandEditor.getCooldown() -
+                    (System.currentTimeMillis() - commandEditor.getActiveCooldown(uuid)) / 1000L;
 
             if (remaining > 0L) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageCooldown.replace("{COOLDOWN}", String.valueOf(remaining))));
-                return false;
+                event.setCancelled(true);
+                return;
             }
 
             commandEditor.setActiveCooldown(uuid, System.currentTimeMillis());
         }
-        return true;
+
+        if (!player.hasPermission(PERMISSION_WARMUP) && commandEditor.getWarmup() > 0) {
+            if (this.warmups.containsKey(uuid)) {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageWarmupDouble));
+            } else {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageWarmup.replace("{WARMUP}", "" + commandEditor.getWarmup())));
+                this.warmups.put(uuid, new WarmupTask(this.plugin, this, player, command.substring(1), commandEditor.getPrice(), commandEditor.getWarmup()));
+            }
+
+            event.setCancelled(true);
+            return;
+        }
+
+        if (!billPlayer(player, commandEditor.getPrice())) {
+            event.setCancelled(true);
+            return;
+        }
+
+        event.setMessage(command);
     }
 
     public boolean billPlayer(Player player, double price) {
-        if (this.plugin.getEconomy() != null && !player.hasPermission(this.permissionEconomy) && price != 0) {
+        if (this.plugin.getEconomy() != null && !player.hasPermission(PERMISSION_ECONOMY) && price != 0) {
             double balance = this.plugin.getEconomy().getBalance(player);
 
             if (balance < price) {
@@ -309,24 +241,7 @@ public class CommandListener implements Listener {
         return true;
     }
 
-    private boolean setWarmup(Player player, CommandEditor commandEditor, String command) {
-        if (player.hasPermission(this.permissionWarmup)) return false;
-
-        UUID uuid = player.getUniqueId();
-        int warmup = commandEditor.getWarmup();
-
-        if (warmup > 0) {
-
-            if (this.warmups.containsKey(uuid)) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageWarmupDouble));
-                return true;
-            }
-
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageWarmup.replace("{WARMUP}", "" + warmup)));
-            this.warmups.put(uuid, new WarmupTask(this.plugin, this, player, command.substring(1), commandEditor.getPrice(), warmup));
-            return true;
-        }
-
-        return false;
+    public void removeWarmup(UUID uuid) {
+        this.warmups.remove(uuid).stopTask();
     }
 }

@@ -32,16 +32,18 @@ permissions:
         children:
             fbasics.user: true
             fbasics.bypass.antilooter: true
+            fbasics.bypass.boat: true
+            fbasics.bypass.booklimiter: true
             fbasics.bypass.commands.blocks: true
             fbasics.bypass.commands.cooldowns: true
             fbasics.bypass.commands.economy: true
             fbasics.bypass.commands.glitchable: true
             fbasics.bypass.commands.territory: true
             fbasics.bypass.commands.warmup: true
-            fbasics.bypass.glitch.boat: true
-            fbasics.bypass.glitch.dismount: true
-            fbasics.bypass.glitch.enderpearl: true
-            fbasics.bypass.glitch.nether: true
+            fbasics.bypass.dismount: true
+            fbasics.bypass.enderpearl: true
+            fbasics.bypass.nether: true
+            fbasics.bypass.phase: true
             fbasics.commands.crate.change: true
             fbasics.commands.reload: true
             fbasics.commands.safepromote: true

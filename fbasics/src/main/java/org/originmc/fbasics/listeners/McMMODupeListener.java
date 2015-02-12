@@ -14,29 +14,36 @@ import java.util.List;
 
 public class McMMODupeListener implements Listener {
 
-    private final List<Material> ores;
+    private final List<Material> ores = new ArrayList<Material>();
 
     public McMMODupeListener(FBasics plugin) {
+        FileConfiguration config = plugin.getConfig();
         FileConfiguration materials = plugin.getMaterials();
-        this.ores = new ArrayList<Material>();
-        for (String material : materials.getStringList("ore-blocks"))
+
+        for (String material : materials.getStringList("ore-blocks")) {
             this.ores.add(Material.getMaterial(material));
+        }
+
+        if (config.getBoolean("patcher.mcmmo-mining-exploit")) {
+            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            plugin.getLogger().info("McMMO module loaded");
+        }
     }
 
-    @EventHandler
-    public void onPistonExtend(BlockPistonExtendEvent e) {
-        for(Block block : e.getBlocks()) {
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockPistonExtend(BlockPistonExtendEvent event) {
+        for (Block block : event.getBlocks()) {
             Material blockMaterial = block.getType();
             if (this.ores.contains(blockMaterial)) {
-                e.setCancelled(true);
+                event.setCancelled(true);
             }
         }
     }
 
-    @EventHandler
-    public void onPistonRetract(BlockPistonRetractEvent e) {
-        if (e.isSticky() && this.ores.contains(e.getRetractLocation().getBlock().getType())) {
-            e.setCancelled(true);
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockPistonRetract(BlockPistonRetractEvent event) {
+        if (event.isSticky() && this.ores.contains(event.getRetractLocation().getBlock().getType())) {
+            event.setCancelled(true);
         }
     }
 }

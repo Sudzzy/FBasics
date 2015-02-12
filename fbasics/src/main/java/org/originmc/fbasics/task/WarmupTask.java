@@ -3,7 +3,6 @@ package org.originmc.fbasics.task;
 import org.originmc.fbasics.FBasics;
 import org.bukkit.entity.Player;
 import org.originmc.fbasics.listeners.CommandListener;
-import org.originmc.fbasics.FBasics;
 
 public class WarmupTask implements Runnable {
 
@@ -26,8 +25,11 @@ public class WarmupTask implements Runnable {
     @Override
     public void run() {
         this.commandListener.removeWarmup(this.player.getUniqueId());
-        if (!this.player.isOnline()) return;
-        if (!this.commandListener.billPlayer(this.player, this.price)) return;
+
+        if (!this.player.isOnline() || !this.commandListener.billPlayer(this.player, this.price)) {
+            return;
+        }
+
         this.plugin.getServer().dispatchCommand(this.player, this.command);
     }
 

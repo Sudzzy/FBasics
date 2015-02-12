@@ -7,6 +7,7 @@ import java.util.*;
 
 public class CommandEditor {
 
+    private static final List<CommandEditor> commandEditors = new ArrayList<CommandEditor>();
     private final double price;
     private final int cooldown;
     private final int warmup;
@@ -17,7 +18,6 @@ public class CommandEditor {
     private final List<Material> blocks = new ArrayList<Material>();
     private final Map<UUID, Long> activeCooldowns = new HashMap<UUID, Long>();
 
-
     public CommandEditor(FileConfiguration config, String editor) {
         this.price = config.getDouble("commands.editors." + editor + ".price");
         this.warmup = config.getInt("commands.editors." + editor + ".warmup");
@@ -26,10 +26,22 @@ public class CommandEditor {
         this.regex = config.getString("commands.editors." + editor + ".match");
         this.permission = config.getString("commands.editors." + editor + ".permission");
         this.factions = config.getStringList("commands.editors." + editor + ".factions");
-        for (String material : config.getStringList("commands.editors." + editor + ".blocks"))
+
+        for (String material : config.getStringList("commands.editors." + editor + ".blocks")) {
             this.blocks.add(Material.getMaterial(material));
+        }
+
+        commandEditors.add(this);
     }
 
+    public static CommandEditor getCommandEditor(String command) {
+        for (CommandEditor commandEditor : commandEditors) {
+            if (command.matches(commandEditor.getRegex())) {
+                return commandEditor;
+            }
+        }
+        return null;
+    }
 
     public double getPrice() {
         return this.price;

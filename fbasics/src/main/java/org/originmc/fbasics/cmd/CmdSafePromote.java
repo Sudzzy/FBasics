@@ -13,6 +13,7 @@ import java.util.List;
 
 public class CmdSafePromote implements CommandExecutor {
 
+    private static final String PERMISSION_PROMOTE = "fbasics.commands.safepromote";
     private final boolean autoComplete;
     private final FBasics plugin;
     private final String messageInvalidPlayer;
@@ -20,7 +21,6 @@ public class CmdSafePromote implements CommandExecutor {
     private final List<String> commandsFailed;
     private final List<String> commandsSuccess;
     private final List<String> messageHelp;
-    private final String permissionPromote = "fbasics.commands.safepromote";
 
     public CmdSafePromote(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();
@@ -34,11 +34,15 @@ public class CmdSafePromote implements CommandExecutor {
         this.commandsFailed = config.getStringList("safe-promote.failed-commands");
         this.commandsSuccess = config.getStringList("safe-promote.success-commands");
         this.messageInvalidPlayer = error + language.getString("general.error.player");
+
+        if (config.getBoolean("safe-promote.enabled")) {
+            plugin.getCommand("safepromote").setExecutor(this);
+        }
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (args.length == 3) {
-            if (!sender.hasPermission(this.permissionPromote)) {
+            if (!sender.hasPermission(PERMISSION_PROMOTE)) {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
                 return true;
             }

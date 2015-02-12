@@ -1,7 +1,7 @@
 package org.originmc.fbasics.listeners;
 
-import org.originmc.fbasics.FBasics;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -24,14 +24,21 @@ import java.util.*;
 
 public class ChestDupeListener implements Listener {
 
+    private static final BlockFace[] BLOCK_FACES = {
+            BlockFace.NORTH,
+            BlockFace.EAST,
+            BlockFace.SOUTH,
+            BlockFace.WEST
+    };
     private final String message;
     private final List<Material> blocks = new ArrayList<Material>();
     private final List<Material> doubleBlocks = new ArrayList<Material>();
     private final List<EntityType> entities = new ArrayList<EntityType>();
-    private final Map<Player, List<Block>> openBlocks = new HashMap<Player, List<Block>>();
-    private final Map<Player, Entity> openEntities = new HashMap<Player, Entity>();
+    private final Map<UUID, List<Location>> openBlocks = new HashMap<UUID, List<Location>>();
+    private final Map<UUID, Entity> openEntities = new HashMap<UUID, Entity>();
 
     public ChestDupeListener(FBasics plugin) {
+        FileConfiguration config = plugin.getConfig();
         FileConfiguration materials = plugin.getMaterials();
         FileConfiguration language = plugin.getLanguage();
         String error = language.getString("general.error.prefix");
@@ -49,56 +56,52 @@ public class ChestDupeListener implements Listener {
         for (String entity : materials.getStringList("inventory-entities")) {
             this.entities.add(EntityType.valueOf(entity));
         }
+
+        if (config.getBoolean("patcher.chest-dupe")) {
+            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            plugin.getLogger().info("Chest-Dupe module loaded");
+        }
     }
 
-    private boolean isProtected(Block block) {
-        for (List<Block> blocks : this.openBlocks.values()) {
-            if (blocks.contains(block)) {
+    private boolean isProtected(Location location) {
+        for (List<Location> protectedLocations : this.openBlocks.values()) {
+            if (protectedLocations.contains(location)) {
                 return true;
             }
         }
         return false;
     }
 
-    private List<Block> getSurroundingBlocks(Block block) {
-        List<Block> blocks = new ArrayList<Block>();
+    private List<Location> getNearBlockLocations(Block block) {
+        List<Location> nearBlockLocations = new ArrayList<Location>();
         Material material = block.getType();
-        blocks.add(block);
+        nearBlockLocations.add(block.getLocation());
 
-        if (!this.blocks.contains(material)) {
-            return blocks;
+        if (this.doubleBlocks.contains(material)) {
+            return nearBlockLocations;
         }
 
-        for (Material doubleBlock : this.doubleBlocks) {
-
-            if (material.equals(doubleBlock)) {
-
-                List<Block> opposingBlocks = new ArrayList<Block>();
-                opposingBlocks.add(block.getRelative(BlockFace.NORTH));
-                opposingBlocks.add(block.getRelative(BlockFace.EAST));
-                opposingBlocks.add(block.getRelative(BlockFace.SOUTH));
-                opposingBlocks.add(block.getRelative(BlockFace.WEST));
-
-                for (Block opposingBlock : opposingBlocks) {
-                    if (opposingBlock.getType().equals(material)) {
-                        blocks.add(opposingBlock);
-                        return blocks;
-                    }
-                }
-
-                return blocks;
+        for (BlockFace blockFace : BLOCK_FACES) {
+            Block nearBlock = block.getRelative(blockFace);
+            if (nearBlock.getType().equals(material)) {
+                nearBlockLocations.add(nearBlock.getLocation());
             }
         }
-        return blocks;
+
+        return nearBlockLocations;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onInventoryOpen(InventoryOpenEvent e) {
-        HumanEntity entity = e.getPlayer();
+    public void onInventoryOpen(InventoryOpenEvent event) {
+        HumanEntity entity = event.getPlayer();
 
-        if (!(entity instanceof Player)) return;
+        if (!(entity instanceof Player)) {
+            return;
+        }
 
         Player player = (Player) entity;
+        UUID uuid = player.getUniqueId();
+
         try {
             @SuppressWarnings("deprecation")
             Block block = player.getTargetBlock(null, 6);
@@ -106,8 +109,8 @@ public class ChestDupeListener implements Listener {
 
             for (Material inventoryBlock : this.blocks) {
                 if (blockType.equals(inventoryBlock)) {
-                    List<Block> blocks = getSurroundingBlocks(block);
-                    this.openBlocks.put(player, blocks);
+                    List<Location> locations = getNearBlockLocations(block);
+                    this.openBlocks.put(uuid, locations);
                     return;
                 }
             }
@@ -117,97 +120,108 @@ public class ChestDupeListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onInteractEntity(PlayerInteractEntityEvent e) {
-        Entity entity = e.getRightClicked();
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
+
+        if (!player.isSneaking()) {
+            return;
+        }
+
+        Entity entity = event.getRightClicked();
         EntityType entityType = entity.getType();
-        Player player = e.getPlayer();
 
         if (entityType.equals(EntityType.HORSE) && this.entities.contains(EntityType.HORSE)) {
-            if (!player.isSneaking()) return;
-
             Horse horse = (Horse) entity;
 
-            if (!horse.isTamed()) return;
+            if (!horse.isTamed()) {
+                return;
+            }
 
-            this.openEntities.put(player, entity);
+            this.openEntities.put(uuid, entity);
             return;
         }
 
         for (EntityType inventoryEntity : this.entities) {
             if (entityType.equals(inventoryEntity)) {
-                this.openEntities.put(player, entity);
+                this.openEntities.put(uuid, entity);
                 return;
             }
         }
     }
 
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent e) {
-        HumanEntity entity = e.getPlayer();
+    public void onInventoryClose(InventoryCloseEvent event) {
+        HumanEntity entity = event.getPlayer();
 
-        if (!(entity instanceof Player)) return;
+        if (!(entity instanceof Player)) {
+            return;
+        }
 
         Player player = (Player) entity;
-        if (this.openBlocks.containsKey(player)) {
-            this.openBlocks.remove(player);
+        UUID uuid = player.getUniqueId();
+
+        this.openBlocks.remove(uuid);
+        this.openEntities.remove(uuid);
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (!isProtected(event.getBlock().getLocation())) {
+            return;
         }
-        this.openEntities.remove(player);
-    }
 
-
-    @EventHandler
-    public void onBlockBreak(BlockBreakEvent e) {
-        Block block = e.getBlock();
-
-        if (!isProtected(block)) return;
-
-        Player player = e.getPlayer();
-
-        e.setCancelled(true);
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.message));
+        event.setCancelled(true);
+        event.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', this.message));
     }
 
     @EventHandler
-    public void onEntityHit(EntityDamageByEntityEvent e) {
-        Entity damager = e.getDamager();
-        Entity damaged = e.getEntity();
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        Entity damager = event.getDamager();
+        Entity damaged = event.getEntity();
 
-        if (!(damager instanceof Player)) return;
-        if (!(this.openEntities.containsValue(damaged))) return;
+        if (!(damager instanceof Player) || !(this.openEntities.containsValue(damaged))) {
+            return;
+        }
 
         Player player = (Player) damager;
 
-        e.setCancelled(true);
+        event.setCancelled(true);
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.message));
     }
 
     @EventHandler
-    public void onVehicleHit(VehicleDamageEvent e) {
-        Entity damager = e.getAttacker();
-        Entity damaged = e.getVehicle();
+    public void onVehicleDamage(VehicleDamageEvent event) {
+        Entity damager = event.getAttacker();
+        Entity damaged = event.getVehicle();
 
-        if (!(damager instanceof Player)) return;
-        if (!(this.openEntities.containsValue(damaged))) return;
+        if (!(damager instanceof Player) || !(this.openEntities.containsValue(damaged))) {
+            return;
+        }
 
         Player player = (Player) damager;
 
-        e.setCancelled(true);
+        event.setCancelled(true);
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.message));
     }
 
     @EventHandler
-    public void onExplode(EntityExplodeEvent e) {
-        List<Block> destroyed = e.blockList();
-        Iterator<Block> it = destroyed.iterator();
+    public void onEntityExplode(EntityExplodeEvent event) {
+        List<Block> destroyed = event.blockList();
+        Iterator<Block> iterator = destroyed.iterator();
 
-        while (it.hasNext()) {
-            Block block = it.next();
-            if (isProtected(block)) it.remove();
+        while (iterator.hasNext()) {
+            Block block = iterator.next();
+            if (isProtected(block.getLocation())) {
+                iterator.remove();
+            }
         }
     }
 
     @EventHandler
-    public void onDamage(EntityDamageEvent event) {
-        if (this.openEntities.values().contains(event.getEntity())) event.setCancelled(true);
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (this.openEntities.values().contains(event.getEntity())) {
+            event.setCancelled(true);
+        }
     }
 }
