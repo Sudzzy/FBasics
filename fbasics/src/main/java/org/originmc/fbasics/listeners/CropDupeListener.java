@@ -30,8 +30,8 @@ public class CropDupeListener implements Listener {
             BlockFace.DOWN
     };
     private final String msgCropBlock;
-    private final List<Material> dupableBlocks = new ArrayList<Material>();
-    private final List<Material> cropBlocks = new ArrayList<Material>();
+    private final List<Material> dupableBlocks = new ArrayList<>();
+    private final List<Material> cropBlocks = new ArrayList<>();
 
     public CropDupeListener(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();

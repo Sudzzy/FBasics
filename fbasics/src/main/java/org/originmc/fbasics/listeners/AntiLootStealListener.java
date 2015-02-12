@@ -24,7 +24,7 @@ public class AntiLootStealListener implements Listener {
     private final FBasics plugin;
     private final String msgDropped;
     private final String msgProtected;
-    private final Map<UUID, Long> messageCooldowns = new HashMap<UUID, Long>();
+    private final Map<UUID, Long> messageCooldowns = new HashMap<>();
 
     public AntiLootStealListener(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();

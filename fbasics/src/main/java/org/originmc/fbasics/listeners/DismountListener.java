@@ -31,7 +31,7 @@ public class DismountListener implements Listener {
     };
     private static final String PERMISSION_DISMOUNT = "fbasics.bypass.glitch.dismount";
     private final FBasics plugin;
-    private final List<Material> hollowMaterials = new ArrayList<Material>();
+    private final List<Material> hollowMaterials = new ArrayList<>();
 
     public DismountListener(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();

@@ -1,12 +1,10 @@
 package org.originmc.hooks.factions;
 
-import java.util.List;
-
 public class FactionsManager {
 
     private FactionsHook hook = null;
 
-    public FactionsManager(String version, String msgFaction, List<String> factions) {
+    public FactionsManager(String version) {
         try {
             if (version.startsWith("1.6")) {
                 Class<?> clazz = Class.forName("org.originmc.fbasics.hooks.factions.Factions1695");
@@ -25,11 +23,7 @@ public class FactionsManager {
                 Object object = clazz.newInstance();
                 hook = (FactionsHook) object;
             }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
+        } catch (ClassNotFoundException|IllegalAccessException|InstantiationException e) {
             e.printStackTrace();
         }
     }

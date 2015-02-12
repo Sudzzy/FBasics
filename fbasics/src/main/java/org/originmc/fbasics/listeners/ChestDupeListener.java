@@ -31,11 +31,11 @@ public class ChestDupeListener implements Listener {
             BlockFace.WEST
     };
     private final String message;
-    private final List<Material> blocks = new ArrayList<Material>();
-    private final List<Material> doubleBlocks = new ArrayList<Material>();
-    private final List<EntityType> entities = new ArrayList<EntityType>();
-    private final Map<UUID, List<Location>> openBlocks = new HashMap<UUID, List<Location>>();
-    private final Map<UUID, Entity> openEntities = new HashMap<UUID, Entity>();
+    private final List<Material> blocks = new ArrayList<>();
+    private final List<Material> doubleBlocks = new ArrayList<>();
+    private final List<EntityType> entities = new ArrayList<>();
+    private final Map<UUID, List<Location>> openBlocks = new HashMap<>();
+    private final Map<UUID, Entity> openEntities = new HashMap<>();
 
     public ChestDupeListener(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();
@@ -73,7 +73,7 @@ public class ChestDupeListener implements Listener {
     }
 
     private List<Location> getNearBlockLocations(Block block) {
-        List<Location> nearBlockLocations = new ArrayList<Location>();
+        List<Location> nearBlockLocations = new ArrayList<>();
         Material material = block.getType();
         nearBlockLocations.add(block.getLocation());
 

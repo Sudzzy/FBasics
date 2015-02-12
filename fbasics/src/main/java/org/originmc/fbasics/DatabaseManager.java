@@ -10,7 +10,11 @@ public final class DatabaseManager {
 
     public int getCrates(String name) {
         name = name.toLowerCase();
-        if (!this.plugin.crates.containsKey(name)) return 0;
+
+        if (!this.plugin.crates.containsKey(name)) {
+            return 0;
+        }
+
         return this.plugin.crates.get(name);
     }
 

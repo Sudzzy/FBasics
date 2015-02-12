@@ -1,6 +1,5 @@
 package org.originmc.fbasics.task;
 
-import org.originmc.fbasics.FBasics;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.originmc.fbasics.FBasics;
@@ -23,12 +22,11 @@ public class UpdateDatabaseTask extends BukkitRunnable {
         for (String name : this.plugin.updateCrates) {
             setCrates(name, this.plugin.crates.get(name));
         }
-        this.plugin.updateCrates = new ArrayList<String>();
+        this.plugin.updateCrates = new ArrayList<>();
     }
 
 
     public void setCrates(String player, int crates) {
-
         FileConfiguration config = this.plugin.getConfig();
         boolean mysql = config.getBoolean("mysql.enabled");
         String prefix = config.getString("mysql.table-prefix");

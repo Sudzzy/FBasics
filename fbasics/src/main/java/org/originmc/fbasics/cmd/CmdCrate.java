@@ -38,7 +38,7 @@ public class CmdCrate implements CommandExecutor {
     private final String messageInvalidPlayer;
     private final String messagePermission;
     private final List<String> messageHelp;
-    private final Map<String, Crate> crates = new HashMap<String, Crate>();
+    private final Map<String, Crate> crates = new HashMap<>();
 
     public CmdCrate(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();

@@ -28,8 +28,8 @@ import java.util.Map;
 public class FBasics extends JavaPlugin {
 
     public Connection connection;
-    public List<String> updateCrates = new ArrayList<String>();
-    public Map<String, Integer> crates = new HashMap<String, Integer>();
+    public List<String> updateCrates = new ArrayList<>();
+    public Map<String, Integer> crates = new HashMap<>();
 
     private Economy economy;
     private FactionsHook factionsHook;
@@ -52,11 +52,8 @@ public class FBasics extends JavaPlugin {
         this.materials = getFileConfiguration("materials");
 
         if (pluginManager.getPlugin("Factions") != null) {
-            String version = pluginManager.getPlugin("Factions").getDescription().getVersion();
-            String error = language.getString("general.error.prefix");
-            String msgFaction = error + language.getString("commands.error.faction");
-            List<String> factions = config.getStringList("patcher.enderpearls.factions-whitelist");
-            this.factionsHook = new FactionsManager(version, msgFaction, factions).getHook();
+            String factionsVersion = pluginManager.getPlugin("Factions").getDescription().getVersion();
+            this.factionsHook = new FactionsManager(factionsVersion).getHook();
         }
 
         new AntiLootStealListener(this);
@@ -104,21 +101,20 @@ public class FBasics extends JavaPlugin {
                 getLogger().info("Created a backup for: " + fileName + ".yml");
             }
 
-        } catch (Exception e) {
+        } catch (IOException|InvalidConfigurationException e) {
             getLogger().info("Generating fresh configuration file: " + fileName + ".yml");
         }
 
         try {
             if (!file.exists()) {
-                if (file.getParentFile().mkdirs()) {
-                    InputStream in = getResource(fileName + ".yml");
-                    OutputStream out = new FileOutputStream(file);
-                    byte[] buf = new byte[1024];
-                    int len;
-                    while ((len = in.read(buf)) > 0) out.write(buf, 0, len);
-                    out.close();
-                    in.close();
-                }
+                file.getParentFile().mkdirs();
+                InputStream in = getResource(fileName + ".yml");
+                OutputStream out = new FileOutputStream(file);
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) out.write(buf, 0, len);
+                out.close();
+                in.close();
             }
             fileConfiguration.load(file);
         } catch(IOException|InvalidConfigurationException ex) {

@@ -15,7 +15,7 @@ import java.util.List;
 public class AntiPhaseListener implements Listener {
 
     private static final String PERMISSION_PHASE = "fbasics.bypass.phase";
-    private final List<Material> hollowMaterials = new ArrayList<Material>();
+    private final List<Material> hollowMaterials = new ArrayList<>();
 
     public AntiPhaseListener(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();

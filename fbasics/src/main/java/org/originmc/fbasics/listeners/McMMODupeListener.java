@@ -14,7 +14,7 @@ import java.util.List;
 
 public class McMMODupeListener implements Listener {
 
-    private final List<Material> ores = new ArrayList<Material>();
+    private final List<Material> ores = new ArrayList<>();
 
     public McMMODupeListener(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();

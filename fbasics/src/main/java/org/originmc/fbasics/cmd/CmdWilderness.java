@@ -73,7 +73,6 @@ public class CmdWilderness implements CommandExecutor {
         }
 
         for (int counter = 0; counter < 25; counter++) {
-
             Random r = new Random();
             int xRange = this.minRange + r.nextInt(this.maxRange - this.minRange);
             int zRange = this.minRange + r.nextInt(this.maxRange - this.minRange);
@@ -103,13 +102,14 @@ public class CmdWilderness implements CommandExecutor {
         return true;
     }
 
-    private boolean teleportPlayer(Player player, World world, int x, int z) {
-        if (player == null) return true;
-
+    private void teleportPlayer(Player player, World world, int x, int z) {
         int y = world.getHighestBlockYAt(x, z);
         player.teleport(new Location(world, x + 0.5D, y, z + 0.5D));
-        String msg = this.messageSuccess.replace("{name}", player.getName()).replace("{X}", "" + x).replace("{Y}", "" + y).replace("{Z}", "" + z).replace("{WORLD}", world.getName());
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
-        return true;
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageSuccess
+                        .replace("{name}", player.getName())
+                        .replace("{X}", "" + x)
+                        .replace("{Y}", "" + y)
+                        .replace("{Z}", "" + z)
+                        .replace("{WORLD}", world.getName())));
     }
 }

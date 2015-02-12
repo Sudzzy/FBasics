@@ -1,6 +1,5 @@
 package org.originmc.fbasics.task;
 
-import org.originmc.fbasics.FBasics;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.originmc.fbasics.FBasics;
@@ -21,7 +20,6 @@ public class SetupDatabaseTask extends BukkitRunnable {
 
     @Override
     public void run() {
-
         FileConfiguration config = this.plugin.getConfig();
         boolean mysql = config.getBoolean("mysql.enabled");
         String user = config.getString("mysql.user-name");

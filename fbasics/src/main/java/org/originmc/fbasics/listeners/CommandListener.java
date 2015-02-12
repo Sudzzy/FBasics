@@ -38,7 +38,7 @@ public class CommandListener implements Listener {
     private final String messagePermission;
     private final String messageWarmup;
     private final String messageWarmupDouble;
-    private final Map<UUID, WarmupTask> warmups = new HashMap<UUID, WarmupTask>();
+    private final Map<UUID, WarmupTask> warmups = new HashMap<>();
 
     public CommandListener(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();
@@ -187,7 +187,7 @@ public class CommandListener implements Listener {
         }
 
         if (this.plugin.getFactionsHook() != null &&
-                this.plugin.getFactionsHook().isInsideClaim(player, commandEditor.getFactions())) {
+                this.plugin.getFactionsHook().isInTerritory(player, commandEditor.getFactions())) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageFaction));
             event.setCancelled(true);
             return;

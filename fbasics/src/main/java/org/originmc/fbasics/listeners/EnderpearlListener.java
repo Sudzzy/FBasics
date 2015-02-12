@@ -35,9 +35,9 @@ public class EnderpearlListener implements Listener {
     private final String messageDisabled;
     private final String messageFactions;
     private final List<String> factions;
-    private final List<Material> doors = new ArrayList<Material>();
-    private final List<Material> hollowMaterials = new ArrayList<Material>();
-    private final Map<String, String> enderpearlCooldowns = new HashMap<String, String>();
+    private final List<Material> doors = new ArrayList<>();
+    private final List<Material> hollowMaterials = new ArrayList<>();
+    private final Map<String, String> enderpearlCooldowns = new HashMap<>();
 
     public EnderpearlListener(FBasics plugin) {
         FileConfiguration config = plugin.getConfig();
@@ -83,7 +83,8 @@ public class EnderpearlListener implements Listener {
         if (!this.factions.contains("{ALL}") && !player.hasPermission(PERMISSION_ENDERPEARL)) {
             Location location = event.getTo();
 
-            if (isInFaction(player, location)) {
+            if (plugin.getFactionsHook() != null &&
+                    this.plugin.getFactionsHook().isInTerritory(player, location, this.factions)) {
                 event.setCancelled(true);
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageFactions));
                 player.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 1));
@@ -161,9 +162,5 @@ public class EnderpearlListener implements Listener {
 
             this.enderpearlCooldowns.put(player.getName(), System.currentTimeMillis() + "-" + this.cooldown);
         }
-    }
-
-    private boolean isInFaction(Player player, Location location) {
-        return plugin.getFactionsHook() != null && plugin.getFactionsHook().isInFaction(player, location);
     }
 }

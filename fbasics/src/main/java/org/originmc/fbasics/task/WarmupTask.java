@@ -1,7 +1,7 @@
 package org.originmc.fbasics.task;
 
-import org.originmc.fbasics.FBasics;
 import org.bukkit.entity.Player;
+import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.listeners.CommandListener;
 
 public class WarmupTask implements Runnable {

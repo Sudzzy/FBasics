@@ -7,7 +7,7 @@ import java.util.*;
 
 public class CommandEditor {
 
-    private static final List<CommandEditor> commandEditors = new ArrayList<CommandEditor>();
+    private static final List<CommandEditor> commandEditors = new ArrayList<>();
     private final double price;
     private final int cooldown;
     private final int warmup;
@@ -15,8 +15,8 @@ public class CommandEditor {
     private final String regex;
     private final String permission;
     private final List<String> factions;
-    private final List<Material> blocks = new ArrayList<Material>();
-    private final Map<UUID, Long> activeCooldowns = new HashMap<UUID, Long>();
+    private final List<Material> blocks = new ArrayList<>();
+    private final Map<UUID, Long> activeCooldowns = new HashMap<>();
 
     public CommandEditor(FileConfiguration config, String editor) {
         this.price = config.getDouble("commands.editors." + editor + ".price");
