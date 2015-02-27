@@ -1,4 +1,4 @@
-package org.originmc.hooks.factions;
+package org.originmc.fbasics.hooks.factions;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

@@ -1,4 +1,4 @@
-package org.originmc.hooks.factions;
+package org.originmc.fbasics.hooks.factions;
 
 public class FactionsManager {
 

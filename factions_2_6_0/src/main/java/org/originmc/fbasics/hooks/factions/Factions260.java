@@ -6,7 +6,6 @@ import com.massivecraft.factions.entity.UPlayer;
 import com.massivecraft.massivecore.ps.PS;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.originmc.hooks.factions.FactionsHook;
 
 import java.util.List;
 

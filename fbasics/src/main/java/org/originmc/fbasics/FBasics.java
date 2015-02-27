@@ -15,8 +15,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.originmc.fbasics.cmd.CmdFBasics;
 import org.originmc.fbasics.task.UpdateDatabaseTask;
 import org.originmc.fbasics.listeners.*;
-import org.originmc.hooks.factions.FactionsHook;
-import org.originmc.hooks.factions.FactionsManager;
+import org.originmc.fbasics.hooks.factions.FactionsHook;
+import org.originmc.fbasics.hooks.factions.FactionsManager;
 
 import java.io.*;
 import java.sql.Connection;
