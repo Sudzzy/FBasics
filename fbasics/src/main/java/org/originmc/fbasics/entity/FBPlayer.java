@@ -22,9 +22,10 @@ public class FBPlayer {
         String[] playerData = line.split(",");
         this.uniqueId = UUID.fromString(playerData[0]);
         this.name = playerData[1];
+        this.crates = Integer.valueOf(playerData[2]);
 
-        for (int i = 0; i < playerData.length - 1; i++) {
-            if (i < 2) {
+        for (int i = 0; i < playerData.length; i++) {
+            if (i < 3) {
                 continue;
             }
 
@@ -106,6 +107,8 @@ public class FBPlayer {
         sb.append(this.uniqueId.toString());
         sb.append(",");
         sb.append(this.name);
+        sb.append(",");
+        sb.append(this.crates);
 
         for (CommandEditor commandEditor : this.cooldowns.keySet()) {
             sb.append(",");

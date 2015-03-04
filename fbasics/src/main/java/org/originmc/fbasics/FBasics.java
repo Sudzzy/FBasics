@@ -73,8 +73,6 @@ public class FBasics extends JavaPlugin {
             this.factionsHook = new FactionsManager(factionsVersion).getHook();
         }
 
-        loadDatabase();
-
         new AntiLootStealListener(this);
         new AntiPhaseListener(this);
         new BoatMovementListener(this);
@@ -92,6 +90,8 @@ public class FBasics extends JavaPlugin {
         new CmdSafePromote(this);
         new CmdWilderness(this);
         new SessionListener(this);
+
+        loadDatabase();
     }
 
     @Override
@@ -168,7 +168,7 @@ public class FBasics extends JavaPlugin {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 UUID uuid = player.getUniqueId();
                 if (FBPlayer.get(uuid) == null) {
-                    new FBPlayer(player.getUniqueId().toString() + "," + player.getName());
+                    new FBPlayer(player.getUniqueId().toString() + "," + player.getName() + ",0");
                 }
             }
 
@@ -189,7 +189,7 @@ public class FBasics extends JavaPlugin {
                     }
                 }
 
-                if (!fbPlayer.getCooldowns().isEmpty() && fbPlayer.getCrates() != 0) {
+                if (!fbPlayer.getCooldowns().isEmpty() || fbPlayer.getCrates() != 0) {
                     writer.write(fbPlayer.toString());
                     writer.newLine();
                 }

@@ -19,7 +19,9 @@ public class SessionListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        new FBPlayer(player.getUniqueId().toString() + "," + player.getName());
+        if (FBPlayer.get(player.getUniqueId()) == null) {
+            new FBPlayer(player.getUniqueId().toString() + "," + player.getName() + ",0");
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
