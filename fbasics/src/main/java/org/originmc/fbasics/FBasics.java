@@ -1,7 +1,9 @@
 package org.originmc.fbasics;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.originmc.fbasics.cmd.CmdCrate;
 import org.originmc.fbasics.cmd.CmdSafePromote;
 import org.originmc.fbasics.cmd.CmdWilderness;
@@ -13,24 +15,24 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.originmc.fbasics.cmd.CmdFBasics;
-import org.originmc.fbasics.task.UpdateDatabaseTask;
+import org.originmc.fbasics.entity.CommandEditor;
+import org.originmc.fbasics.entity.FBPlayer;
 import org.originmc.fbasics.listeners.*;
 import org.originmc.fbasics.hooks.factions.FactionsHook;
 import org.originmc.fbasics.hooks.factions.FactionsManager;
 
 import java.io.*;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 public class FBasics extends JavaPlugin {
 
-    public Connection connection;
-    public List<String> updateCrates = new ArrayList<>();
-    public Map<String, Integer> crates = new HashMap<>();
-
+    private final static Charset ENCODING = StandardCharsets.UTF_8;
+    private final Path path = Paths.get(getDataFolder() + File.separator + "db.csv");
     private Economy economy;
     private FactionsHook factionsHook;
     private FileConfiguration config;
@@ -40,13 +42,28 @@ public class FBasics extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        PluginManager pluginManager = this.getServer().getPluginManager();
-        ServicesManager servicesManager = this.getServer().getServicesManager();
-        RegisteredServiceProvider<Economy> economyProvider = servicesManager.getRegistration(Economy.class);
-        RegisteredServiceProvider<Permission> permissionProvider = servicesManager.getRegistration(Permission.class);
+        PluginManager pluginManager = getServer().getPluginManager();
+        ServicesManager servicesManager = getServer().getServicesManager();
 
-        this.economy = economyProvider.getProvider();
-        this.permission = permissionProvider.getProvider();
+        try {
+            RegisteredServiceProvider<Permission> permissionProvider = servicesManager.getRegistration(Permission.class);
+            RegisteredServiceProvider<Economy> economyProvider = servicesManager.getRegistration(Economy.class);
+
+            if (permissionProvider != null) {
+                this.permission = permissionProvider.getProvider();
+            } else {
+                getLogger().severe("Could not find permissions support!");
+            }
+
+            if (economyProvider != null) {
+                this.economy = economyProvider.getProvider();
+            } else {
+                getLogger().severe("Could not find economy support!");
+            }
+        } catch(NoClassDefFoundError error) {
+            getLogger().severe("Could not find Vault!");
+        }
+
         this.config = getFileConfiguration("config");
         this.language = getFileConfiguration("language");
         this.materials = getFileConfiguration("materials");
@@ -55,6 +72,8 @@ public class FBasics extends JavaPlugin {
             String factionsVersion = pluginManager.getPlugin("Factions").getDescription().getVersion();
             this.factionsHook = new FactionsManager(factionsVersion).getHook();
         }
+
+        loadDatabase();
 
         new AntiLootStealListener(this);
         new AntiPhaseListener(this);
@@ -72,13 +91,12 @@ public class FBasics extends JavaPlugin {
         new CmdFBasics(this);
         new CmdSafePromote(this);
         new CmdWilderness(this);
+        new SessionListener(this);
     }
 
     @Override
     public void onDisable() {
-        if (this.config.getBoolean("crates.enabled")) {
-            new UpdateDatabaseTask(this).run();
-        }
+        saveDatabase();
     }
 
     private FileConfiguration getFileConfiguration(String fileName) {
@@ -125,6 +143,60 @@ public class FBasics extends JavaPlugin {
         }
 
         return fileConfiguration;
+    }
+
+    private void loadDatabase() {
+        try {
+            File file = new File(getDataFolder() + File.separator + "db.csv");
+            file.getParentFile().mkdirs();
+            file.createNewFile();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        try (BufferedReader reader = Files.newBufferedReader(this.path, ENCODING)) {
+            for (FBPlayer fbPlayer : FBPlayer.getFbPlayers()) {
+                fbPlayer.remove();
+            }
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                new FBPlayer(line);
+            }
+
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                UUID uuid = player.getUniqueId();
+                if (FBPlayer.get(uuid) == null) {
+                    new FBPlayer(player.getUniqueId().toString() + "," + player.getName());
+                }
+            }
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void saveDatabase() {
+        try (BufferedWriter writer = Files.newBufferedWriter(this.path, ENCODING)) {
+            for (FBPlayer fbPlayer : FBPlayer.getFbPlayers()) {
+
+                for (CommandEditor commandEditor : fbPlayer.getCooldowns().keySet()) {
+                    int difference = (int) (System.currentTimeMillis() - fbPlayer.getCooldown(commandEditor)) / 1000;
+
+                    if (difference > commandEditor.getCooldown()) {
+                        fbPlayer.removeCooldown(commandEditor);
+                    }
+                }
+
+                if (!fbPlayer.getCooldowns().isEmpty() && fbPlayer.getCrates() != 0) {
+                    writer.write(fbPlayer.toString());
+                    writer.newLine();
+                }
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override

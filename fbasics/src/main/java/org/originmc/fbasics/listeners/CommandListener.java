@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.entity.CommandEditor;
+import org.originmc.fbasics.entity.FBPlayer;
 import org.originmc.fbasics.task.WarmupTask;
 
 import java.util.HashMap;
@@ -140,9 +141,9 @@ public class CommandListener implements Listener {
         CommandEditor commandEditor;
 
         if (this.ignoreCase) {
-            commandEditor = CommandEditor.getCommandEditor(command.toLowerCase());
+            commandEditor = CommandEditor.getByCommand(command.toLowerCase());
         } else {
-            commandEditor = CommandEditor.getCommandEditor(command);
+            commandEditor = CommandEditor.getByCommand(command);
         }
 
         if (commandEditor == null) {
@@ -194,23 +195,28 @@ public class CommandListener implements Listener {
         }
 
         if (commandEditor.getCooldown() > 0 && !player.hasPermission(PERMISSION_COOLDOWN)) {
+            FBPlayer fbPlayer = FBPlayer.get(uuid);
             long remaining = commandEditor.getCooldown() -
-                    (System.currentTimeMillis() - commandEditor.getActiveCooldown(uuid)) / 1000L;
+                    (System.currentTimeMillis() - fbPlayer.getCooldown(commandEditor)) / 1000L;
 
             if (remaining > 0L) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageCooldown.replace("{COOLDOWN}", String.valueOf(remaining))));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageCooldown
+                        .replace("{COOLDOWN}", String.valueOf(remaining))));
+
                 event.setCancelled(true);
                 return;
             }
 
-            commandEditor.setActiveCooldown(uuid, System.currentTimeMillis());
+            fbPlayer.setCooldown(commandEditor);
         }
 
         if (!player.hasPermission(PERMISSION_WARMUP) && commandEditor.getWarmup() > 0) {
             if (this.warmups.containsKey(uuid)) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageWarmupDouble));
             } else {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageWarmup.replace("{WARMUP}", "" + commandEditor.getWarmup())));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageWarmup
+                        .replace("{WARMUP}", "" + commandEditor.getWarmup())));
+
                 this.warmups.put(uuid, new WarmupTask(this.plugin, this, player, command.substring(1), commandEditor.getPrice(), commandEditor.getWarmup()));
             }
 

@@ -12,13 +12,14 @@ public class CommandEditor {
     private final int cooldown;
     private final int warmup;
     private final String alias;
+    private final String editor;
     private final String regex;
     private final String permission;
     private final List<String> factions;
     private final List<Material> blocks = new ArrayList<>();
-    private final Map<UUID, Long> activeCooldowns = new HashMap<>();
 
     public CommandEditor(FileConfiguration config, String editor) {
+        this.editor = editor;
         this.price = config.getDouble("commands.editors." + editor + ".price");
         this.warmup = config.getInt("commands.editors." + editor + ".warmup");
         this.cooldown = config.getInt("commands.editors." + editor + ".cooldown");
@@ -34,9 +35,18 @@ public class CommandEditor {
         commandEditors.add(this);
     }
 
-    public static CommandEditor getCommandEditor(String command) {
+    public static CommandEditor getByCommand(String command) {
         for (CommandEditor commandEditor : commandEditors) {
             if (command.matches(commandEditor.getRegex())) {
+                return commandEditor;
+            }
+        }
+        return null;
+    }
+
+    public static CommandEditor getByEditor(String editor) {
+        for (CommandEditor commandEditor : commandEditors) {
+            if (commandEditor.toString().equals(editor)) {
                 return commandEditor;
             }
         }
@@ -75,14 +85,8 @@ public class CommandEditor {
         return this.blocks;
     }
 
-    public Long getActiveCooldown(UUID uuid) {
-        if (this.activeCooldowns.containsKey(uuid)) {
-            return this.activeCooldowns.get(uuid);
-        }
-        return 0L;
-    }
-
-    public void setActiveCooldown(UUID uuid, Long time) {
-        this.activeCooldowns.put(uuid, time);
+    @Override
+    public String toString() {
+        return editor;
     }
 }

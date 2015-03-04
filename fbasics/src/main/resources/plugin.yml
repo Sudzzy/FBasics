@@ -3,10 +3,8 @@ main: org.originmc.fbasics.FBasics
 version: ${project.version}
 description: ${project.description}
 authors: [Sudzzy]
-database: true
 website: http://www.originmc.org/
-depend: [Vault]
-softdepend: [Factions, MassiveCore]
+softdepend: [Vault, Factions, MassiveCore]
 
 commands:
     crate:

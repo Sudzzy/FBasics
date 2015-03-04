@@ -51,6 +51,7 @@ crates:
     error:
         balance: 'You do not have enough crates!'
         invalid: 'Invalid amount of crates specified!'
+        offline: 'Cannot find the requested player!'
     info:
         balance: 'You have {CRATES} crates left.'
         balance-other: '{NAME} has {CRATES} crates remaining.'

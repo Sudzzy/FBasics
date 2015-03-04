@@ -122,15 +122,6 @@ crates:
             commands:
             - give {NAME} 52:61 1
 
-mysql:
-    enabled: false
-    user-name: UserName
-    user-password: UserPassword
-    database-name: DataBaseName
-    table-prefix: FBasics_
-    port: 3306
-    address: localhost
-
 patcher:
     # Prevents all known types of phase, V-Clipping, etc
     # Very accurate method and should not be possible to bypass
