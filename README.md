@@ -60,7 +60,7 @@ Please stick to normal released builds via Spigot if you wish to maintain a stab
 |/wilderness|Teleports the player to a random location|
 |/safepromote [player] [old rank] [new rank] [world]|Promotes a player using group checks|
 
-## Admin Permissions
+## Permissions
 
 |Permission|Description|Default|
 | ------------- | ------------- | ------------- |
