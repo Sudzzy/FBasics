@@ -1,11 +1,13 @@
 package org.originmc.fbasics.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -19,14 +21,20 @@ import java.util.UUID;
 
 public class AntiLootStealListener implements Listener {
 
-    private static final String PERMISSION_BYPASS = "fbasics.bypass.antilooter";
+    private static final String PERMISSION_BYPASS = "fbasics.bypass.antiloot";
+
     private final int protectionDuration;
+
     private final FBasics plugin;
+
     private final String msgDropped;
+
     private final String msgProtected;
+
     private final Map<UUID, Long> messageCooldowns = new HashMap<>();
 
     public AntiLootStealListener(FBasics plugin) {
+        // Load all settings for the Anti-Loot module
         FileConfiguration config = plugin.getConfig();
         FileConfiguration language = plugin.getLanguage();
         String info = language.getString("general.info.prefix");
@@ -36,56 +44,68 @@ public class AntiLootStealListener implements Listener {
         this.msgDropped = info + language.getString("anti-looter.info.dropped");
         this.msgProtected = info + language.getString("anti-looter.info.protected");
 
+        // Register Anti-Loot events to the server if stated in the config
         if (config.getBoolean("anti-looter.enabled")) {
-            plugin.getServer().getPluginManager().registerEvents(this, plugin);
-            plugin.getLogger().info("Anti-Looter module loaded");
+            Bukkit.getPluginManager().registerEvents(this, plugin);
+            plugin.getLogger().info("Anti-Loot module loaded");
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public void denyPickup(PlayerPickupItemEvent event) {
+        // Do nothing if player has permission
         Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
+        if (player.hasPermission(PERMISSION_BYPASS)) return;
+
+        // Do nothing if loot is not protected
         Item item = event.getItem();
+        if (!item.hasMetadata("fbasics-antiloot")) return;
 
-        if (player.hasPermission(PERMISSION_BYPASS) || !item.hasMetadata("fbasics-antiloot")) {
-            return;
-        }
-
+        // Remove metadata from loot if it is no longer being protected or the attacker is picking it up
         String[] itemData = item.getMetadata("fbasics-antiloot").get(0).asString().split("-");
         long remaining = System.currentTimeMillis() - Long.valueOf(itemData[1]);
-
-        if (player.getName().equals(itemData[0]) || remaining >= this.protectionDuration * 1000) {
+        if (player.getName().equals(itemData[0]) || remaining >= protectionDuration * 1000) {
             event.getItem().removeMetadata("fbasics-antiloot", plugin);
             return;
         }
 
+        // Prevent the player from picking up the loot
         event.setCancelled(true);
 
-        if (this.messageCooldowns.containsKey(uuid) && System.currentTimeMillis() - this.messageCooldowns.get(uuid) > 1000) {
-            return;
-        }
+        // Do nothing if player is on a message cooldown
+        UUID uuid = player.getUniqueId();
+        if (messageCooldowns.containsKey(uuid) &&
+                System.currentTimeMillis() - messageCooldowns.get(uuid) < 1000) return;
 
-        this.messageCooldowns.put(uuid, System.currentTimeMillis());
-        long cooldown = this.protectionDuration - remaining / 1000;
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.msgProtected.replace("{REMAINING}", "" + cooldown)));
+        // Tell the player this loot is protected
+        long cooldown = protectionDuration - remaining / 1000;
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', msgProtected
+                .replace("{REMAINING}", "" + cooldown)));
+
+        // Give the player a message cooldown
+        messageCooldowns.put(uuid, System.currentTimeMillis());
     }
 
-    @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        if (event.getEntity().getKiller() == null) {
-            return;
-        }
+    @EventHandler(priority = EventPriority.HIGH)
+    public void protectLoot(PlayerDeathEvent event) {
+        // Do nothing if the player did not die from PvP
+        Player victim = event.getEntity();
+        if (victim.getKiller() == null) return;
 
-        Player killer = event.getEntity().getPlayer().getKiller();
-        Player victim = event.getEntity().getPlayer();
-        killer.sendMessage(ChatColor.translateAlternateColorCodes('&', this.msgDropped.replace("{TIME}", "" + this.protectionDuration)));
+        // Send killer a confirmation message
+        Player killer = victim.getKiller();
+        killer.sendMessage(ChatColor.translateAlternateColorCodes('&', msgDropped
+                .replace("{TIME}", "" + protectionDuration)));
 
+        // Drop a copy of the loot, but with protected metadata
         for (ItemStack itemStack : event.getDrops()) {
             Entity item = victim.getWorld().dropItemNaturally(victim.getLocation(), itemStack);
-            item.setMetadata("fbasics-antiloot", new FixedMetadataValue(this.plugin, killer.getName() + "-" + System.currentTimeMillis()));
+            item.setMetadata("fbasics-antiloot",
+                    new FixedMetadataValue(plugin, killer.getName() + "-" + System.currentTimeMillis()));
         }
 
+        // Remove all other drops as copies have already been dropped to prevent duplications
         event.getDrops().clear();
     }
+
 }

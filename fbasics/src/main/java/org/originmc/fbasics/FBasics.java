@@ -1,25 +1,23 @@
 package org.originmc.fbasics;
 
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.originmc.fbasics.cmd.CmdCrate;
-import org.originmc.fbasics.cmd.CmdSafePromote;
-import org.originmc.fbasics.cmd.CmdWilderness;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.PluginManager;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.originmc.fbasics.cmd.CmdCrate;
 import org.originmc.fbasics.cmd.CmdFBasics;
-import org.originmc.fbasics.entity.CommandEditor;
-import org.originmc.fbasics.entity.FBPlayer;
+import org.originmc.fbasics.cmd.CmdSafePromote;
+import org.originmc.fbasics.cmd.CmdWilderness;
+import org.originmc.fbasics.factions.api.FactionsHelper;
+import org.originmc.fbasics.factions.api.FactionsHelperImpl;
 import org.originmc.fbasics.listeners.*;
-import org.originmc.fbasics.hooks.factions.FactionsHook;
-import org.originmc.fbasics.hooks.factions.FactionsManager;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -27,52 +25,68 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Iterator;
+import java.util.UUID;
 
 public class FBasics extends JavaPlugin {
 
     private final static Charset ENCODING = StandardCharsets.UTF_8;
+
     private final Path path = Paths.get(getDataFolder() + File.separator + "db.csv");
+
     private Economy economy;
-    private FactionsHook factionsHook;
+
     private FileConfiguration config;
+
     private FileConfiguration language;
+
     private FileConfiguration materials;
+
     private Permission permission;
+
+    private FactionsManager factionsManager;
+
+    public Economy getEconomy() {
+        return this.economy;
+    }
+
+    public FactionsManager getFactionsManager() {
+        return factionsManager;
+    }
+
+    @Override
+    public FileConfiguration getConfig() {
+        return this.config;
+    }
+
+    public FileConfiguration getLanguage() {
+        return this.language;
+    }
+
+    public FileConfiguration getMaterials() {
+        return this.materials;
+    }
+
+    public Permission getPermission() {
+        return this.permission;
+    }
 
     @Override
     public void onEnable() {
-        PluginManager pluginManager = getServer().getPluginManager();
-        ServicesManager servicesManager = getServer().getServicesManager();
+        // Integrate dependencies
+        integrateFactions();
+        integrateVault();
 
-        try {
-            RegisteredServiceProvider<Permission> permissionProvider = servicesManager.getRegistration(Permission.class);
-            RegisteredServiceProvider<Economy> economyProvider = servicesManager.getRegistration(Economy.class);
-
-            if (permissionProvider != null) {
-                this.permission = permissionProvider.getProvider();
-            } else {
-                getLogger().severe("Could not find permissions support!");
-            }
-
-            if (economyProvider != null) {
-                this.economy = economyProvider.getProvider();
-            } else {
-                getLogger().severe("Could not find economy support!");
-            }
-        } catch(NoClassDefFoundError error) {
-            getLogger().severe("Could not find Vault!");
-        }
-
+        // Generate config files
         this.config = getFileConfiguration("config");
         this.language = getFileConfiguration("language");
         this.materials = getFileConfiguration("materials");
 
-        if (pluginManager.getPlugin("Factions") != null) {
-            String factionsVersion = pluginManager.getPlugin("Factions").getDescription().getVersion();
-            this.factionsHook = new FactionsManager(factionsVersion).getHook();
-        }
+        // Load user database
+        // TODO: Design a better database system. Preferably supporting all MySQL, SQLite and FlatFile
+        loadDatabase();
 
+        // Register listeners
         new AntiLootStealListener(this);
         new AntiPhaseListener(this);
         new BoatMovementListener(this);
@@ -90,13 +104,82 @@ public class FBasics extends JavaPlugin {
         new CmdSafePromote(this);
         new CmdWilderness(this);
         new SessionListener(this);
-
-        loadDatabase();
     }
 
     @Override
     public void onDisable() {
+        // Save user database
         saveDatabase();
+    }
+
+    private void integrateFactions() {
+        // Determine if Factions is loaded
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("Factions");
+        if (plugin == null) {
+            getLogger().info("Factions integration is disabled because it is not loaded");
+
+            // Use the dummy helper implementation if Factions isn't loaded
+            factionsManager = new FactionsManager(new FactionsHelperImpl());
+            return;
+        }
+
+        // Determine which helper class implementation to use
+        FactionsHelper helper;
+        String[] v = plugin.getDescription().getVersion().split("\\.");
+        String version = v[0] + "_" + v[1];
+        String className = "org.originmc.fbasics.factions.v" + version + ".FactionsHelperImpl";
+
+        try {
+            // Try to create a new helper instance
+            helper = (FactionsHelper) Class.forName(className).newInstance();
+
+            // Create the manager which is what the plugin will interact with
+            factionsManager = new FactionsManager(helper);
+        } catch (Exception e) {
+            // Something went wrong, chances are it's a newer, incompatible Factions
+            getLogger().warning("**WARNING**");
+            getLogger().warning("Failed to enable Factions integration due to errors");
+            getLogger().warning("This is most likely due to a newer Factions");
+
+            // Use the dummy helper implementation since WG isn't supported
+            factionsManager = new FactionsManager(new FactionsHelperImpl());
+
+            // Let's leave a stack trace in console for reporting
+            e.printStackTrace();
+        }
+    }
+
+    private void integrateVault() {
+        // Determine if Vault is loaded
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("Vault");
+        if (plugin == null) {
+            getLogger().info("Vault integration is disabled as it is not loaded");
+            return;
+        }
+
+        ServicesManager sm = getServer().getServicesManager();
+        RegisteredServiceProvider<Permission> permissionProvider = sm.getRegistration(Permission.class);
+        RegisteredServiceProvider<Economy> economyProvider = sm.getRegistration(Economy.class);
+
+        if (permissionProvider != null) {
+            this.permission = permissionProvider.getProvider();
+        } else {
+            // No permissions provider has been found
+            getLogger().warning("**WARNING**");
+            getLogger().warning("Failed to enable Permissions integration!");
+            getLogger().warning("This is most likely due Vault not being installed");
+            getLogger().warning("Certain features of this plugin may not function correctly");
+        }
+
+        if (economyProvider != null) {
+            this.economy = economyProvider.getProvider();
+        } else {
+            // No economy provider has been found
+            getLogger().warning("**WARNING**");
+            getLogger().warning("Failed to enable Economy integration!");
+            getLogger().warning("This is most likely due no economy plugin being installed");
+            getLogger().warning("Certain features of this plugin may not function correctly");
+        }
     }
 
     private FileConfiguration getFileConfiguration(String fileName) {
@@ -119,7 +202,7 @@ public class FBasics extends JavaPlugin {
                 getLogger().info("Created a backup for: " + fileName + ".yml");
             }
 
-        } catch (IOException|InvalidConfigurationException e) {
+        } catch (IOException | InvalidConfigurationException e) {
             getLogger().info("Generating fresh configuration file: " + fileName + ".yml");
         }
 
@@ -135,7 +218,7 @@ public class FBasics extends JavaPlugin {
                 in.close();
             }
             fileConfiguration.load(file);
-        } catch(IOException|InvalidConfigurationException ex) {
+        } catch (IOException | InvalidConfigurationException ex) {
             getLogger().severe("Plugin unable to write configuration file " + fileName + ".yml!");
             getLogger().severe("Disabling...");
             getServer().getPluginManager().disablePlugin(this);
@@ -155,8 +238,10 @@ public class FBasics extends JavaPlugin {
         }
 
         try (BufferedReader reader = Files.newBufferedReader(this.path, ENCODING)) {
-            for (FBPlayer fbPlayer : FBPlayer.getFbPlayers()) {
-                fbPlayer.remove();
+            Iterator<FBPlayer> iterator = FBPlayer.getFBPlayers().iterator();
+            while (iterator.hasNext()) {
+                iterator.next();
+                iterator.remove();
             }
 
             String line;
@@ -179,18 +264,18 @@ public class FBasics extends JavaPlugin {
 
     private void saveDatabase() {
         try (BufferedWriter writer = Files.newBufferedWriter(this.path, ENCODING)) {
-            for (FBPlayer fbPlayer : FBPlayer.getFbPlayers()) {
+            for (FBPlayer fbplayer : FBPlayer.getFBPlayers()) {
 
-                for (CommandEditor commandEditor : fbPlayer.getCooldowns().keySet()) {
-                    int difference = (int) (System.currentTimeMillis() - fbPlayer.getCooldown(commandEditor)) / 1000;
+                for (CommandEditor commandEditor : fbplayer.getCooldowns().keySet()) {
+                    int difference = (int) (System.currentTimeMillis() - fbplayer.getCooldown(commandEditor)) / 1000;
 
                     if (difference > commandEditor.getCooldown()) {
-                        fbPlayer.removeCooldown(commandEditor);
+                        fbplayer.removeCooldown(commandEditor);
                     }
                 }
 
-                if (!fbPlayer.getCooldowns().isEmpty() || fbPlayer.getCrates() != 0) {
-                    writer.write(fbPlayer.toString());
+                if (!fbplayer.getCooldowns().isEmpty() || fbplayer.getCrates() != 0) {
+                    writer.write(fbplayer.toString());
                     writer.newLine();
                 }
             }
@@ -199,28 +284,4 @@ public class FBasics extends JavaPlugin {
         }
     }
 
-    @Override
-    public FileConfiguration getConfig() {
-        return this.config;
-    }
-
-    public FileConfiguration getLanguage() {
-        return this.language;
-    }
-
-    public FileConfiguration getMaterials() {
-        return this.materials;
-    }
-
-    public Economy getEconomy() {
-        return this.economy;
-    }
-
-    public Permission getPermission() {
-        return this.permission;
-    }
-
-    public FactionsHook getFactionsHook() {
-        return factionsHook;
-    }
 }

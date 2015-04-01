@@ -16,21 +16,30 @@ import java.util.Random;
 
 public class CmdWilderness implements CommandExecutor {
 
-    private static final String PERMISSION_WILDERNESS = "fbasics.commands.wilderness";
     private final int xCenter;
+
     private final int zCenter;
+
     private final int maxRange;
+
     private final int minRange;
+
     private final FBasics plugin;
+
     private final String messageFailed;
+
     private final String messageSuccess;
+
     private final String messageWorld;
+
     private final String messageConsole;
-    private final String messagePermission;
+
     private final List<String> worlds;
+
     private final List<String> blocks;
 
     public CmdWilderness(FBasics plugin) {
+        // Load all the settings for the Wilderness command
         FileConfiguration config = plugin.getConfig();
         FileConfiguration language = plugin.getLanguage();
         String error = language.getString("general.error.prefix");
@@ -44,72 +53,69 @@ public class CmdWilderness implements CommandExecutor {
         this.messageSuccess = info + language.getString("wilderness.info.success");
         this.messageWorld = error + language.getString("wilderness.error.world");
         this.messageConsole = error + language.getString("general.error.console");
-        this.messagePermission = error + language.getString("general.error.permission");
         this.worlds = config.getStringList("wilderness.whitelisted-worlds");
         this.blocks = config.getStringList("wilderness.disabled-blocks");
         this.plugin = plugin;
 
+        // If config states Wilderness should be enabled, register its command
         if (config.getBoolean("wilderness.enabled")) {
             plugin.getCommand("wilderness").setExecutor(this);
         }
     }
 
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        // Do nothing if sender is console
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageConsole));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', messageConsole));
             return true;
         }
 
-        if (!sender.hasPermission(PERMISSION_WILDERNESS)) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messagePermission));
-        }
-
+        // Do nothing if wilderness is not enabled in this world
         Player player = (Player) sender;
         World world = player.getWorld();
-
-        if (!this.worlds.contains(world.getName())) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageWorld));
+        if (!worlds.contains(world.getName())) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', messageWorld));
             return true;
         }
 
+        // Attempt to find a safe teleportation location
         for (int counter = 0; counter < 25; counter++) {
+            // Generate random set of coordinates
             Random r = new Random();
-            int xRange = this.minRange + r.nextInt(this.maxRange - this.minRange);
-            int zRange = this.minRange + r.nextInt(this.maxRange - this.minRange);
-            int x = this.xCenter + xRange;
-            int z = this.zCenter + zRange;
+            int xRange = minRange + r.nextInt(maxRange - minRange);
+            int zRange = minRange + r.nextInt(maxRange - minRange);
+            int x = xCenter + xRange;
+            int z = zCenter + zRange;
+            int y = world.getHighestBlockYAt(x, z);
 
-            if (teleportCheck(player, world, x, z)) {
-                return true;
+            // Find a different location if the destination is not safe
+            Block block = world.getBlockAt(x, y - 1, z);
+            if (blocks.contains(block.getType().toString())) {
+                continue;
             }
+
+            // Find a different location if the destination is inside claimed factions territory
+            if (plugin.getFactionsManager().isInTerritory(block.getLocation())) {
+                continue;
+            }
+
+            // Teleport player to the destination
+            player.teleport(new Location(world, x + 0.5D, y, z + 0.5D));
+
+            // Tell the player the teleportation was a success
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', messageSuccess
+                    .replace("{NAME}", player.getName())
+                    .replace("{X}", "" + x)
+                    .replace("{Y}", "" + y)
+                    .replace("{Z}", "" + z)
+                    .replace("{WORLD}", world.getName())));
+            return true;
         }
 
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageFailed));
+        // Tell player the teleportation has failed
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', messageFailed));
         return true;
     }
 
-    private boolean teleportCheck(Player sender, World world, int z, int x) {
-        int y = world.getHighestBlockYAt(x, z);
-        Block highest = world.getBlockAt(x, y - 1, z);
-        String blockName = highest.getType().toString();
-
-        if (this.blocks.contains(blockName) ||
-                (plugin.getFactionsHook() != null && plugin.getFactionsHook().isInTerritory(highest.getLocation()))) {
-            return false;
-        }
-
-        teleportPlayer(sender, world, x, z);
-        return true;
-    }
-
-    private void teleportPlayer(Player player, World world, int x, int z) {
-        int y = world.getHighestBlockYAt(x, z);
-        player.teleport(new Location(world, x + 0.5D, y, z + 0.5D));
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageSuccess
-                        .replace("{name}", player.getName())
-                        .replace("{X}", "" + x)
-                        .replace("{Y}", "" + y)
-                        .replace("{Z}", "" + z)
-                        .replace("{WORLD}", world.getName())));
-    }
 }

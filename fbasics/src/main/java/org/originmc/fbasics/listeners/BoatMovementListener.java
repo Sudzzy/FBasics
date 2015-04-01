@@ -1,5 +1,6 @@
 package org.originmc.fbasics.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,22 +13,28 @@ public class BoatMovementListener implements Listener {
     private static final String PERMISSION_BOAT = "fbasics.bypass.glitch.boat";
 
     public BoatMovementListener(FBasics plugin) {
+        // Register Boat-Movement events to the server if stated in the config
         FileConfiguration config = plugin.getConfig();
-
         if (config.getBoolean("patcher.boat-glitch")) {
-            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            Bukkit.getPluginManager().registerEvents(this, plugin);
             plugin.getLogger().info("Boat-Glitch module loaded");
         }
     }
 
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
+    public void denyBoatGlitch(PlayerMoveEvent event) {
+        // Do nothing if player is not in a vehicle
         Player player = event.getPlayer();
+        if (!player.isInsideVehicle()) return;
 
-        if (player.isInsideVehicle()
-                && !player.hasPermission(PERMISSION_BOAT)
-                && event.getTo().distance(event.getFrom()) > 8D) {
-            event.setTo(event.getFrom());
-        }
+        // Do nothing if player has permission
+        if (player.hasPermission(PERMISSION_BOAT)) return;
+
+        // Do nothing if distance is less than 8
+        if (event.getTo().distance(event.getFrom()) < 8D) return;
+
+        // Deny movement
+        event.setTo(event.getFrom().setDirection(event.getTo().getDirection()));
     }
+
 }

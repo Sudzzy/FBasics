@@ -1,50 +1,49 @@
-## What is FBasics?
+# FBasics
 
-FBasics stands for "Factions Basics". The plugin provides you with an essential selection of features, designed for factions servers. It was initially developed to prevent all glitches / exploits that arise within my own factions server (OriginMC). Releasing this plugin is basically my little thank you to the community for helping me start out. Hopefully a few of you can benefit off this just as much as I have!
+*Prevents all kinds of exploits and glitches within factions servers*
 
-## [Download Latest Development Build](https://github.com/Sudzzy/FBasics/raw/master/target/FBasics.jar "Download Latest Development Build")
+## Supports
+* CraftBukkit & Spigot 1.7.9
+* CraftBukkit & Spigot 1.7.10
+* Spigot 1.7.10 / 1.8 Protocol Patch
+* CraftBukkit & Spigot 1.8.0
+* CraftBukkit & Spigot 1.8.3
 
 ## Features
 
-- Many glitches patched - including:
-  - Horse glitches 
-  - Enderpearl glitching (Factions support)
-  - Glitching to the top of the nether
-  - Cactus duplication glitch
-  - Essentials' teleportation glitches
-  - Buycraft / Enjin promotion glitches (With Safe Promote)
-  - McMMO duplication glitch
-  - TNT/Chest duplication glitches
+* Patches many issues found on factions servers
+  * Glitching through walls with horses, boats, and even Essentials' safe teleportation
+  * Promoting players via Buycraft and Enjin with a safety catch
+  * Teleporting through walls with enderpearls or to the top of the nether
+  * Duplicating crops by placing doors and other materials next to them
+  * Duplicating ores with mcMMO
+  * Duplicating consumables by blowing up inventory blocks
+  * Every single V-Clip and Phase hack through solid walls is blocked
+* Supports both Vault 1.4.x and Vault 1.5.x
+* Supports Factions for checking territories with commands, wilderness and enderpearls
+  * _Most mainstream Faction builds are supported:_
+  * Factions 2.7 (MassiveCore 2.7)
+  * Factions 2.6 (MassiveCore 7.4)
+  * FactionsUUID 1.6 by @drtshock
+  * FactionsUUID 1.8 by @externo6
+* Advanced command editing
+  * Aliasing
+  * Warmups (Cancelled on damage and movement)
+  * Cooldowns
+  * RegEx support
+  * Blocking commands while in faction territory
+  * Blocking commands while in specific block
+  * Prices
+  * Add your own permissions
+* Other useful commands for factions servers:
+  * Crates
+  * Wilderness (Factions support)
 
-- Advanced command editing:
-  - Aliasing
-  - Warmups (Cancelled on damage and movement)
-  - Cooldowns
-  - RegEx support
-  - Blocking commands while in faction territory
-  - Blocking commands while in specific block
-  - Prices
-  - Add your own permissions
+## Development Builds
+Obtain the latest compiled version of FBasics here: [Download Here](https://github.com/Sudzzy/FBasics/raw/master/FBasics/target/FBasics.jar "Download Here")
+Please stick to normal released builds via Spigot if you wish to maintain a stable server, these builds are purely for testing.
 
-- Other useful commands for factions servers:
-  - Crates
-  - Wilderness (Factions support)
-
-## Supported Plugins (Latest version)
-- FactionsUUID 1.6.9.5 by DrtShock
-- Factions 2.6.0
-- Factions 2.7.5
-- MassiveCore 7.4.0 (Old)
-- MassiveCore 2.7.5 (New)
-- Vault 1.4.1
-- Vault 1.5.2
-
-## Supported Server Versions (Latest version)
-- 1.7.2 -> 1.7.10 Craftbukkit
-- 1.7 / 1.8 Spigot Protocol hack
-- 1.8.1 Spigot
-
-##Commands
+## Commands
 
 |Command|Description|
 | ------------- | ------------- |
@@ -61,33 +60,30 @@ FBasics stands for "Factions Basics". The plugin provides you with an essential 
 |/wilderness|Teleports the player to a random location|
 |/safepromote [player] [old rank] [new rank] [world]|Promotes a player using group checks|
 
-##Admin Permissions
+## Admin Permissions
 
-|Permission|Description|
-| ------------- | ------------- |
-|fbasics.admin|All admin permission nodes - Granted to Ops|
-|fbasics.bypass.antilooter|Bypasses loot protection|
-|fbasics.bypass.commands.block|Bypass commands blocks settings|
-|fbasics.bypass.commands.cooldowns|Bypass commands cooldowns settings|
-|fbasics.bypass.commands.economy|Bypass commands payment settings|
-|fbasics.bypass.commands.glitchable|Bypass glitchable commands (see config)|
-|fbasics.bypass.commands.territory|Bypass commands factions settings|
-|fbasics.bypass.commands.warmup|Bypass commands warmup settings|
-|fbasics.bypass.glitch.boat|Bypass boat movement patch|
-|fbasics.bypass.glitch.dismount|Bypass dismount patch|
-|fbasics.bypass.glitch.enderpearl|Bypass enderpearl patch|
-|fbasics.bypass.glitch.nether|Bypass nether patch|
-|fbasics.commands.crate.change|Access to change player crates|
-|fbasics.commands.crate.change|Access to change player crates|
-|fbasics.commands.reload|Access to reload the plugin|
-
-##User Permissions
-
-|Permission|Description|
-| ------------- | ------------- |
-|fbasics.user|All user permission nodes - Granted to everyone|
-|fbasics.commands.crate.balance|Access to view your own balance|
-|fbasics.commands.crate.balance.other|Access to view balance of other players|
-|fbasics.commands.crate.open|Access to open your own crates|
-|fbasics.commands.crate.pay|Access to pay another user with crates|
-|fbasics.commands.wilderness|Access to use the wilderness command|
+|Permission|Description|Default|
+| ------------- | ------------- | ------------- |
+|fbasics.bypass.antiloot|Bypass loot protection|operator|
+|fbasics.bypass.boat|Bypass boat exploit protection|operator|
+|fbasics.bypass.booklimiter|Bypass book exploit protection|operator|
+|fbasics.bypass.command.blocks|Bypass command block limits|operator|
+|fbasics.bypass.command.cooldowns|Bypass command cooldowns|operator|
+|fbasics.bypass.command.economy|Bypass command fees|operator|
+|fbasics.bypass.command.glitchable|Bypass blocked commands listed in config|operator|
+|fbasics.bypass.command.territory|Bypass command territory limits|operator|
+|fbasics.bypass.command.warmup|Bypass command warmups|operator|
+|fbasics.bypass.dismount|Bypass dismount glitch protection|operator|
+|fbasics.bypass.enderpearl|Bypass enderpearl glitch protection|operator|
+|fbasics.bypass.nether|Bypass nether glitch protection|operator|
+|fbasics.bypass.phase|Bypass V-Clip protection|operator|
+|fbasics.command.crate|Use the crates command|everyone|
+|fbasics.command.crate.balance|View crates balance|everyone|
+|fbasics.command.crate.balance.other|View other players crates balance|everyone|
+|fbasics.command.crate.change|Give / take / set players crates|operator|
+|fbasics.command.crate.open|Open a crate|everyone|
+|fbasics.command.crate.pay|Pay other players in crates|everyone|
+|fbasics.command.fbasics|Use the default "/fbasics" command|everyone|
+|fbasics.command.reload|Reload the plugin|operator|
+|fbasics.command.safepromote|Safely promote a player|operator|
+|fbasics.command.wilderness|Teleport to a random place in the wilderness|everyone|

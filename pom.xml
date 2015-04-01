@@ -5,38 +5,21 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.originmc</groupId>
-    <artifactId>FBasics</artifactId>
+    <artifactId>FBasicsParent</artifactId>
     <packaging>pom</packaging>
-    <version>parent</version>
-    <name>FBasics Parent</name>
-    <url>https://github.com/Sudzzy/FBasics</url>
+    <version>${fbasics.version}</version>
+    <description>Prevents all kinds of exploits and glitches within factions servers</description>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <fbasics.version>1.5.0-SNAPSHOT</fbasics.version>
     </properties>
 
     <modules>
-        <module>factions_integration</module>
-        <module>factions_1_6_9_5</module>
-        <module>factions_1_8_2</module>
-        <module>factions_2_6_0</module>
-        <module>factions_2_7_5</module>
-        <module>fbasics</module>
+        <module>FBasicsFactions-API</module>
+        <module>FBasicsFactions-v1_6</module>
+        <module>FBasicsFactions-v1_8</module>
+        <module>FBasicsFactions-v2_6</module>
+        <module>FBasicsFactions-v2_7</module>
+        <module>FBasics</module>
     </modules>
-
-    <repositories>
-        <repository>
-            <id>bukkit-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
-        </repository>
-    </repositories>
-
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-    </build>
 </project>

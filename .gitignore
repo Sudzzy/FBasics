@@ -15,6 +15,5 @@ out/production/
 
 # Maven
 log/
-target/*
-*/target/
-!target/FBasics.jar
+*/target/*
+!FBasics/target/FBasics.jar

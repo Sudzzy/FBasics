@@ -3,55 +3,86 @@ main: org.originmc.fbasics.FBasics
 version: ${project.version}
 description: ${project.description}
 authors: [Sudzzy]
-website: http://www.originmc.org/
 softdepend: [Vault, Factions, MassiveCore]
 
 commands:
-    crate:
-        description: Access to mystery crates
-        aliases: [crates]
-
-    fbasics:
-        description: FBasics core command
-        aliases: [fb]
-
-    safepromote:
-        description: Safely promotes players using a check
-        aliases: [sp]
-
-    wilderness:
-        description: Teleports the user to a random location
-        aliases: [wild]
+  crate:
+    aliases: [crates]
+    description: Access to mystery crates
+    usage: /<command>
+    permission: fbasics.command.crate
+    permission-message: '§cYou do not have permission to use that command.'
+  fbasics:
+    aliases: [fb]
+    description: FBasics core command
+    usage: /<command>
+    permission: fbasics.command.fbasics
+    permission-message: '§cYou do not have permission to use that command.'
+  safepromote:
+    aliases: [sp]
+    description: Safely promotes players using a check
+    usage: /<command> <name> <old rank> <new rank>
+    permission: fbasics.command.safepromote
+    permission-message: '§cYou do not have permission to use that command.'
+  wilderness:
+    aliases: [wild]
+    description: Teleports the user to a random location
+    usage: /<command>
+    permission: fbasics.command.wilderness
+    permission-message: '§cYou do not have permission to use that command.'
 
 permissions:
-    fbasics.admin:
-        default: op
-        description: All FBasics permissions for Administrators
-        children:
-            fbasics.user: true
-            fbasics.bypass.antilooter: true
-            fbasics.bypass.boat: true
-            fbasics.bypass.booklimiter: true
-            fbasics.bypass.commands.blocks: true
-            fbasics.bypass.commands.cooldowns: true
-            fbasics.bypass.commands.economy: true
-            fbasics.bypass.commands.glitchable: true
-            fbasics.bypass.commands.territory: true
-            fbasics.bypass.commands.warmup: true
-            fbasics.bypass.dismount: true
-            fbasics.bypass.enderpearl: true
-            fbasics.bypass.nether: true
-            fbasics.bypass.phase: true
-            fbasics.commands.crate.change: true
-            fbasics.commands.reload: true
-            fbasics.commands.safepromote: true
+  fbasics.bypass.antiloot: {default: false}
+  fbasics.bypass.boat: {default: false}
+  fbasics.bypass.booklimiter: {default: false}
+  fbasics.bypass.command.blocks: {default: false}
+  fbasics.bypass.command.cooldowns: {default: false}
+  fbasics.bypass.command.economy: {default: false}
+  fbasics.bypass.command.glitchable: {default: false}
+  fbasics.bypass.command.territory: {default: false}
+  fbasics.bypass.command.warmup: {default: false}
+  fbasics.bypass.dismount: {default: false}
+  fbasics.bypass.enderpearl: {default: false}
+  fbasics.bypass.nether: {default: false}
+  fbasics.bypass.phase: {default: false}
+  fbasics.command.crate: {default: false}
+  fbasics.command.crate.balance: {default: false}
+  fbasics.command.crate.balance.other: {default: false}
+  fbasics.command.crate.change: {default: false}
+  fbasics.command.crate.open: {default: false}
+  fbasics.command.crate.pay: {default: false}
+  fbasics.command.fbasics: {default: false}
+  fbasics.command.reload: {default: false}
+  fbasics.command.safepromote: {default: false}
+  fbasics.command.wilderness: {default: false}
 
-    fbasics.user:
-        default: true
-        description: Predefined permissions for default players
-        children:
-            fbasics.commands.crate.balance: true
-            fbasics.commands.crate.balance.other: true
-            fbasics.commands.crate.open: true
-            fbasics.commands.crate.pay: true
-            fbasics.commands.wilderness: true
+  fbasics.user:
+    default: true
+    children:
+      fbasics.command.crate: true
+      fbasics.command.crate.balance: true
+      fbasics.command.crate.balance.other: true
+      fbasics.command.crate.open: true
+      fbasics.command.crate.pay: true
+      fbasics.command.fbasics: true
+      fbasics.command.wilderness: true
+
+  fbasics.admin:
+    default: op
+    children:
+      fbasics.bypass.antiloot: true
+      fbasics.bypass.boat: true
+      fbasics.bypass.booklimiter: true
+      fbasics.bypass.command.blocks: true
+      fbasics.bypass.command.cooldowns: true
+      fbasics.bypass.command.economy: true
+      fbasics.bypass.command.glitchable: true
+      fbasics.bypass.command.territory: true
+      fbasics.bypass.command.warmup: true
+      fbasics.bypass.dismount: true
+      fbasics.bypass.enderpearl: true
+      fbasics.bypass.nether: true
+      fbasics.bypass.phase: true
+      fbasics.command.crate.change: true
+      fbasics.command.reload: true
+      fbasics.command.safepromote: true

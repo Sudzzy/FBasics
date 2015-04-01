@@ -1,5 +1,7 @@
 package org.originmc.fbasics.listeners;
 
+import com.google.common.collect.ImmutableList;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -17,7 +19,7 @@ import java.util.List;
 
 public class CropDupeListener implements Listener {
 
-    private static final BlockFace[] BLOCK_FACES = {
+    private static final List<BlockFace> ALL_DIRECTIONS = ImmutableList.of(
             BlockFace.NORTH,
             BlockFace.NORTH_EAST,
             BlockFace.EAST,
@@ -28,12 +30,16 @@ public class CropDupeListener implements Listener {
             BlockFace.NORTH_WEST,
             BlockFace.UP,
             BlockFace.DOWN
-    };
+    );
+
     private final String msgCropBlock;
+
     private final List<Material> dupableBlocks = new ArrayList<>();
+
     private final List<Material> cropBlocks = new ArrayList<>();
 
     public CropDupeListener(FBasics plugin) {
+        // Load all settings for the Crop-Dupe module
         FileConfiguration config = plugin.getConfig();
         FileConfiguration materials = plugin.getMaterials();
         FileConfiguration language = plugin.getLanguage();
@@ -49,35 +55,38 @@ public class CropDupeListener implements Listener {
             this.dupableBlocks.add(Material.getMaterial(block));
         }
 
+        // Register Crop-Dupe events to the server if stated in the config
         if (config.getBoolean("patcher.crop-dupe")) {
-            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            Bukkit.getPluginManager().registerEvents(this, plugin);
             plugin.getLogger().info("Crop-Dupe module loaded");
         }
     }
 
     @SuppressWarnings("deprecation")
     @EventHandler(ignoreCancelled = true)
-    public void onInteract(PlayerInteractEvent event) {
-        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-            return;
-        }
+    public void denyCropDupe(PlayerInteractEvent event) {
+        // Do nothing if player is right clicking
+        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
 
+        // Do nothing if player is not holding an exploitable material
         Player player = event.getPlayer();
+        if (!cropBlocks.contains(player.getItemInHand().getType())) return;
 
-        if (!this.cropBlocks.contains(player.getItemInHand().getType())) {
-            return;
-        }
-
+        // Iterate through all blocks surrounding block attempted to be placed
         Block block = event.getClickedBlock().getRelative(event.getBlockFace());
-
-        for (BlockFace blockFace : BLOCK_FACES) {
+        for (BlockFace blockFace : ALL_DIRECTIONS) {
+            // Do nothing if block cannot be duped
             Material material = block.getRelative(blockFace).getType();
-            if (this.dupableBlocks.contains(material)) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.msgCropBlock));
-                player.updateInventory();
-                event.setCancelled(true);
-                return;
-            }
+            if (!dupableBlocks.contains(material)) continue;
+
+            // Deny placing the block
+            player.updateInventory();
+            event.setCancelled(true);
+
+            // Send player a message
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', msgCropBlock));
+            return;
         }
     }
+
 }

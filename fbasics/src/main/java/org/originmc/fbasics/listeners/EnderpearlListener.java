@@ -1,5 +1,6 @@
 package org.originmc.fbasics.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -8,6 +9,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -24,22 +26,37 @@ import java.util.Map;
 public class EnderpearlListener implements Listener {
 
     private static final String PERMISSION_ENDERPEARL = "fbasics.bypass.glitch.enderpearl";
+
     private final boolean blocks;
+
     private final boolean disabled;
+
     private final boolean correctTeleport;
+
     private final int cooldown;
+
     private final int doorCooldown;
+
     private final FBasics plugin;
+
     private final String messageBlock;
+
     private final String messageCooldown;
+
     private final String messageDisabled;
+
     private final String messageFactions;
+
     private final List<String> factions;
+
     private final List<Material> doors = new ArrayList<>();
+
     private final List<Material> hollowMaterials = new ArrayList<>();
+
     private final Map<String, String> enderpearlCooldowns = new HashMap<>();
 
     public EnderpearlListener(FBasics plugin) {
+        // Load all settings for the Enderpearls module
         FileConfiguration config = plugin.getConfig();
         FileConfiguration language = plugin.getLanguage();
         FileConfiguration materials = plugin.getMaterials();
@@ -66,101 +83,144 @@ public class EnderpearlListener implements Listener {
             this.hollowMaterials.add(Material.getMaterial(hollowMaterials));
         }
 
+        // Register Enderpearls events to the server if stated in the config
         if (config.getBoolean("patcher.enderpearls.enabled")) {
-            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            Bukkit.getPluginManager().registerEvents(this, plugin);
             plugin.getLogger().info("Enderpearls module loaded");
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerTeleport(PlayerTeleportEvent event) {
-        if (!event.getCause().equals(TeleportCause.ENDER_PEARL)) {
-            return;
-        }
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void denyTeleport(PlayerTeleportEvent event) {
+        // Do nothing if not teleported by an enderpearl
+        if (!event.getCause().equals(TeleportCause.ENDER_PEARL)) return;
 
+        // Do nothing if config states teleportation into all territories is allowed
         Player player = event.getPlayer();
+        if (factions.contains("{ALL}")) return;
 
-        if (!this.factions.contains("{ALL}") && !player.hasPermission(PERMISSION_ENDERPEARL)) {
-            Location location = event.getTo();
+        // Do nothing if player has permission
+        if (player.hasPermission(PERMISSION_ENDERPEARL)) return;
 
-            if (plugin.getFactionsHook() != null &&
-                    this.plugin.getFactionsHook().isInTerritory(player, location, this.factions)) {
-                event.setCancelled(true);
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageFactions));
-                player.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 1));
-            }
+        // Do nothing if location is not inside territory
+        Location location = event.getTo();
+        if (!plugin.getFactionsManager().isInTerritory(player, location, factions)) return;
+
+        // Deny teleportation as it is inside another factions territory
+        event.setCancelled(true);
+
+        // Give player back their enderpearl
+        player.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 1));
+
+        // Send player a message
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', messageFactions));
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void corretTeleport(PlayerTeleportEvent event) {
+        // Do nothing if plugin should not safely teleport enderpearls
+        if (!correctTeleport) return;
+
+        // Do nothing if not teleported by an enderpearl
+        if (!event.getCause().equals(TeleportCause.ENDER_PEARL)) return;
+
+        // Calculate safe teleportation location
+        Location to = event.getTo();
+        Block block = to.getBlock();
+        double excess = to.getY() - (int) to.getY();
+        if (hollowMaterials.contains(block.getType())) {
+            event.setTo(event.getTo().subtract(0, excess, 0));
         }
 
-        if (this.correctTeleport) {
-            Location toLocation = event.getTo();
-            Block toBlock = toLocation.getBlock();
-            double excess = toLocation.getY() - (int) toLocation.getY();
-
-            if (this.hollowMaterials.contains(toBlock.getType())) {
-                event.setTo(event.getTo().subtract(0, excess, 0));
-            }
-
-            if (!this.hollowMaterials.contains(toBlock.getRelative(BlockFace.UP).getType())) {
-                event.setTo(toLocation.subtract(0, 1, 0));
-            }
+        if (!hollowMaterials.contains(block.getRelative(BlockFace.UP).getType())) {
+            event.setTo(to.subtract(0, 1, 0));
         }
     }
 
-    @SuppressWarnings("deprecation")
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public void setDoorCooldown(PlayerInteractEvent event) {
+        // Do nothing if player has not right clicked a block
         Action action = event.getAction();
+        if (!action.equals(Action.RIGHT_CLICK_BLOCK)) return;
+
+        // Do nothing if player has permission
         Player player = event.getPlayer();
+        if (player.hasPermission(PERMISSION_ENDERPEARL)) return;
+
+        // Do nothing if player did not click a door
+        if (!doors.contains(event.getClickedBlock().getType())) return;
+
+        // Give player an enderpearl cooldown
+        enderpearlCooldowns.put(player.getName(), System.currentTimeMillis() + "-" + doorCooldown);
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void setEnderpearlCooldown(PlayerInteractEvent event) {
+        // Do nothing if player has permission
+        Player player = event.getPlayer();
+        if (player.hasPermission(PERMISSION_ENDERPEARL)) return;
+
+        // Do nothing if material is null
         Material material = player.getItemInHand().getType();
+        if (material == null) return;
 
-        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) &&
-                !player.hasPermission(PERMISSION_ENDERPEARL) &&
-                this.doors.contains(event.getClickedBlock().getType()) &&
-                !this.enderpearlCooldowns.containsKey(player.getName())) {
-            this.enderpearlCooldowns.put(player.getName(), System.currentTimeMillis() + "-" + this.doorCooldown);
-        }
+        // Do nothing if material is not an enderpearl
+        if (material != Material.ENDER_PEARL) return;
 
-        if (player.hasPermission(PERMISSION_ENDERPEARL) || material == null || material != Material.ENDER_PEARL) {
-            return;
-        }
-
+        // Deny enderpearl if player clicked a block
+        Action action = event.getAction();
         if (action.equals(Action.RIGHT_CLICK_BLOCK)) {
             event.setCancelled(true);
-        } else if (action.equals(Action.RIGHT_CLICK_AIR)) {
-
-            if (this.disabled) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageDisabled));
-                event.setCancelled(true);
-                player.updateInventory();
-                return;
-            }
-
-            Location location = player.getLocation();
-            Material feet = location.getBlock().getType();
-            Material head = location.getBlock().getRelative(0, 1, 0).getType();
-
-            if (this.blocks && (!this.hollowMaterials.contains(feet) || !this.hollowMaterials.contains(head))) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageBlock));
-                event.setCancelled(true);
-                player.updateInventory();
-                return;
-            }
-
-            if (this.enderpearlCooldowns.containsKey(player.getName())) {
-                String[] cooldownInfo = this.enderpearlCooldowns.get(player.getName()).split("-");
-                long remaining = Integer.parseInt(cooldownInfo[1]) - (System.currentTimeMillis() - Long.parseLong(cooldownInfo[0])) / 1000L;
-
-                if (remaining < 0) {
-                    this.enderpearlCooldowns.remove(player.getName());
-                } else {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.messageCooldown.replace("{REMAINING}", "" + remaining)));
-                    event.setCancelled(true);
-                    player.updateInventory();
-                    return;
-                }
-            }
-
-            this.enderpearlCooldowns.put(player.getName(), System.currentTimeMillis() + "-" + this.cooldown);
+            return;
         }
+
+        // Do nothing if player did not right click air
+        if (!action.equals(Action.RIGHT_CLICK_AIR)) return;
+
+        // Check if config is set to disable all enderpearls
+        if (disabled) {
+            // Deny enderpearl
+            event.setCancelled(true);
+
+            // Send player a message
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', messageDisabled));
+            return;
+        }
+
+        // Check if player is within a block and config denies enderpearls within blocks
+        Location location = player.getLocation();
+        Material feet = location.getBlock().getType();
+        Material head = location.getBlock().getRelative(0, 1, 0).getType();
+        if (blocks && (!hollowMaterials.contains(feet) || !hollowMaterials.contains(head))) {
+            // Deny enderpearl
+            event.setCancelled(true);
+
+            // Send player a message
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', messageBlock));
+            return;
+        }
+
+        // Check if player already has an enderpearl cooldown
+        if (enderpearlCooldowns.containsKey(player.getName())) {
+            // Find the remaining cooldown duration
+            String[] cooldownInfo = enderpearlCooldowns.get(player.getName()).split("-");
+            long remaining = Integer.parseInt(cooldownInfo[1]) -
+                    (System.currentTimeMillis() - Long.parseLong(cooldownInfo[0])) / 1000L;
+
+            // Check if players enderpearl cooldown is still active
+            if (remaining > 0) {
+                // Deny enderpearl
+                event.setCancelled(true);
+
+                // Send player a message
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', messageCooldown
+                        .replace("{REMAINING}", "" + remaining)));
+                return;
+            }
+        }
+
+        // Give player an enderpearl cooldown
+        enderpearlCooldowns.put(player.getName(), System.currentTimeMillis() + "-" + cooldown);
     }
+
 }

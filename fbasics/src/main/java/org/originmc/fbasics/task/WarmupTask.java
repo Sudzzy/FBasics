@@ -1,5 +1,6 @@
 package org.originmc.fbasics.task;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.listeners.CommandListener;
@@ -7,15 +8,17 @@ import org.originmc.fbasics.listeners.CommandListener;
 public class WarmupTask implements Runnable {
 
     private final int id;
+
     private final double price;
-    private final FBasics plugin;
+
     private final Player player;
+
     private final String command;
+
     private final CommandListener commandListener;
 
     public WarmupTask(FBasics plugin, CommandListener commandListener, Player player, String command, double price, int warmup) {
-        this.plugin = plugin;
-        this.id = this.plugin.getServer().getScheduler().runTaskLater(plugin, this, warmup * 20).getTaskId();
+        this.id = Bukkit.getScheduler().runTaskLater(plugin, this, warmup * 20).getTaskId();
         this.price = price;
         this.player = player;
         this.command = command;
@@ -24,16 +27,21 @@ public class WarmupTask implements Runnable {
 
     @Override
     public void run() {
-        this.commandListener.removeWarmup(this.player.getUniqueId());
+        // Warmup finished, therefore should be removed
+        commandListener.removeWarmup(player.getUniqueId());
 
-        if (!this.player.isOnline() || !this.commandListener.billPlayer(this.player, this.price)) {
-            return;
-        }
+        // Do nothing if player is no longer online
+        if (!player.isOnline()) return;
 
-        this.plugin.getServer().dispatchCommand(this.player, this.command);
+        // Do nothing if player cannot afford the command
+        if (!commandListener.billPlayer(player, price)) return;
+
+        // Execute the command
+        Bukkit.dispatchCommand(player, command);
     }
 
     public void stopTask() {
-        this.plugin.getServer().getScheduler().cancelTask(id);
+        Bukkit.getScheduler().cancelTask(id);
     }
+
 }

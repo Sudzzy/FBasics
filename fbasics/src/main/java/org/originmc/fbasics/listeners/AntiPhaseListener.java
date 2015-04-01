@@ -1,5 +1,6 @@
 package org.originmc.fbasics.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,9 +16,11 @@ import java.util.List;
 public class AntiPhaseListener implements Listener {
 
     private static final String PERMISSION_PHASE = "fbasics.bypass.phase";
+
     private final List<Material> hollowMaterials = new ArrayList<>();
 
     public AntiPhaseListener(FBasics plugin) {
+        // Load all settings for the Anti-Phase module
         FileConfiguration config = plugin.getConfig();
         FileConfiguration materials = plugin.getMaterials();
 
@@ -25,62 +28,62 @@ public class AntiPhaseListener implements Listener {
             this.hollowMaterials.add(Material.getMaterial(hollowMaterials));
         }
 
+        // Register Anti-Phase events to the server if stated in the config
         if (config.getBoolean("patcher.anti-phase")) {
-            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            Bukkit.getPluginManager().registerEvents(this, plugin);
             plugin.getLogger().info("Anti-Phase module loaded");
         }
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerMove(PlayerMoveEvent event) {
+    public void denyPhase(PlayerMoveEvent event) {
+        // Do nothing if player is flying
         Player player = event.getPlayer();
+        if (player.isFlying()) return;
 
-        if (player.isFlying() || player.hasPermission(PERMISSION_PHASE)) {
-            return;
-        }
+        // Do nothing if player has permission
+        if (player.hasPermission(PERMISSION_PHASE)) return;
 
-        Location from = event.getFrom();
-        Location to = event.getTo();
+        // Do nothing if player is going above sky limit
+        Location t = event.getTo();
+        if (t.getY() > 254) return;
 
-        if (to.getY() > 254) {
-            return;
-        }
+        // Do nothing if player has not moved
+        Location f = event.getFrom();
+        double distance = f.distance(t);
+        if (distance == 0.0D) return;
 
-        double distance = from.distance(to);
-
-        if (distance == 0.0D) {
-            return;
-        }
-
+        // Deny movement if player has moved too far to prevent excessive lookups
         if (distance > 8.0D) {
-            event.setTo(from);
+            event.setTo(f.setDirection(t.getDirection()));
             return;
         }
 
-        if (!isPathHollow(from, to)) {
-            event.setTo(from);
-        }
-    }
+        // Calculate all possible blocks the player has moved through
+        int topBlockX = f.getBlockX() < t.getBlockX() ? t.getBlockX() : f.getBlockX();
+        int bottomBlockX = f.getBlockX() > t.getBlockX() ? t.getBlockX() : f.getBlockX();
 
-    private boolean isPathHollow(Location loc1, Location loc2) {
-        int topBlockX = loc1.getBlockX() < loc2.getBlockX() ? loc2.getBlockX() : loc1.getBlockX();
-        int bottomBlockX = loc1.getBlockX() > loc2.getBlockX() ? loc2.getBlockX() : loc1.getBlockX();
+        int topBlockY = (f.getBlockY() < t.getBlockY() ? t.getBlockY() : f.getBlockY()) + 1;
+        int bottomBlockY = f.getBlockY() > t.getBlockY() ? t.getBlockY() : f.getBlockY();
 
-        int topBlockY = (loc1.getBlockY() < loc2.getBlockY() ? loc2.getBlockY() : loc1.getBlockY()) + 1;
-        int bottomBlockY = loc1.getBlockY() > loc2.getBlockY() ? loc2.getBlockY() : loc1.getBlockY();
+        int topBlockZ = f.getBlockZ() < t.getBlockZ() ? t.getBlockZ() : f.getBlockZ();
+        int bottomBlockZ = f.getBlockZ() > t.getBlockZ() ? t.getBlockZ() : f.getBlockZ();
 
-        int topBlockZ = loc1.getBlockZ() < loc2.getBlockZ() ? loc2.getBlockZ() : loc1.getBlockZ();
-        int bottomBlockZ = loc1.getBlockZ() > loc2.getBlockZ() ? loc2.getBlockZ() : loc1.getBlockZ();
-
+        // Iterate through the outermost coordinates
         for (int x = bottomBlockX; x <= topBlockX; x++) {
             for (int z = bottomBlockZ; z <= topBlockZ; z++) {
                 for (int y = bottomBlockY; y <= topBlockY; y++) {
-                    if (!this.hollowMaterials.contains(loc1.getWorld().getBlockAt(x, y, z).getType())) {
-                        return false;
-                    }
+                    // Do nothing if material is able to be moved through
+                    if (hollowMaterials.contains(f.getWorld().getBlockAt(x, y, z).getType())) continue;
+
+                    // Do nothing if player has walked over stairs
+                    if (y == bottomBlockY && f.getBlockY() != t.getBlockY()) continue;
+
+                    // Deny movement
+                    event.setTo(f.setDirection(t.getDirection()));
                 }
             }
         }
-        return true;
     }
+
 }

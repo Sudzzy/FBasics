@@ -1,5 +1,5 @@
 #####
-# FBasics 1.4.0
+# FBasics ${project.version}
 # Material Settings
 #####
 
@@ -21,31 +21,6 @@ ore-blocks:
 # If you are using Spigot 1.8, it may be useful to stop slime blocks being moved by pistons to prevent this:
 # https://www.youtube.com/watch?v=SaGPyMDLtLY
 #- SLIME_BLOCK
-
-# Used in Chest Dupe Patch
-inventory-blocks:
-- ANVIL
-- BEACON
-- BURNING_FURNACE
-- CHEST
-- DISPENSER
-- DROPPER
-- ENCHANTMENT_TABLE
-- FURNACE
-- HOPPER
-- TRAPPED_CHEST
-
-# Used in Chest Dupe Patch
-inventory-double-blocks:
-- CHEST
-- TRAPPED_CHEST
-
-# Used in Chest Dupe Patch
-inventory-entities:
-- HORSE
-- MINECART_CHEST
-- MINECART_FURNACE
-- MINECART_HOPPER
 
 # Used in Crop Dupe Patch
 block-placement-near-crops:
