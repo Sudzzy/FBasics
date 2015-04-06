@@ -45,45 +45,45 @@ Please stick to normal released builds via Spigot if you wish to maintain a stab
 
 ## Commands
 
-|Command|Description|
-| ------------- | ------------- |
-|/crate balance|View your own balance|
-|/crate balance [player]|View the balance of another player|
-|/crate open|Opens one of your crates|
-|/crate add [player] [amount]|Give a player some crates|
-|/crate pay [player] [amount]|Pay a player come crates|
-|/crate remove [player] [amount]|Remove crates from a player|
-|/crate set [player] [amount]|Set the amount of crates a player has|
-|/fbasics|Displays the help page|
-|/fbasics reload|Reloads the plugin|
-|/fbasics version|View the current version you are using|
-|/wilderness|Teleports the player to a random location|
-|/safepromote [player] [old rank] [new rank] [world]|Promotes a player using group checks|
+| **Command**                                         | **Description**                           |
+| --------------------------------------------------- | ----------------------------------------- |
+| /crate balance                                      | View your own balance                     |
+| /crate balance <player>                             | View the balance of another player        |
+| /crate open                                         | Opens one of your crates                  |
+| /crate add <player> <amount>                        | Give a player some crates                 |
+| /crate pay <player> <amount>                        | Pay a player come crates                  |
+| /crate remove <player> <amount>                     | Remove crates from a player               |
+| /crate set <player> <amount>                        | Set the amount of crates a player has     |
+| /fbasics                                            | Displays the help page                    |
+| /fbasics reload                                     | Reloads the plugin                        |
+| /fbasics version                                    | View the current version you are using    |
+| /wilderness                                         | Teleports the player to a random location |
+| /safepromote <player> <old rank> <new rank> <world> | Promotes a player using group checks      |
 
 ## Permissions
 
-|Permission|Description|Default|
-| ------------- | ------------- | ------------- |
-|fbasics.bypass.antiloot|Bypass loot protection|operator|
-|fbasics.bypass.boat|Bypass boat exploit protection|operator|
-|fbasics.bypass.booklimiter|Bypass book exploit protection|operator|
-|fbasics.bypass.command.blocks|Bypass command block limits|operator|
-|fbasics.bypass.command.cooldowns|Bypass command cooldowns|operator|
-|fbasics.bypass.command.economy|Bypass command fees|operator|
-|fbasics.bypass.command.glitchable|Bypass blocked commands listed in config|operator|
-|fbasics.bypass.command.territory|Bypass command territory limits|operator|
-|fbasics.bypass.command.warmup|Bypass command warmups|operator|
-|fbasics.bypass.dismount|Bypass dismount glitch protection|operator|
-|fbasics.bypass.enderpearl|Bypass enderpearl glitch protection|operator|
-|fbasics.bypass.nether|Bypass nether glitch protection|operator|
-|fbasics.bypass.phase|Bypass V-Clip protection|operator|
-|fbasics.command.crate|Use the crates command|everyone|
-|fbasics.command.crate.balance|View crates balance|everyone|
-|fbasics.command.crate.balance.other|View other players crates balance|everyone|
-|fbasics.command.crate.change|Give / take / set players crates|operator|
-|fbasics.command.crate.open|Open a crate|everyone|
-|fbasics.command.crate.pay|Pay other players in crates|everyone|
-|fbasics.command.fbasics|Use the default "/fbasics" command|everyone|
-|fbasics.command.reload|Reload the plugin|operator|
-|fbasics.command.safepromote|Safely promote a player|operator|
-|fbasics.command.wilderness|Teleport to a random place in the wilderness|everyone|
+| **Permission**                      | **Description**                              | **Default** |
+| ----------------------------------- | -------------------------------------------- | ----------- |
+| fbasics.bypass.antiloot             | Bypass loot protection                       | operator    |
+| fbasics.bypass.boat                 | Bypass boat exploit protection               | operator    |
+| fbasics.bypass.booklimiter          | Bypass book exploit protection               | operator    |
+| fbasics.bypass.command.blocks       | Bypass command block limits                  | operator    |
+| fbasics.bypass.command.cooldowns    | Bypass command cooldowns                     | operator    |
+| fbasics.bypass.command.economy      | Bypass command fees                          | operator    |
+| fbasics.bypass.command.glitchable   | Bypass blocked commands listed in config     | operator    |
+| fbasics.bypass.command.territory    | Bypass command territory limits              | operator    |
+| fbasics.bypass.command.warmup       | Bypass command warmups                       | operator    |
+| fbasics.bypass.dismount             | Bypass dismount glitch protection            | operator    |
+| fbasics.bypass.enderpearl           | Bypass enderpearl glitch protection          | operator    |
+| fbasics.bypass.nether               | Bypass nether glitch protection              | operator    |
+| fbasics.bypass.phase                | Bypass V-Clip protection                     | operator    |
+| fbasics.command.crate               | Use the crates command                       | everyone    |
+| fbasics.command.crate.balance       | View crates balance                          | everyone    |
+| fbasics.command.crate.balance.other | View other players crates balance            | everyone    |
+| fbasics.command.crate.change        | Give / take / set players crates             | operator    |
+| fbasics.command.crate.open          | Open a crate                                 | everyone    |
+| fbasics.command.crate.pay           | Pay other players in crates                  | everyone    |
+| fbasics.command.fbasics             | Use the default "/fbasics" command           | everyone    |
+| fbasics.command.reload              | Reload the plugin                            | operator    |
+| fbasics.command.safepromote         | Safely promote a player                      | operator    |
+| fbasics.command.wilderness          | Teleport to a random place in the wilderness | everyone    |
