@@ -2,6 +2,7 @@ package org.originmc.fbasics.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -97,10 +98,14 @@ public class AntiLootStealListener implements Listener {
         killer.sendMessage(ChatColor.translateAlternateColorCodes('&', msgDropped
                 .replace("{TIME}", "" + protectionDuration)));
 
-        // Drop a copy of the loot, but with protected metadata
-        for (ItemStack itemStack : event.getDrops()) {
-            Entity item = victim.getWorld().dropItemNaturally(victim.getLocation(), itemStack);
-            item.setMetadata("fbasics-antiloot",
+        // Iterate through each item dropped
+        for (ItemStack item : event.getDrops()) {
+            // Do nothing if item is not valid
+            if (item == null || item.getType() == Material.AIR) continue;
+
+            // Drop this item with the FBasics metadata
+            Entity newItem = victim.getWorld().dropItemNaturally(victim.getLocation(), item);
+            newItem.setMetadata("fbasics-antiloot",
                     new FixedMetadataValue(plugin, killer.getName() + "-" + System.currentTimeMillis()));
         }
 
