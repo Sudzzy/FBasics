@@ -127,6 +127,13 @@ public class FBasics extends JavaPlugin {
         FactionsHelper helper;
         String[] v = plugin.getDescription().getVersion().split("\\.");
         String version = v[0] + "_" + v[1];
+
+        // Special case for HCF. Use FactionsUUID 1.6 hook
+        if (version.compareTo("1_6") < 0) {
+            version = "1_6";
+        }
+
+        // Determine which hook implementation to use
         String className = "org.originmc.fbasics.factions.v" + version + ".FactionsHelperImpl";
 
         try {
