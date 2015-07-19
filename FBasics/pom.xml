@@ -97,5 +97,11 @@
             <version>${fbasics.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.originmc</groupId>
+            <artifactId>FBasicsFactions-v2_8</artifactId>
+            <version>${fbasics.version}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>
