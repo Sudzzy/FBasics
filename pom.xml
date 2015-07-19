@@ -20,6 +20,7 @@
         <module>FBasicsFactions-v1_8</module>
         <module>FBasicsFactions-v2_6</module>
         <module>FBasicsFactions-v2_7</module>
+        <module>FBasicsFactions-v2_8</module>
         <module>FBasics</module>
     </modules>
 </project>
