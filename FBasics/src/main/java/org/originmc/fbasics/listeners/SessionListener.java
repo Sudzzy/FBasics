@@ -11,6 +11,8 @@ import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.CommandEditor;
 import org.originmc.fbasics.FBPlayer;
 
+import java.util.Iterator;
+
 public class SessionListener implements Listener {
 
     public SessionListener(FBasics plugin) {
@@ -35,11 +37,14 @@ public class SessionListener implements Listener {
         if (fbplayer == null) return;
 
         // Iterate through all player command cooldowns
-        for (CommandEditor commandEditor : fbplayer.getCooldowns().keySet()) {
+        Iterator<CommandEditor> editors = fbplayer.getCooldowns().keySet().iterator();
+        CommandEditor editor;
+        while (editors.hasNext()) {
             // Remove all expired command cooldowns
-            int difference = (int) (System.currentTimeMillis() - fbplayer.getCooldown(commandEditor)) / 1000;
-            if (difference > commandEditor.getCooldown()) {
-                fbplayer.removeCooldown(commandEditor);
+            editor = editors.next();
+            int difference = (int) (System.currentTimeMillis() - fbplayer.getCooldown(editor)) / 1000;
+            if (difference > editor.getCooldown()) {
+                fbplayer.removeCooldown(editor);
             }
         }
 
