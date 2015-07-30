@@ -17,6 +17,7 @@ import org.originmc.fbasics.CommandEditor;
 import org.originmc.fbasics.FBPlayer;
 import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.task.WarmupTask;
+import org.originmc.fbasics.util.DurationUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -233,7 +234,7 @@ public class CommandListener implements Listener {
 
             if (remaining > 0L) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', messageCooldown
-                        .replace("{COOLDOWN}", String.valueOf(remaining))));
+                        .replace("{COOLDOWN}", DurationUtils.format(remaining))));
 
                 event.setCancelled(true);
                 return;
@@ -251,7 +252,7 @@ public class CommandListener implements Listener {
             } else {
                 // Send player a message that the warmup is starting
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', messageWarmup
-                        .replace("{WARMUP}", "" + commandEditor.getWarmup())));
+                        .replace("{WARMUP}", DurationUtils.format(commandEditor.getWarmup()))));
 
                 // Start the warmup for the player
                 warmupTasks.put(uuid, new WarmupTask(plugin, this, player, command.substring(1),

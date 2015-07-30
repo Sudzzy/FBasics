@@ -29,8 +29,8 @@ general:
 
 anti-looter:
   info:
-    dropped: 'The dropped items have been protected for {TIME} seconds.'
-    protected: 'This loot is currently protected! ({REMAINING} seconds)'
+    dropped: 'The dropped items have been protected for {TIME}.'
+    protected: 'This loot is currently protected! ({REMAINING})'
 
 book-limiter:
   info:
@@ -44,9 +44,9 @@ commands:
     warmup: 'Command cancelled due to another command already warming up!'
   info:
     cancelled: 'Command cancelled.'
-    cooldown: 'Command on cooldown! ({COOLDOWN} seconds)'
+    cooldown: 'Command on cooldown! ({COOLDOWN})'
     paid: 'You have paid ${PRICE} to use this command.'
-    warmup: 'Command commencing in {WARMUP} seconds. Do not move.'
+    warmup: 'Command commencing in {WARMUP}. Do not move.'
 
 crates:
   error:
@@ -68,7 +68,7 @@ patcher:
     enderpearls-block: 'Enderpearls disabled whilst within a block!'
     nether-cancelled: 'Cancelled as the destination is above the nether!'
   info:
-    enderpearls-cooldown: 'Not allowed to enderpearl yet! ({REMAINING} seconds)'
+    enderpearls-cooldown: 'Not allowed to enderpearl yet! ({REMAINING})'
 
 wilderness:
   error:

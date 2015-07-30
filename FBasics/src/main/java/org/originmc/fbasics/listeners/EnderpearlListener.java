@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.originmc.fbasics.FBasics;
+import org.originmc.fbasics.util.DurationUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -214,7 +215,7 @@ public class EnderpearlListener implements Listener {
 
                 // Send player a message
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', messageCooldown
-                        .replace("{REMAINING}", "" + remaining)));
+                        .replace("{REMAINING}", DurationUtils.format(remaining))));
                 return;
             }
         }

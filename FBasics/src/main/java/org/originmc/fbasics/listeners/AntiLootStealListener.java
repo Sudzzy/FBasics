@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.originmc.fbasics.FBasics;
+import org.originmc.fbasics.util.DurationUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,7 +82,7 @@ public class AntiLootStealListener implements Listener {
         // Tell the player this loot is protected
         long cooldown = protectionDuration - remaining / 1000;
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', msgProtected
-                .replace("{REMAINING}", "" + cooldown)));
+                .replace("{REMAINING}", DurationUtils.format(cooldown))));
 
         // Give the player a message cooldown
         messageCooldowns.put(uuid, System.currentTimeMillis());
@@ -96,7 +97,7 @@ public class AntiLootStealListener implements Listener {
         // Send killer a confirmation message
         Player killer = victim.getKiller();
         killer.sendMessage(ChatColor.translateAlternateColorCodes('&', msgDropped
-                .replace("{TIME}", "" + protectionDuration)));
+                .replace("{TIME}", DurationUtils.format(protectionDuration))));
 
         // Iterate through each item dropped
         for (ItemStack item : event.getDrops()) {
