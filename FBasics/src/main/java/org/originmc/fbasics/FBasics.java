@@ -272,12 +272,14 @@ public class FBasics extends JavaPlugin {
     private void saveDatabase() {
         try (BufferedWriter writer = Files.newBufferedWriter(this.path, ENCODING)) {
             for (FBPlayer fbplayer : FBPlayer.getFBPlayers()) {
+                Iterator<CommandEditor> editors = fbplayer.getCooldowns().keySet().iterator();
+                CommandEditor editor;
+                while (editors.hasNext()) {
+                    editor = editors.next();
+                    int difference = (int) (System.currentTimeMillis() - fbplayer.getCooldown(editor)) / 1000;
 
-                for (CommandEditor commandEditor : fbplayer.getCooldowns().keySet()) {
-                    int difference = (int) (System.currentTimeMillis() - fbplayer.getCooldown(commandEditor)) / 1000;
-
-                    if (difference > commandEditor.getCooldown()) {
-                        fbplayer.removeCooldown(commandEditor);
+                    if (difference > editor.getCooldown()) {
+                        fbplayer.removeCooldown(editor);
                     }
                 }
 
