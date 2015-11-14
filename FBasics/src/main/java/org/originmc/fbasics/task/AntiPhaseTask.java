@@ -52,11 +52,18 @@ public final class AntiPhaseTask implements Runnable {
      * Check to see if the players current state can skip a phase check.
      *
      * @param player the player to check for.
+     * @param user the players' user profile.
      * @return true if player can skip this current phase check.
      */
     public boolean checkState(Player player, User user) {
         // Do nothing if player has permission.
         if (player.hasPermission(Perm.AntiGlitch.PHASE)) {
+            user.setValidLocation(null);
+            return true;
+        }
+
+        // Do nothing if player is flying.
+        if (player.isFlying()) {
             user.setValidLocation(null);
             return true;
         }
