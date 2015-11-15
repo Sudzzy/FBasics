@@ -37,7 +37,7 @@ public final class CmdWilderness extends CommandExecutor {
             worldSettings = settings.getWorlds().get(world.getName());
         }
 
-        if (!settings.getDefaultWorld().equalsIgnoreCase("none")) {
+        if (world == null && !settings.getDefaultWorld().equalsIgnoreCase("none")) {
             world = Bukkit.getWorld(settings.getDefaultWorld());
             if (world != null) {
                 worldSettings = settings.getWorlds().get(world.getName());
