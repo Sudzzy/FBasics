@@ -11,7 +11,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <fbasics.version>2.0.0-SNAPSHOT</fbasics.version>
+    <fbasics.version>2.0.0</fbasics.version>
   </properties>
 
   <modules>
