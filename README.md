@@ -12,13 +12,13 @@
 ## Features
 
 * Patches many issues found on factions servers
-  * Glitching through walls with horses, boats, and even Essentials' safe teleportation
+  * Glitching through walls with horses, and boats
   * Promoting players via Buycraft and Enjin with a safety catch
   * Teleporting through walls with enderpearls or to the top of the nether
   * Duplicating crops by placing doors and other materials next to them
   * Duplicating ores with mcMMO
   * Duplicating consumables by blowing up inventory blocks
-  * Every single V-Clip and Phase hack through solid walls is blocked
+  * Any V-Clip or Phase hack through solid walls
 * Supports Factions for checking territories with commands, wilderness and enderpearls
   * _Most mainstream Faction builds are supported:_
   * Factions 2.8 (MassiveCore 2.8)

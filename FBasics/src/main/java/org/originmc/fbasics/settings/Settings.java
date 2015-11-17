@@ -4,6 +4,7 @@ import lombok.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.originmc.fbasics.FBasics;
+import org.originmc.fbasics.factions.api.FactionsVersion;
 import org.originmc.fbasics.task.CleanDatabaseTask;
 import org.originmc.fbasics.task.SaveDatabaseTask;
 
@@ -15,6 +16,8 @@ public final class Settings implements ISettings {
     private static final String DATABASE_CLEAN = "database-clean";
 
     private static final String DATABASE_SAVE = "database-save";
+
+    private static final String FACTIONS_VERSION = "factions-version";
 
     private static final String UPDATE_CONFIG = "update-config";
 
@@ -38,6 +41,8 @@ public final class Settings implements ISettings {
 
     private int databaseSave = 0;
 
+    private FactionsVersion factionsVersion;
+
     private boolean updateConfig = false;
 
     private int cleanDatabaseTaskId = 0;
@@ -60,6 +65,7 @@ public final class Settings implements ISettings {
         configVersion = configuration.getInt(CONFIG_VERSION, 0);
         databaseClean = configuration.getInt(DATABASE_CLEAN, 0) * 20;
         databaseSave = configuration.getInt(DATABASE_SAVE, 0) * 20;
+        factionsVersion = FactionsVersion.parse(configuration.getString(FACTIONS_VERSION, "auto"));
         updateConfig = configuration.getBoolean(UPDATE_CONFIG, false);
         antiGlitchSettings.load();
         antiLooterSettings.load();

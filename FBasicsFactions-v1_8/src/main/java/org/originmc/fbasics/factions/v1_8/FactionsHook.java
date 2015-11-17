@@ -5,12 +5,14 @@ import com.massivecraft.factions.FLocation;
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.struct.Rel;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.originmc.fbasics.factions.api.FactionsMode;
 import org.originmc.fbasics.factions.api.IFactionsHook;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class FactionsHook implements IFactionsHook {
@@ -35,33 +37,19 @@ public final class FactionsHook implements IFactionsHook {
         // Return true if factions list has this specific faction declared when using whitelist. Opposite for blacklist.
         if (factions.contains(ChatColor.stripColor(locationFaction.getTag()))) return whitelist;
 
+        // Attempt to parse all the faction relations in this factions list.
+        List<Rel> relations = new ArrayList<>();
+        for (String faction : factions) {
+            String[] data = faction.split(":");
+            if (data.length == 2) {
+                relations.add(Rel.parse(data[1]));
+            }
+        }
+
         // Return true if the players relation to the location faction is stated in the factions list when using
         // whitelist mode. Opposite for blacklist.
-        switch (fplayer.getRelationTo(locationFaction)) {
-            case LEADER:
-                if (factions.contains("Rel:Leader")) return whitelist;
-                break;
-            case OFFICER:
-                if (factions.contains("Rel:Officer")) return whitelist;
-                break;
-            case MEMBER:
-                if (factions.contains("Rel:Member")) return whitelist;
-                break;
-            case RECRUIT:
-                if (factions.contains("Rel:Recruit")) return whitelist;
-                break;
-            case ALLY:
-                if (factions.contains("Rel:Ally")) return whitelist;
-                break;
-            case TRUCE:
-                if (factions.contains("Rel:Truce")) return whitelist;
-                break;
-            case NEUTRAL:
-                if (factions.contains("Rel:Neutral")) return whitelist;
-                break;
-            case ENEMY:
-                if (factions.contains("Rel:Enemy")) return whitelist;
-                break;
+        if (relations.contains(fplayer.getRelationTo(locationFaction))) {
+            return whitelist;
         }
 
         // Now all checks are complete, the player does not have access when using whitelist mode. Opposite for

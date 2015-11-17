@@ -10,13 +10,19 @@
 # * Set any messages in this configuration to "" to display nothing.
 
 # Version of the config file. Do not change this.
-config-version: 2
+config-version: 3
 
 # Duration in seconds for scheduled database cleanups, clears all outdated data to free up RAM and disk space.
 database-clean: 300
 
 # Duration in seconds for scheduled database saves, in case of crashes. Set to -1 to disable.
 database-save: 300
+
+# The factions version to attempt to support, normally FBasics is able to automatically find which factions version you
+# are using. If you are using some obscure factions which I have not attempted to account for which is based off another
+# build of factions then feel free to change this. Supported versions: "auto", "none", "2.7", "2.6", "1.8", "1.6".
+# Factions 2.8 naturally is supported as the API FBasics requires is the same as Factions 2.7.
+factions-version: "auto"
 
 # Should this plugin update the configuration? False will warn you in console when the configuration needs updating.
 # This is recommended to be set to true.

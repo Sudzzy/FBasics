@@ -153,22 +153,38 @@ public final class FBasics extends JavaPlugin {
      * Creates a factions hook depending on which factions version the server is running.
      */
     public void integrateFactions() {
-        // Set factions hook to default if factions is not loaded.
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("Factions");
-        if (plugin == null) {
-            factions = new FactionsHook();
-            return;
+        String version = null;
+        switch (settings.getFactionsVersion()) {
+            case AUTO:
+                // Do nothing if factions is not enabled.
+                Plugin plugin = Bukkit.getPluginManager().getPlugin("Factions");
+                if (plugin == null || !plugin.isEnabled()) break;
+
+                String[] v = plugin.getDescription().getVersion().split("\\.");
+                version = v[0] + "_" + v[1];
+
+                // Special case for HCF - Use FactionsUUID 1.6 hook.
+                // Special case for 2.8 - Use Factions 2.7 hook.
+                if (version.compareTo("1_6") < 0) {
+                    version = "1_6";
+                } else if (version.compareTo("2_7") > 0) {
+                    version = "2_7";
+                }
+                break;
+
+            case V1_6:
+            case V1_8:
+            case V2_6:
+            case V2_7:
+                version = settings.getFactionsVersion().name().toLowerCase();
+                break;
         }
 
-        String[] v = plugin.getDescription().getVersion().split("\\.");
-        String version = v[0] + "_" + v[1];
-
-        // Special case for HCF - Use FactionsUUID 1.6 hook.
-        // Special case for 2.8 - Use Factions 2.7 hook.
-        if (version.compareTo("1_6") < 0) {
-            version = "1_6";
-        } else if (version.compareTo("2_7") > 0) {
-            version = "2_7";
+        // If the factions version is invalid, drop all factions support.
+        if (version == null) {
+            factions = new FactionsHook();
+            getLogger().info("Not using any Factions support.");
+            return;
         }
 
         // Determine which factions helper implementation to use.
@@ -177,6 +193,7 @@ public final class FBasics extends JavaPlugin {
         try {
             // Create and add the IFactionsHook.
             factions = (IFactionsHook) Class.forName(className).newInstance();
+            getLogger().info("Using Factions v" + version + " support.");
         } catch (Exception e) {
             // Something went wrong, chances are it's a newer, incompatible Factions.
             getLogger().warning("**WARNING**");
