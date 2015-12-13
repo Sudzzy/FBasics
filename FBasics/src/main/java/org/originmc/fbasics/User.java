@@ -30,7 +30,16 @@ public final class User {
 
     private WeakReference<EnderPearl> pearl;
 
+    /**
+     * Checks to see if the user currently has a thrown enderpearl.
+     *
+     * @return true if the player has a thrown enderpearl.
+     */
     public boolean isThrowingPearl() {
+        // User is not throwing an enderpearl if not set.
+        if (pearl == null) return false;
+
+        // User is throwing an enderpearl if the pearl is not null or dead.
         EnderPearl pearl = this.pearl.get();
         return pearl != null && !pearl.isDead();
     }
