@@ -5,15 +5,19 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.EnderPearl;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.projectiles.ProjectileSource;
 import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.Perm;
 import org.originmc.fbasics.User;
@@ -21,6 +25,8 @@ import org.originmc.fbasics.settings.AntiGlitchEnderpearlsSettings;
 import org.originmc.fbasics.util.DurationUtils;
 import org.originmc.fbasics.util.MaterialUtils;
 import org.originmc.fbasics.util.MessageUtils;
+
+import java.lang.ref.WeakReference;
 
 public final class EnderpearlListener implements Listener {
 
@@ -131,24 +137,21 @@ public final class EnderpearlListener implements Listener {
 
         // Deny event if user is already throwing an enderpearl.
         User user = plugin.getOrCreateUser(player.getUniqueId());
-        if (user.isThrowingEnderpearl()) {
+        if (user.isThrowingPearl()) {
             event.setCancelled(true);
             MessageUtils.sendMessage(player, settings.getMultipleMessage());
             return;
         }
 
-        // Deny event if user is on a cooldown.
+        // Do nothing if the user is not on a cooldown.
         long enderpearl = DurationUtils.calculateRemaining(user.getEnderpearlCooldown());
         long door = DurationUtils.calculateRemaining(user.getEnderpearlDoorCooldown());
-        if (enderpearl > 0 || door > 0) {
-            event.setCancelled(true);
-            MessageUtils.sendMessage(player, settings.getCooldownMessage()
-                    .replace("{time}", DurationUtils.format(enderpearl > door ? enderpearl : door)));
-            return;
-        }
+        if (enderpearl < 0 && door < 0) return;
 
-        // Tell plugin that user has thrown enderpearl.
-        user.setThrowingEnderpearl(true);
+        // Deny the event and send player a message.
+        event.setCancelled(true);
+        MessageUtils.sendMessage(player, settings.getCooldownMessage()
+                .replace("{time}", DurationUtils.format(enderpearl > door ? enderpearl : door)));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -185,17 +188,22 @@ public final class EnderpearlListener implements Listener {
         user.setEnderpearlDoorCooldown(System.currentTimeMillis() + settings.getDoorCooldown());
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void setThrowingEnderpearl(PlayerTeleportEvent event) {
-        // Do nothing if not teleported by an enderpearl.
-        if (event.getCause() != TeleportCause.ENDER_PEARL) return;
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void setCurrentPearl(ProjectileLaunchEvent event) {
+        // Do nothing if entity that died was not an enderpearl.
+        if (event.getEntityType() != EntityType.ENDER_PEARL) return;
+
+        // Do nothing if shooter was not a player.
+        EnderPearl enderpearl = (EnderPearl) event.getEntity();
+        ProjectileSource shooter = enderpearl.getShooter();
+        if (!(shooter instanceof Player)) return;
 
         // Do nothing if user has not thrown an enderpearl.
-        User user = plugin.getUsers().get(event.getPlayer().getUniqueId());
-        if (user == null || !user.isThrowingEnderpearl()) return;
+        User user = plugin.getUsers().get(((Player) shooter).getUniqueId());
+        if (user == null) return;
 
         // User is no longer throwing an enderpearl.
-        user.setThrowingEnderpearl(false);
+        user.setPearl(new WeakReference<>(enderpearl));
     }
 
 }
