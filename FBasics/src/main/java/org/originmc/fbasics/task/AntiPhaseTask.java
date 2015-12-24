@@ -29,10 +29,10 @@ public final class AntiPhaseTask implements Runnable {
                 continue;
             }
 
-            // Do not allow movements larger than 10 blocks distance or there will be serious lag.
+            // Do not allow movements larger than 16 blocks distance or there will be serious lag.
             Location current = player.getLocation();
             Location previous = user.getValidLocation();
-            if (previous.distance(current) > 10) {
+            if (previous.distanceSquared(current) > 256) {
                 player.teleport(previous, PlayerTeleportEvent.TeleportCause.PLUGIN);
                 continue;
             }
