@@ -216,91 +216,91 @@ commands-faction-message: "&cCannot execute &b{command} &cwithin this factions' 
 # All modified command should be listed here. Please take some time to learn RegEx before using.
 commands-modifiers:
 
-  # This is the command modifier name, it can be changed to whatever you want. Feel free to add as many command
-  # modifiers as you please. Just be sure that the command modifier names are all different from one another.
-  tutorial:
-    # RegEx is used in order to check if this is the correct command modifier to use.
-    regex: "/(|essentials:)(|e)home(| .*)"
-
-    # Priority of the command modifiers listed under this key.
-    # Supports: LOWEST, LOW, NORMAL, HIGH, HIGHEST and MONITOR.
-    priority: NORMAL
-
-    # Alias can be used to change the command into something completely different. This can support for changing where
-    # the arguments will show up in the newly executed command.
-    #
-    # Example:
-    # A player executes the command "/ehome base".
-    # %0 = "ehome"
-    # %1 = "base"
-    # %0+ = "ehome base"
-    # %1+ = "base"
-    #
-    # This here would change the command "/ehome base" to "/home base".
-    alias: "/home %1+"
-
-    # Duration in seconds to prevent the user from typing this command again.
-    cooldown: 5
-
-    # Duration in seconds to wait before the command warmups up.
-    warmup: 2
-
-    # Cancels the warmup if the player takes damage.
-    warmup-cancel-on-damage: true
-
-    # Cancels the warmup if the player moves.
-    warmup-cancel-on-move: true
-
-    # Price of the command.
-    price: 10.0
-
-    # Perm required to execute the command.
-    permission: "an.awesome.permission"
-
-    # This message is displayed if the player does not have permission.
-    permission-message: "&cYou do not have permission! Tell the server administrator to configure FBasics."
-
-    # This message is displayed once the command has been successfully sent.
-    message: "&6Teleporting . . ."
-
-    # Faction names and relations to determine whether or not the player is allowed to execute the command in this
-    # specific region.
-    #
-    # Supports: Leader, Officer, Member, Recruit, Ally, Truce, Neutral and Enemy.
-    factions:
-      - "Rel:Truce"
-      - "Rel:Ally"
-      - "Rel:Recruit"
-      - "Rel:Member"
-      - "Rel:Officer"
-      - "Rel:Leader"
-      - "SafeZone"
-      - "WarZone"
-      - "Wilderness"
-
-    # Change how the list of factions will work.
-    # WHITELIST will allow the command when executed within the specified regions and deny everywhere else.
-    # BLACKLIST will deny the command when exectued within the specified regions and allow everywhere else.
-    #
-    # Not settings this variable will default to BLACKLIST.
-    #
-    # Supports: WHITELIST and BLACKLIST.
-    factions-mode: WHITELIST
-
-    # Groups enables permission based command editing. Every group inherits all modifiers from the section above and
-    # all groups which have a lower weight. Any variables in the first section can be overridden by these groups,
-    # barring "regex", "priority" and "groups". FBasics will attempt to hook into your permissions plugin and check
-    # the rank name the user is in. If a player is in the rank "member", the member group will be used.
-    groups:
-      member:
-        weight: 10
-        price: 5.0
-        cooldown: 0
-
-      # Due to group "member" having a lower weight, group "donor" inherits the cooldown of 0 seconds.
-      donor:
-        weight: 20
-        price: 2.50
+#  # This is the command modifier name, it can be changed to whatever you want. Feel free to add as many command
+#  # modifiers as you please. Just be sure that the command modifier names are all different from one another.
+#  tutorial:
+#    # RegEx is used in order to check if this is the correct command modifier to use.
+#    regex: "/(|essentials:)(|e)home(| .*)"
+#
+#    # Priority of the command modifiers listed under this key.
+#    # Supports: LOWEST, LOW, NORMAL, HIGH, HIGHEST and MONITOR.
+#    priority: NORMAL
+#
+#    # Alias can be used to change the command into something completely different. This can support for changing where
+#    # the arguments will show up in the newly executed command.
+#    #
+#    # Example:
+#    # A player executes the command "/ehome base".
+#    # %0 = "ehome"
+#    # %1 = "base"
+#    # %0+ = "ehome base"
+#    # %1+ = "base"
+#    #
+#    # This here would change the command "/ehome base" to "/home base".
+#    alias: "/home %1+"
+#
+#    # Duration in seconds to prevent the user from typing this command again.
+#    cooldown: 5
+#
+#    # Duration in seconds to wait before the command warmups up.
+#    warmup: 2
+#
+#    # Cancels the warmup if the player takes damage.
+#    warmup-cancel-on-damage: true
+#
+#    # Cancels the warmup if the player moves.
+#    warmup-cancel-on-move: true
+#
+#    # Price of the command.
+#    price: 10.0
+#
+#    # Perm required to execute the command.
+#    permission: "an.awesome.permission"
+#
+#    # This message is displayed if the player does not have permission.
+#    permission-message: "&cYou do not have permission! Tell the server administrator to configure FBasics."
+#
+#    # This message is displayed once the command has been successfully sent.
+#    message: "&6Teleporting . . ."
+#
+#    # Faction names and relations to determine whether or not the player is allowed to execute the command in this
+#    # specific region.
+#    #
+#    # Supports: Leader, Officer, Member, Recruit, Ally, Truce, Neutral and Enemy.
+#    factions:
+#      - "Rel:Truce"
+#      - "Rel:Ally"
+#      - "Rel:Recruit"
+#      - "Rel:Member"
+#      - "Rel:Officer"
+#      - "Rel:Leader"
+#      - "SafeZone"
+#      - "WarZone"
+#      - "Wilderness"
+#
+#    # Change how the list of factions will work.
+#    # WHITELIST will allow the command when executed within the specified regions and deny everywhere else.
+#    # BLACKLIST will deny the command when exectued within the specified regions and allow everywhere else.
+#    #
+#    # Not settings this variable will default to BLACKLIST.
+#    #
+#    # Supports: WHITELIST and BLACKLIST.
+#    factions-mode: WHITELIST
+#
+#    # Groups enables permission based command editing. Every group inherits all modifiers from the section above and
+#    # all groups which have a lower weight. Any variables in the first section can be overridden by these groups,
+#    # barring "regex", "priority" and "groups". FBasics will attempt to hook into your permissions plugin and check
+#    # the rank name the user is in. If a player is in the rank "member", the member group will be used.
+#    groups:
+#      member:
+#        weight: 10
+#        price: 5.0
+#        cooldown: 0
+#
+#      # Due to group "member" having a lower weight, group "donor" inherits the cooldown of 0 seconds.
+#      donor:
+#        weight: 20
+#        price: 2.50
 
   safepromote:
     regex: "/(?!s($| ))(|fbasics:)(|f(b|(|action)basics) )s(|p|afepromote)(| .*)"
