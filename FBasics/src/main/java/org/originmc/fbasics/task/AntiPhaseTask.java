@@ -38,7 +38,7 @@ public final class AntiPhaseTask implements Runnable {
             }
 
             // Do nothing if the players' movement is valid.
-            if (checkMovement(previous, current)) {
+            if (checkMovement(previous, current, player.isInsideVehicle())) {
                 user.setValidLocation(current);
                 continue;
             }
@@ -52,7 +52,7 @@ public final class AntiPhaseTask implements Runnable {
      * Check to see if the players current state can skip a phase check.
      *
      * @param player the player to check for.
-     * @param user the players' user profile.
+     * @param user   the players' user profile.
      * @return true if player can skip this current phase check.
      */
     public boolean checkState(Player player, User user) {
@@ -105,9 +105,10 @@ public final class AntiPhaseTask implements Runnable {
      *
      * @param previous the first position of movement.
      * @param current  the second position of movement.
+     * @param vehicle  if the player is inside a during vehicle this movement.
      * @return true if movement is valid (does not pass through solid blocks).
      */
-    public boolean checkMovement(Location previous, Location current) {
+    public boolean checkMovement(Location previous, Location current, boolean vehicle) {
         // Calculate all possible blocks the player has moved through.
         int moveMinX = Math.min(previous.getBlockX(), current.getBlockX());
         int moveMaxX = Math.max(previous.getBlockX(), current.getBlockX());
@@ -119,6 +120,9 @@ public final class AntiPhaseTask implements Runnable {
         // Adjust Y values to the maximum of 256 due to blocks above build limit being solid.
         if (moveMaxY > 256) moveMaxX = 256;
         if (moveMinY > 256) moveMinY = 256;
+
+        // Increment minimum Y by 1 if the player is currently inside a vehicle to prevent mine cart bugs.
+        if (vehicle) moveMinY++;
 
         // Iterate through all possible blocks passed through.
         for (int x = moveMinX; x <= moveMaxX; x++) {

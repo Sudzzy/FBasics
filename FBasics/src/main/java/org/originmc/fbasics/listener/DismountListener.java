@@ -49,15 +49,22 @@ public final class DismountListener implements Listener {
         if (player.hasPermission(Perm.AntiGlitch.DISMOUNT_CLIPPING)) return;
 
         // Locate a safe position to teleport the player.
-        Location location = player.getLocation();
+        Location pLoc = player.getLocation();
+        Location vLoc = event.getVehicle().getLocation();
         if (player.getLocation().getY() > 250.0D) {
-            location.add(0, 10, 0);
-        } else if (!MaterialUtils.isFullBlock(event.getVehicle().getLocation().add(0.0D, 1.0D, 0.0D).getBlock().getType())) {
-            location.subtract(0, 1, 0);
+            pLoc.add(0, 10, 0);
+        } else if (!MaterialUtils.isFullBlock(vLoc.add(0.0D, 1.0D, 0.0D).getBlock().getType())) {
+            // If the vehicles' position is safe, teleport the player into the center of the block, otherwise below.
+            if (!MaterialUtils.isFullBlock(vLoc.getBlock().getType())) {
+                pLoc = new Location(vLoc.getWorld(), vLoc.getBlockX() + 0.5, vLoc.getBlockY(), vLoc.getBlockZ() + 0.5,
+                        pLoc.getYaw(), pLoc.getPitch());
+            } else {
+                pLoc.subtract(0, 1, 0);
+            }
         }
 
         // Teleport player to the safe location on the next tick.
-        Bukkit.getScheduler().runTask(plugin, new TeleportTask(player, location));
+        Bukkit.getScheduler().runTask(plugin, new TeleportTask(player, pLoc));
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
