@@ -7,8 +7,6 @@ import org.bukkit.event.EventPriority;
 import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.util.SettingsUtils;
 
-import java.util.Set;
-
 @Data
 public final class CommandSettings implements ISettings {
 
@@ -66,45 +64,18 @@ public final class CommandSettings implements ISettings {
         warmupFailedMessage = configuration.getString(WARMUP_FAILED_MESSAGE, "");
         factionMessage = configuration.getString(FACTION_MESSAGE, "");
 
-        // Do nothing if modifiers are not defined.
-        if (!configuration.contains(MODIFIERS)) {
-            modifiers.clear();
-            return;
-        }
-
-        // Load all modifier settings.
+        // Create and load all the command modifiers.
+        modifiers.clear();
         ConfigurationSection configuration = this.configuration.getConfigurationSection(MODIFIERS);
         for (String modifierName : configuration.getKeys(false)) {
             EventPriority priority = SettingsUtils.getEventPriority(configuration.getString(modifierName + ".priority"));
-            loadModifier(priority, configuration);
-        }
-    }
+            CommandModifierSettings modifier = new CommandModifierSettings(plugin,
+                    configuration.getConfigurationSection(modifierName).getCurrentPath(),
+                    modifierName
+            );
 
-    private void loadModifier(EventPriority priority, ConfigurationSection configuration) {
-        // Remove all unused modifiers.
-        Set<CommandModifierSettings> modifiers = this.modifiers.get(priority);
-        for (CommandModifierSettings modifier : modifiers) {
-            if (!configuration.contains(modifier.getName())) {
-                modifiers.remove(modifier);
-            }
-        }
-
-        for (String modifierName : configuration.getKeys(false)) {
-            // Attempt to load an already cached modifier settings, otherwise create a new one.
-            CommandModifierSettings modifier = null;
-            for (CommandModifierSettings m : modifiers) {
-                if (m.getName().equals(modifierName)) {
-                    modifier = m;
-                }
-            }
-
-            if (modifier == null) {
-                modifier = new CommandModifierSettings(plugin, configuration.getConfigurationSection(modifierName).getCurrentPath(), modifierName);
-            }
-
-            // Load the modifier then add it to the modifier set.
             modifier.load();
-            modifiers.add(modifier);
+            modifiers.put(priority, modifier);
         }
     }
 

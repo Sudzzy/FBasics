@@ -150,9 +150,9 @@ public final class AntiPhaseTask implements Runnable {
     /**
      * Checks if a players' movement could be classed as a phase if moved into a block.
      *
-     * @param block the block to check if the player has phased through.
+     * @param block    the block to check if the player has phased through.
      * @param previous the first position of movement.
-     * @param current the second position of movement.
+     * @param current  the second position of movement.
      * @return if the players movement could be classed as a phase.
      */
     public boolean hasPhased(Block block, Location previous, Location current) {
