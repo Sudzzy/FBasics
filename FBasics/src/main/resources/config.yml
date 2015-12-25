@@ -5,8 +5,9 @@
 # |_|\__,_\__|\__|_\___/_||_|___/\__,_/__/_\__/__/ #
 #                                                  #
 # ------------------------------------------------ #
-#             Version 2.0.0 by Sudzzy.             #
+#  Supplies features most faction servers require. #
 ####################################################
+# * Version ${project.version} by Sudzzy.
 # * Set any messages in this configuration to "" to display nothing.
 
 # Version of the config file. Do not change this.
