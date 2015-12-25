@@ -132,8 +132,12 @@ public final class AntiPhaseTask implements Runnable {
                     Block block = previous.getWorld().getBlockAt(x, y, z);
                     if (y == moveMinY && previous.getBlockY() != current.getBlockY()) continue;
 
-                    // Deny movement if block is solid.
-                    if (MaterialUtils.isFullBlock(block.getType())) {
+                    // Do nothing if the material passed through is not full.
+                    if (!MaterialUtils.isFullBlock(block.getType())) continue;
+
+                    // TODO: Implement a 3D path finding algorithm for more accurate results over larger distances.
+                    // Player has phased if the movement through this block is invalid.
+                    if (hasPhased(block, previous, current)) {
                         return false;
                     }
                 }
@@ -141,6 +145,49 @@ public final class AntiPhaseTask implements Runnable {
         }
 
         return true;
+    }
+
+    /**
+     * Checks if a players' movement could be classed as a phase if moved into a block.
+     *
+     * @param block the block to check if the player has phased through.
+     * @param previous the first position of movement.
+     * @param current the second position of movement.
+     * @return if the players movement could be classed as a phase.
+     */
+    public boolean hasPhased(Block block, Location previous, Location current) {
+        // Movement boundaries.
+        double moveMaxX = Math.max(previous.getX(), current.getX());
+        double moveMinX = Math.min(previous.getX(), current.getX());
+        double moveMaxY = Math.max(previous.getY(), current.getY()) + 1.8;
+        double moveMinY = Math.min(previous.getY(), current.getY());
+        double moveMaxZ = Math.max(previous.getZ(), current.getZ());
+        double moveMinZ = Math.min(previous.getZ(), current.getZ());
+
+        // Block boundaries.
+        double blockMaxX = block.getLocation().getBlockX() + 1;
+        double blockMinX = block.getLocation().getBlockX();
+        double blockMaxY = block.getLocation().getBlockY() + 2;
+        double blockMinY = block.getLocation().getBlockY();
+        double blockMaxZ = block.getLocation().getBlockZ() + 1;
+        double blockMinZ = block.getLocation().getBlockZ();
+
+        // Determine whether the player is moving positively in each axis.
+        boolean x = previous.getX() < current.getX();
+        boolean y = previous.getY() < current.getY();
+        boolean z = previous.getZ() < current.getZ();
+
+        return  // Player is within both Y and Z coordinates and has entered through an X face.
+                (moveMinX != moveMaxX && moveMinY <= blockMaxY && moveMaxY >= blockMinY && moveMinZ <= blockMaxZ && moveMaxZ >= blockMinZ &&
+                        (x && moveMinX <= blockMinX && moveMaxX >= blockMinX || !x && moveMinX <= blockMaxX && moveMaxX >= blockMaxX)) ||
+
+                        // Player is within both X and Z coordinates and has entered through a Y face.
+                        (moveMinY != moveMaxY && moveMinX <= blockMaxX && moveMaxX >= blockMinX && moveMinZ <= blockMaxZ && moveMaxZ >= blockMinZ &&
+                                (y && moveMinY <= blockMinY && moveMaxY >= blockMinY || !y && moveMinY <= blockMaxY && moveMaxY >= blockMaxY)) ||
+
+                        // Player is within both X and Y coordinates and has entered through a Z face.
+                        (moveMinZ != moveMaxZ && moveMinX <= blockMaxX && moveMaxX >= blockMinX && moveMinY <= blockMaxY && moveMaxY >= blockMinY &&
+                                (z && moveMinZ <= blockMinZ && moveMaxZ >= blockMinZ || !z && moveMinZ <= blockMaxZ && moveMaxZ >= blockMaxZ));
     }
 
 }
