@@ -8,8 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.Perm;
-import org.originmc.fbasics.User;
+import org.originmc.fbasics.entity.Tile;
+import org.originmc.fbasics.entity.User;
 import org.originmc.fbasics.util.MaterialUtils;
+import org.originmc.fbasics.util.PathUtils;
 
 import java.util.UUID;
 
@@ -125,26 +127,33 @@ public final class AntiPhaseTask implements Runnable {
         if (vehicle) moveMinY++;
 
         // Iterate through all possible blocks passed through.
+        boolean passable = true;
+        Tile[][][] movement = new Tile[moveMaxX - moveMinX + 1][moveMaxY - moveMinY + 1][moveMaxZ - moveMinZ + 1];
         for (int x = moveMinX; x <= moveMaxX; x++) {
             for (int z = moveMinZ; z <= moveMaxZ; z++) {
                 for (int y = moveMinY; y <= moveMaxY; y++) {
-                    // Do nothing if player has walked over stairs and this is the bottommost block.
-                    Block block = previous.getWorld().getBlockAt(x, y, z);
-                    if (y == moveMinY && previous.getBlockY() != current.getBlockY()) continue;
+                    // Add current blocks' tile to the movement array.
+                    int diffX = moveMaxX - x;
+                    int diffY = moveMaxY - y;
+                    int diffZ = moveMaxZ - z;
+                    movement[diffX][diffY][diffZ] = new Tile(diffX, diffY, diffZ);
 
                     // Do nothing if the material passed through is not full.
+                    Block block = previous.getWorld().getBlockAt(x, y, z);
                     if (!MaterialUtils.isFullBlock(block.getType())) continue;
 
-                    // TODO: Implement a 3D path finding algorithm for more accurate results over larger distances.
                     // Player has phased if the movement through this block is invalid.
-                    if (hasPhased(block, previous, current)) {
-                        return false;
+                    if (isPassable(block, previous, current)) {
+                        passable = false;
+                        movement[diffX][diffY][diffZ].setPassable(false);
                     }
                 }
             }
         }
 
-        return true;
+        return passable || PathUtils.hasPath(movement,
+                movement[moveMaxX - previous.getBlockX()][moveMaxY - previous.getBlockY() - 1][moveMaxZ - previous.getBlockZ()],
+                movement[moveMaxX - current.getBlockX()][moveMaxY - current.getBlockY() - 1][moveMaxZ - current.getBlockZ()]);
     }
 
     /**
@@ -155,7 +164,7 @@ public final class AntiPhaseTask implements Runnable {
      * @param current  the second position of movement.
      * @return if the players movement could be classed as a phase.
      */
-    public boolean hasPhased(Block block, Location previous, Location current) {
+    public boolean isPassable(Block block, Location previous, Location current) {
         // Movement boundaries.
         double moveMaxX = Math.max(previous.getX(), current.getX());
         double moveMinX = Math.min(previous.getX(), current.getX());

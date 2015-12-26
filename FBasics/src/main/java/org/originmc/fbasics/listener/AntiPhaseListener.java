@@ -7,7 +7,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.originmc.fbasics.FBasics;
-import org.originmc.fbasics.User;
 import org.originmc.fbasics.settings.AntiGlitchSettings;
 
 public final class AntiPhaseListener implements Listener {

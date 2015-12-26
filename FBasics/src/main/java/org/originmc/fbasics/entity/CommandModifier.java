@@ -1,8 +1,7 @@
-package org.originmc.fbasics;
+package org.originmc.fbasics.entity;
 
 import com.google.gson.annotations.Expose;
 import lombok.Data;
-import org.originmc.fbasics.settings.CommandModifierGroupSettings;
 import org.originmc.fbasics.task.CommandWarmupTask;
 
 @Data

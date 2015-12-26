@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
-import org.originmc.fbasics.CommandModifier;
+import org.originmc.fbasics.entity.CommandModifier;
 import org.originmc.fbasics.settings.CommandModifierGroupSettings;
 
 public final class CommandModifierEvent extends PlayerEvent implements Cancellable {

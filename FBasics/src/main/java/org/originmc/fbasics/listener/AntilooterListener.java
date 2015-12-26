@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.Perm;
-import org.originmc.fbasics.User;
+import org.originmc.fbasics.entity.User;
 import org.originmc.fbasics.settings.AntiLooterSettings;
 
 import java.util.UUID;

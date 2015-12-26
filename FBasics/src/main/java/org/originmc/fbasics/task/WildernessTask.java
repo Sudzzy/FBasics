@@ -8,7 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.originmc.fbasics.FBasics;
-import org.originmc.fbasics.User;
+import org.originmc.fbasics.entity.User;
 import org.originmc.fbasics.settings.WildernessSettings;
 import org.originmc.fbasics.settings.WildernessWorldSettings;
 import org.originmc.fbasics.util.MessageUtils;

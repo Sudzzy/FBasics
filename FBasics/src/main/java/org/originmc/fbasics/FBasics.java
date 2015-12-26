@@ -12,6 +12,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.originmc.fbasics.command.CommandType;
+import org.originmc.fbasics.entity.CommandModifier;
+import org.originmc.fbasics.entity.User;
 import org.originmc.fbasics.factions.api.FactionsHook;
 import org.originmc.fbasics.factions.api.IFactionsHook;
 import org.originmc.fbasics.listener.AntiPhaseListener;
