@@ -18,30 +18,29 @@ permissions:
     default: true
     children:
       fbasics.incorrect: true
+      fbasics.version: true
       fbasics.wilderness: true
 
   fbasics.admin:
     default: op
     children:
-      fbasics.antiglitch.phase: true
-      fbasics.antiglitch.faction-map: true
-      fbasics.antiglitch.dismount-clipping: true
-      fbasics.antiglitch.nether-roof: true
-      fbasics.antiglitch.bonemeal-dispensers: true
-      fbasics.antiglitch.mcmmo-mining: true
-      fbasics.antiglitch.inventory-dupe: true
-      fbasics.antiglitch.crop-dupe: true
       fbasics.antiglitch.book-limit: true
+      fbasics.antiglitch.crop-dupe: true
+      fbasics.antiglitch.dismount-clipping: true
       fbasics.antiglitch.enderpearls-cooldown: true
-      fbasics.antiglitch.enderpearls-within-block: true
       fbasics.antiglitch.enderpearls-factions: true
+      fbasics.antiglitch.enderpearls-within-block: true
+      fbasics.antiglitch.faction-map: true
+      fbasics.antiglitch.inventory-dupe: true
+      fbasics.antiglitch.nether-roof: true
+      fbasics.antiglitch.phase: true
       fbasics.antilooter: true
       fbasics.commands.cooldowns: true
-      fbasics.commands.warmups: true
-      fbasics.commands.warmups-move: true
-      fbasics.commands.warmups-damage: true
-      fbasics.commands.prices: true
       fbasics.commands.factions: true
+      fbasics.commands.prices: true
+      fbasics.commands.warmups: true
+      fbasics.commands.warmups-damage: true
+      fbasics.commands.warmups-move: true
       fbasics.reload: true
       fbasics.safepromote: true
       fbasics.user: true
@@ -51,26 +50,25 @@ permissions:
     children:
       fbasics.admin: true
 
-  fbasics.antiglitch.phase: {default: false}
-  fbasics.antiglitch.faction-map: {default: false}
-  fbasics.antiglitch.dismount-clipping: {default: false}
-  fbasics.antiglitch.nether-roof: {default: false}
-  fbasics.antiglitch.bonemeal-dispensers: {default: false}
-  fbasics.antiglitch.mcmmo-mining: {default: false}
-  fbasics.antiglitch.inventory-dupe: {default: false}
-  fbasics.antiglitch.crop-dupe: {default: false}
   fbasics.antiglitch.book-limit: {default: false}
+  fbasics.antiglitch.crop-dupe: {default: false}
+  fbasics.antiglitch.dismount-clipping: {default: false}
   fbasics.antiglitch.enderpearls-cooldown: {default: false}
-  fbasics.antiglitch.enderpearls-within-block: {default: false}
   fbasics.antiglitch.enderpearls-factions: {default: false}
+  fbasics.antiglitch.enderpearls-within-block: {default: false}
+  fbasics.antiglitch.faction-map: {default: false}
+  fbasics.antiglitch.inventory-dupe: {default: false}
+  fbasics.antiglitch.nether-roof: {default: false}
+  fbasics.antiglitch.phase: {default: false}
   fbasics.antilooter: {default: false}
   fbasics.commands.cooldowns: {default: false}
-  fbasics.commands.warmups: {default: false}
-  fbasics.commands.warmups-move: {default: false}
-  fbasics.commands.warmups-damage: {default: false}
-  fbasics.commands.prices: {default: false}
   fbasics.commands.factions: {default: false}
+  fbasics.commands.prices: {default: false}
+  fbasics.commands.warmups: {default: false}
+  fbasics.commands.warmups-damage: {default: false}
+  fbasics.commands.warmups-move: {default: false}
   fbasics.incorrect: {default: false}
   fbasics.reload: {default: false}
   fbasics.safepromote: {default: false}
+  fbasics.version: {default: false}
   fbasics.wilderness: {default: false}
