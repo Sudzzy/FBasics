@@ -17,6 +17,7 @@ public final class CmdReload extends CommandExecutor {
     public boolean perform() {
         long duration = System.currentTimeMillis();
         getPlugin().integrateFactions();
+        getPlugin().integratePlaceholders();
         getPlugin().integrateVault();
         getPlugin().getSettings().load();
         getSender().sendMessage(RELOAD_MESSAGE.replace("{time}", String.valueOf(System.currentTimeMillis() - duration)));

@@ -3,7 +3,7 @@ main: org.originmc.fbasics.FBasics
 version: ${project.version}
 description: ${project.description}
 author: Sudzzy
-softdepend: [Vault, Factions, MassiveCore]
+softdepend: [Vault, Factions, MassiveCore, MVdWPlaceholderAPI]
 
 commands:
   factionbasics:

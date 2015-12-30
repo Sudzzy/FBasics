@@ -53,6 +53,10 @@
       <id>vault-repo</id>
       <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
     </repository>
+    <repository>
+      <id>mvdw-repo</id>
+      <url>http://repo.mvdw-software.be/content/groups/public/</url>
+    </repository>
   </repositories>
 
   <dependencies>
@@ -72,6 +76,12 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.14.8</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>be.maximvdw</groupId>
+      <artifactId>MVdWPlaceholderAPI</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

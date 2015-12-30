@@ -1,5 +1,6 @@
 package org.originmc.fbasics;
 
+import be.maximvdw.placeholderapi.PlaceholderAPI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -28,6 +29,7 @@ import org.originmc.fbasics.listener.FactionMapListener;
 import org.originmc.fbasics.listener.InventoryDupeListener;
 import org.originmc.fbasics.listener.McMMOMiningListener;
 import org.originmc.fbasics.listener.NetherRoofListener;
+import org.originmc.fbasics.placeholder.EnderpearlCooldownPlaceholder;
 import org.originmc.fbasics.settings.Settings;
 import org.originmc.fbasics.util.SettingsUtils;
 
@@ -102,6 +104,7 @@ public final class FBasics extends JavaPlugin {
 
         // Load dependencies.
         integrateFactions();
+        integratePlaceholders();
         integrateVault();
 
         // Create and register all listeners.
@@ -149,6 +152,17 @@ public final class FBasics extends JavaPlugin {
         // Grab Permissions support.
         RegisteredServiceProvider<Permission> permissions = Bukkit.getServicesManager().getRegistration(Permission.class);
         this.permissions = permissions.getProvider();
+    }
+
+    /**
+     * Loads MVdW placeholders API dependency.
+     */
+    public void integratePlaceholders() {
+        // Create and register new placeholders.
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("MVdWPlaceholderAPI");
+        if (plugin instanceof PlaceholderAPI) {
+            new EnderpearlCooldownPlaceholder(this);
+        }
     }
 
     /**
