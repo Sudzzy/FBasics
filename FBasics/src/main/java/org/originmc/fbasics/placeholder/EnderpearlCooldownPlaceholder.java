@@ -7,7 +7,11 @@ import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.entity.User;
 import org.originmc.fbasics.util.DurationUtils;
 
+import java.text.DecimalFormat;
+
 public final class EnderpearlCooldownPlaceholder implements PlaceholderReplacer {
+
+    private final DecimalFormat timeFormat = new DecimalFormat("#0.0");
 
     private final FBasics plugin;
 
@@ -19,14 +23,19 @@ public final class EnderpearlCooldownPlaceholder implements PlaceholderReplacer 
     @Override
     public String onPlaceholderReplace(PlaceholderReplaceEvent event) {
         // Get remaining enderpearl cooldown for the player.
-        long remaining = 0;
+        double remaining = 0;
         if (event.getPlayer() != null) {
             User user = plugin.getOrCreateUser(event.getPlayer().getUniqueId());
-            remaining = DurationUtils.calculateRemaining(user.getEnderpearlCooldown());
+            remaining = ((double) DurationUtils.calculateRemaining(user.getEnderpearlCooldown())) / 1000;
         }
 
-        // Return the cooldown in text format.
-        return DurationUtils.format(remaining);
+        // Return inactive if there is no cooldown remaining.
+        if (remaining < 0) {
+            return "Inactive";
+        }
+
+        // Return the cooldown in a compact time format.
+        return timeFormat.format(remaining);
     }
 
 }
