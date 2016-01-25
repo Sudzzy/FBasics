@@ -119,12 +119,12 @@ public final class AntiPhaseTask implements Runnable {
         int moveMinZ = Math.min(previous.getBlockZ(), current.getBlockZ());
         int moveMaxZ = Math.max(previous.getBlockZ(), current.getBlockZ());
 
+        // Increment minimum Y by 1 if the player is currently inside a vehicle to prevent mine cart bugs.
+        if (vehicle) moveMinY++;
+
         // Adjust Y values to the maximum of 256 due to blocks above build limit being solid.
         if (moveMaxY > 256) moveMaxY = 256;
         if (moveMinY > 256) moveMinY = 256;
-
-        // Increment minimum Y by 1 if the player is currently inside a vehicle to prevent mine cart bugs.
-        if (vehicle) moveMinY++;
 
         // Iterate through all possible blocks passed through.
         boolean passable = true;
