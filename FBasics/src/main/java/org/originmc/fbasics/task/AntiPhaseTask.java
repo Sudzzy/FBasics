@@ -14,6 +14,7 @@ import org.originmc.fbasics.util.MaterialUtils;
 import org.originmc.fbasics.util.PathUtils;
 
 import java.util.UUID;
+import java.util.logging.Level;
 
 @Data
 public final class AntiPhaseTask implements Runnable {
@@ -114,17 +115,13 @@ public final class AntiPhaseTask implements Runnable {
         // Calculate all possible blocks the player has moved through.
         int moveMinX = Math.min(previous.getBlockX(), current.getBlockX());
         int moveMaxX = Math.max(previous.getBlockX(), current.getBlockX());
-        int moveMinY = Math.min(previous.getBlockY(), current.getBlockY());
-        int moveMaxY = Math.max(previous.getBlockY(), current.getBlockY()) + 1;
+        int moveMinY = Math.min(256, Math.min(previous.getBlockY(), current.getBlockY()));
+        int moveMaxY = Math.min(256, Math.max(previous.getBlockY(), current.getBlockY()) + 1);
         int moveMinZ = Math.min(previous.getBlockZ(), current.getBlockZ());
         int moveMaxZ = Math.max(previous.getBlockZ(), current.getBlockZ());
 
         // Increment minimum Y by 1 if the player is currently inside a vehicle to prevent mine cart bugs.
-        if (vehicle) moveMinY++;
-
-        // Adjust Y values to the maximum of 256 due to blocks above build limit being solid.
-        if (moveMaxY > 256) moveMaxY = 256;
-        if (moveMinY > 256) moveMinY = 256;
+        if (vehicle && moveMinY != 256) moveMinY++;
 
         // Iterate through all possible blocks passed through.
         boolean passable = true;
@@ -152,8 +149,8 @@ public final class AntiPhaseTask implements Runnable {
         }
 
         return passable || PathUtils.hasPath(movement,
-                movement[moveMaxX - previous.getBlockX()][moveMaxY - previous.getBlockY() - 1][moveMaxZ - previous.getBlockZ()],
-                movement[moveMaxX - current.getBlockX()][moveMaxY - current.getBlockY() - 1][moveMaxZ - current.getBlockZ()]);
+                movement[moveMaxX - previous.getBlockX()][Math.max(0, moveMaxY - previous.getBlockY() - 1)][moveMaxZ - previous.getBlockZ()],
+                movement[moveMaxX - current.getBlockX()][Math.max(0, moveMaxY - current.getBlockY() - 1)][moveMaxZ - current.getBlockZ()]);
     }
 
     /**
