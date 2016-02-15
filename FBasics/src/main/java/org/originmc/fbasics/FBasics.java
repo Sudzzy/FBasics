@@ -147,11 +147,11 @@ public final class FBasics extends JavaPlugin {
 
         // Grab Economy support.
         RegisteredServiceProvider<Economy> economy = Bukkit.getServicesManager().getRegistration(Economy.class);
-        this.economy = economy.getProvider();
+        if (economy != null) this.economy = economy.getProvider();
 
         // Grab Permissions support.
         RegisteredServiceProvider<Permission> permissions = Bukkit.getServicesManager().getRegistration(Permission.class);
-        this.permissions = permissions.getProvider();
+        if (permissions != null) this.permissions = permissions.getProvider();
     }
 
     /**

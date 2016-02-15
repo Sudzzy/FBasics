@@ -184,6 +184,9 @@ public final class CommandListener implements Listener {
         double price = event.getSettings().getPrice();
         if (price == 0) return;
 
+        // Do nothing if no economy plugin is on the server.
+        if (plugin.getEconomy() == null) return;
+
         // Charge the player for executing this command.
         plugin.getEconomy().withdrawPlayer(player, event.getSettings().getPrice());
 
