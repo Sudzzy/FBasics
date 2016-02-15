@@ -11,7 +11,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <fbasics.version>2.1.3</fbasics.version>
+    <fbasics.version>2.1.4</fbasics.version>
   </properties>
 
   <modules>
