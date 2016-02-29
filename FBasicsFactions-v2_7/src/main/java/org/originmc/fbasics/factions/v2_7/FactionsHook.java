@@ -41,7 +41,7 @@ public final class FactionsHook implements IFactionsHook {
         for (String faction : factions) {
             String[] data = faction.split(":");
             if (data.length == 2) {
-                relations.add(Rel.parse(data[1]));
+                relations.add(parseRel(data[1]));
             }
         }
 
@@ -54,6 +54,30 @@ public final class FactionsHook implements IFactionsHook {
         // Now all checks are complete, the player does not have access when using whitelist mode. Opposite for
         // blacklist.
         return !whitelist;
+    }
+
+    private Rel parseRel(String str) {
+        if (str == null || str.length() < 1) {
+            return null;
+        }
+
+        str = str.toLowerCase();
+        switch (str) {
+            case "admin":
+                return Rel.LEADER;
+            case "moderator":
+                return Rel.OFFICER;
+            case "normal":
+                return Rel.MEMBER;
+            default:
+                for (Rel rel : Rel.values()) {
+                    if (rel.name().toLowerCase().startsWith(str)) {
+                        return rel;
+                    }
+                }
+        }
+
+        return null;
     }
 
 }

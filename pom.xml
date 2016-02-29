@@ -11,8 +11,15 @@
   <packaging>pom</packaging>
 
   <properties>
-    <fbasics.version>2.1.5</fbasics.version>
+    <fbasics.version>2.1.6</fbasics.version>
   </properties>
+
+  <repositories>
+    <repository>
+      <id>spigot-repo</id>
+      <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+    </repository>
+  </repositories>
 
   <modules>
     <module>FBasicsFactions-API</module>
