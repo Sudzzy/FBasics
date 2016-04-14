@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.originmc.fbasics.FBasics;
+import org.originmc.fbasics.entity.User;
 import org.originmc.fbasics.settings.AntiGlitchSettings;
 
 public final class AntiPhaseListener implements Listener {
@@ -27,9 +28,8 @@ public final class AntiPhaseListener implements Listener {
         if (!settings.isPhase()) return;
 
         // Tell plugin player has been teleported in order to allow this movement.
-        if (event.getCause() != PlayerTeleportEvent.TeleportCause.UNKNOWN) {
-            plugin.getOrCreateUser(event.getPlayer().getUniqueId()).setTeleported(true);
-        }
+        User user = plugin.getOrCreateUser(event.getPlayer().getUniqueId());
+        user.setTeleported(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

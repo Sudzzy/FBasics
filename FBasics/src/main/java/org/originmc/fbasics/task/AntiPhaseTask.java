@@ -14,7 +14,6 @@ import org.originmc.fbasics.util.MaterialUtils;
 import org.originmc.fbasics.util.PathUtils;
 
 import java.util.UUID;
-import java.util.logging.Level;
 
 @Data
 public final class AntiPhaseTask implements Runnable {
@@ -36,7 +35,7 @@ public final class AntiPhaseTask implements Runnable {
             Location current = player.getLocation();
             Location previous = user.getValidLocation();
             if (previous.distanceSquared(current) > 256) {
-                player.teleport(previous, PlayerTeleportEvent.TeleportCause.PLUGIN);
+                player.teleport(previous);
                 continue;
             }
 
@@ -47,7 +46,8 @@ public final class AntiPhaseTask implements Runnable {
             }
 
             // Teleport the player to the last valid location.
-            player.teleport(previous, PlayerTeleportEvent.TeleportCause.UNKNOWN);
+            player.teleport(previous);
+            user.setTeleported(false);
         }
     }
 
@@ -58,7 +58,7 @@ public final class AntiPhaseTask implements Runnable {
      * @param user   the players' user profile.
      * @return true if player can skip this current phase check.
      */
-    public boolean checkState(Player player, User user) {
+    private boolean checkState(Player player, User user) {
         // Do nothing if player has permission.
         if (player.hasPermission(Perm.AntiGlitch.PHASE)) {
             user.setValidLocation(null);
@@ -111,7 +111,7 @@ public final class AntiPhaseTask implements Runnable {
      * @param vehicle  if the player is inside a during vehicle this movement.
      * @return true if movement is valid (does not pass through solid blocks).
      */
-    public boolean checkMovement(Location previous, Location current, boolean vehicle) {
+    private boolean checkMovement(Location previous, Location current, boolean vehicle) {
         // Calculate all possible blocks the player has moved through.
         int moveMinX = Math.min(previous.getBlockX(), current.getBlockX());
         int moveMaxX = Math.max(previous.getBlockX(), current.getBlockX());
@@ -161,7 +161,7 @@ public final class AntiPhaseTask implements Runnable {
      * @param current  the second position of movement.
      * @return if the players movement could be classed as a phase.
      */
-    public boolean isPassable(Block block, Location previous, Location current) {
+    private boolean isPassable(Block block, Location previous, Location current) {
         // Movement boundaries.
         double moveMaxX = Math.max(previous.getX(), current.getX());
         double moveMinX = Math.min(previous.getX(), current.getX());
