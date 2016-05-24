@@ -22,6 +22,7 @@ import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.Perm;
 import org.originmc.fbasics.entity.User;
 import org.originmc.fbasics.settings.AntiGlitchEnderpearlsSettings;
+import org.originmc.fbasics.util.BukkitUtils;
 import org.originmc.fbasics.util.DurationUtils;
 import org.originmc.fbasics.util.MaterialUtils;
 import org.originmc.fbasics.util.MessageUtils;
@@ -46,7 +47,7 @@ public final class EnderpearlListener implements Listener {
         if (!settings.isCorrectTeleport()) return;
 
         // Do nothing if not teleported by an enderpearl.
-        if (!event.getCause().equals(TeleportCause.ENDER_PEARL)) return;
+        if (event.getCause() != TeleportCause.ENDER_PEARL) return;
 
         // Calculate safe teleportation location and change the destination.
         Location to = event.getTo();
@@ -63,7 +64,7 @@ public final class EnderpearlListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void denyEnderpearlFactions(PlayerTeleportEvent event) {
         // Do nothing if not teleported by an enderpearl.
-        if (!event.getCause().equals(TeleportCause.ENDER_PEARL)) return;
+        if (event.getCause() != TeleportCause.ENDER_PEARL) return;
 
         // Do nothing if player has permission.
         Player player = event.getPlayer();
@@ -95,17 +96,16 @@ public final class EnderpearlListener implements Listener {
         if (player.hasPermission(Perm.AntiGlitch.ENDERPEARLS_WITHIN_BLOCK)) return;
 
         // Do nothing if player is not clicking an enderpearl.
-        Material material = player.getItemInHand().getType();
-        if (material == null || material != Material.ENDER_PEARL) return;
+        if (!BukkitUtils.hasItemSelected(player, Material.ENDER_PEARL)) return;
 
         // Cancel the event if player clicked a block.
-        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             event.setCancelled(true);
             return;
         }
 
         // Do nothing if player did not right click air.
-        if (!event.getAction().equals(Action.RIGHT_CLICK_AIR)) return;
+        if (event.getAction() != Action.RIGHT_CLICK_AIR) return;
 
         // Do nothing if player is not within a solid block.
         Block block = player.getLocation().getBlock();
@@ -125,15 +125,14 @@ public final class EnderpearlListener implements Listener {
         if (settings.getCooldown() <= 0) return;
 
         // Do nothing if player did not right click air.
-        if (!event.getAction().equals(Action.RIGHT_CLICK_AIR)) return;
+        if (event.getAction() != Action.RIGHT_CLICK_AIR) return;
 
         // Do nothing if player has permission.
         Player player = event.getPlayer();
         if (player.hasPermission(Perm.AntiGlitch.ENDERPEARLS_COOLDOWN)) return;
 
         // Do nothing if player is not clicking an enderpearl.
-        Material material = player.getItemInHand().getType();
-        if (material == null || material != Material.ENDER_PEARL) return;
+        if (!BukkitUtils.hasItemSelected(player, Material.ENDER_PEARL)) return;
 
         // Deny event if user is already throwing an enderpearl.
         User user = plugin.getOrCreateUser(player.getUniqueId());
@@ -174,7 +173,7 @@ public final class EnderpearlListener implements Listener {
         if (settings.getDoorCooldown() <= 0) return;
 
         // Do nothing if player has not right clicked a block.
-        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
         // Do nothing if player has permission.
         Player player = event.getPlayer();

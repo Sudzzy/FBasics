@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.Perm;
 import org.originmc.fbasics.settings.AntiGlitchSettings;
+import org.originmc.fbasics.util.BukkitUtils;
 import org.originmc.fbasics.util.MessageUtils;
 
 public final class CropDupeListener implements Listener {
@@ -37,7 +38,7 @@ public final class CropDupeListener implements Listener {
         if (player.hasPermission(Perm.AntiGlitch.CROP_DUPE)) return;
 
         // Do nothing if player is not holding an exploitable material.
-        if (!settings.getCropDupeDenyBlocks().contains(player.getItemInHand().getType())) return;
+        if (!BukkitUtils.hasItemsSelected(player, settings.getCropDupeDenyBlocks())) return;
 
         // Iterate through all blocks surrounding block attempted to be placed.
         Block block = event.getClickedBlock().getRelative(event.getBlockFace());

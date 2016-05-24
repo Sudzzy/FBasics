@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.originmc.fbasics.FBasics;
 import org.originmc.fbasics.Perm;
 import org.originmc.fbasics.settings.AntiGlitchSettings;
+import org.originmc.fbasics.util.BukkitUtils;
 
 public final class InventoryDupeListener implements Listener {
 
@@ -33,11 +34,27 @@ public final class InventoryDupeListener implements Listener {
         Player player = event.getPlayer();
         if (player.hasPermission(Perm.AntiGlitch.INVENTORY_DUPE)) return;
 
-        // Do nothing if item stack size is greater than 0.
-        if (player.getItemInHand().getAmount() > 0) return;
+        if (BukkitUtils.BUKKIT_VERSION.compareTo("1.9") >= 0) {
+            // Validate items in both hands.
+            ItemStack offHand = player.getInventory().getItemInOffHand();
+            ItemStack mainHand = player.getInventory().getItemInMainHand();
 
-        // Remove duped item
-        player.setItemInHand(null);
+            // Remove item in off hand if invalid size.
+            if (offHand != null && offHand.getAmount() <= 0) {
+                player.getInventory().setItemInOffHand(null);
+            }
+
+            // Remove item in main hand if invalid size.
+            if (mainHand != null && mainHand.getAmount() <= 0) {
+                player.getInventory().setItemInMainHand(null);
+            }
+        } else {
+            // Remove item in hand if invalid size.
+            ItemStack hand = player.getItemInHand();
+            if (hand != null && hand.getAmount() <= 0) {
+                player.getInventory().setItemInHand(null);
+            }
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
