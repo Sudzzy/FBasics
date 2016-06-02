@@ -34,7 +34,7 @@ public final class InventoryDupeListener implements Listener {
         Player player = event.getPlayer();
         if (player.hasPermission(Perm.AntiGlitch.INVENTORY_DUPE)) return;
 
-        if (BukkitUtils.BUKKIT_VERSION.compareTo("1.9") >= 0) {
+        if (BukkitUtils.isAtLeast(BukkitUtils.Version.v1_9)) {
             // Validate items in both hands.
             ItemStack offHand = player.getInventory().getItemInOffHand();
             ItemStack mainHand = player.getInventory().getItemInMainHand();

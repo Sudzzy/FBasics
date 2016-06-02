@@ -12,14 +12,24 @@ public class BukkitUtils {
     public static final String BUKKIT_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
     /**
+     * Determines if the server version is at least as high as the input value.
+     *
+     * @param version the {@link Version} to check against.
+     * @return true if the server version is at least as high as queried.
+     */
+    public static boolean isAtLeast(Version version) {
+        return BUKKIT_VERSION.compareTo(version.name()) >= 0;
+    }
+
+    /**
      * Determines if the player is holding an item in either hand.
      *
-     * @param player the player to test for.
+     * @param player   the player to test for.
      * @param material the material to test for.
      * @return true if player is holding this specific material in either hand.
      */
     public static boolean hasItemSelected(Player player, Material material) {
-        if (BUKKIT_VERSION.compareTo("1.9") >= 0) {
+        if (isAtLeast(Version.v1_9)) {
             // Check items in both hands if server is using the 1.9 API or higher.
             ItemStack offHand = player.getInventory().getItemInOffHand();
             ItemStack mainHand = player.getInventory().getItemInMainHand();
@@ -38,12 +48,12 @@ public class BukkitUtils {
      * Determines if the player is holding one of a select number of items in
      * either hand.
      *
-     * @param player the player to test for.
+     * @param player    the player to test for.
      * @param materials the materials to test for.
      * @return true if player is holding one of the select items.
      */
     public static boolean hasItemsSelected(Player player, Collection<Material> materials) {
-        if (BUKKIT_VERSION.compareTo("1.9") >= 0) {
+        if (isAtLeast(Version.v1_9)) {
             // Check items in both hands if server is using the 1.9 API or higher.
             ItemStack offHand = player.getInventory().getItemInOffHand();
             ItemStack mainHand = player.getInventory().getItemInMainHand();
@@ -56,5 +66,9 @@ public class BukkitUtils {
         }
 
         return false;
+    }
+
+    public enum Version {
+        v1_7, v1_8, v1_9
     }
 }
