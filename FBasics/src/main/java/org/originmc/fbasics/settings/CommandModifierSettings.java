@@ -32,7 +32,7 @@ public final class CommandModifierSettings extends CommandModifierGroupSettings 
     private HashMap<String, CommandModifierGroupSettings> groups = new HashMap<>();
 
     public CommandModifierSettings(FBasics plugin, String path, String name) {
-        super(plugin, null, path);
+        super(plugin, null, null, path);
         this.name = name;
         this.path = path;
         this.plugin = plugin;
@@ -72,7 +72,7 @@ public final class CommandModifierSettings extends CommandModifierGroupSettings 
             // Attempt to load an already cached group settings, otherwise create a new one.
             CommandModifierGroupSettings group = this.groups.get(groupName);
             if (group == null) {
-                group = new CommandModifierGroupSettings(plugin, groupName, configuration.getConfigurationSection(groupName).getCurrentPath());
+                group = new CommandModifierGroupSettings(plugin, this, groupName, configuration.getConfigurationSection(groupName).getCurrentPath());
             }
 
             // Load the groups' settings.

@@ -23,10 +23,9 @@ import org.originmc.fbasics.task.CommandWarmupTask;
 import org.originmc.fbasics.util.DurationUtils;
 import org.originmc.fbasics.util.MessageUtils;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class CommandListener implements Listener {
 
@@ -238,6 +237,21 @@ public final class CommandListener implements Listener {
         String alias = event.getSettings().getAlias();
         if (alias.isEmpty()) return;
 
+        CommandModifierSettings root = event.getSettings().getRoot()  == null ?
+                (CommandModifierSettings) event.getSettings() : event.getSettings().getRoot();
+        Matcher matcher = root.getRegex().matcher(event.getCommand());
+        LinkedHashMap<String, String> groupPlaceholders = new LinkedHashMap<>();
+        for (int c = 0; c < matcher.groupCount(); c++) {
+            if (alias.contains("$" + c)) {
+                groupPlaceholders.put("$" + c, matcher.group(c));
+            }
+        }
+
+        String command = alias;
+        for (Map.Entry<String, String> entry : groupPlaceholders.entrySet()) {
+            command = command.replace(entry.getKey(), entry.getValue());
+        }
+
         // Load all argument placeholders.
         LinkedHashMap<String, String> placeholders = new LinkedHashMap<>();
         String[] args = event.getCommand().split(" ");
@@ -250,7 +264,6 @@ public final class CommandListener implements Listener {
         }
 
         // Create the new command with placeholders changed.
-        String command = alias;
         for (String placeholder : placeholders.keySet()) {
             command = command.replace(placeholder, placeholders.get(placeholder));
         }

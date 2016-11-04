@@ -39,6 +39,8 @@ public class CommandModifierGroupSettings implements ISettings {
 
     private final FBasics plugin;
 
+    private final CommandModifierSettings root;
+
     private final String group;
 
     private final String path;
